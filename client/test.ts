@@ -7,8 +7,7 @@ const toggleRegister = document.getElementById('toggleRegister')
 
 if (regContainer && logContainer) {
   regContainer.style.display = "none";
-  toggleLogin?.classList.add("bg-teal-100");
-  // logContainer.style.display = "none";
+  toggleLogin?.classList.add("bg-black");
 }
 let arr = [logContainer, regContainer];
 
@@ -17,11 +16,10 @@ enum PageState {
   Register,
 };
 
-
 toggleLogin?.addEventListener('click', () => {
   if (arr[PageState.Login] && arr[PageState.Register]) {
-    toggleLogin.classList.add("bg-teal-100");
-    toggleRegister?.classList.remove("bg-teal-100");
+    toggleLogin.classList.add("bg-black");
+    toggleRegister?.classList.remove("bg-black");
     arr[PageState.Login].style.display = "block";
     arr[PageState.Register].style.display = "none";
   }
@@ -29,12 +27,13 @@ toggleLogin?.addEventListener('click', () => {
 
 toggleRegister?.addEventListener('click', () => {
   if (arr[PageState.Login] && arr[PageState.Register]) {
-    toggleRegister.classList.add("bg-teal-100");
-    toggleLogin?.classList.remove("bg-teal-100");
+    toggleRegister.classList.add("bg-black");
+    toggleLogin?.classList.remove("bg-black");
     arr[PageState.Register].style.display = "block";
     arr[PageState.Login].style.display = "none";
   }
 })
 
 
+console.log("OK");
 
