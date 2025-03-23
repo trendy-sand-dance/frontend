@@ -1,7 +1,7 @@
 <div align=center>
 
-# service template
-This repo contains the basic layout of our services, it runs a node server.
+# frontend
+Bla bla
 
 </div>
 
