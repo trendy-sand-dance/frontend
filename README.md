@@ -1,6 +1,6 @@
 <div align=center>
 
-# service template 
+# service template
 This repo contains the basic layout of our services, it runs a node server.
 
 </div>
@@ -11,13 +11,25 @@ This repo contains the basic layout of our services, it runs a node server.
 - Don't forget to match :user when retrieving URL parameters
 
 
-## Repo setup
-After you've created a repo based on this template you should setup the branch rules.
-T.B.A
 
-## Project setup
+## Repo configuration
+After you've created a repo based on this template you should setup the branch rules.
+#### Use rebases instead of merges
+1. In your repo go to `Settings -> General`, scroll down to `Pull Requests` and disable `Allow merge commits`.
+2. In `Allow squash merging` set the `Default commit message` to `Pull request title`.
+
+#### Only commit on main using PRs
+1. Go to `Settings -> Rules -> Rulesets` and create a `New ruleset -> New branch ruleset` give it a name like "protect main"
+2. The the `Enforcement status` to `Active`.
+3. Scroll down to `Targets` `Add target -> Include default branch`.
+4. Scroll further down to `Rules` and enable `Require a pull request before merging`.
+5. Expand the `Additional settings` the set `Allowed merge methods` to **Squash** and **Rebase**.
+
+#### Fix package not building
+This is because after you fork github automagically disables any actions, in order to enable them just goto the `Actions` tab in the repo's homepage.
+
+## Initial project setup
 1. Set the name in `package.json` to the name of the service.
-T.B.A
 
 
 ## dev pre-requisites
