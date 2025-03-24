@@ -1,2 +1,56 @@
 <!DOCTYPE html>
-<h1 class="bg-black text-white w-1/2">HI <%= username %>, EMAIL: <%= email %></h1>
+<!-- <html lang="en"> -->
+<!--   <head> -->
+<!--     <meta charset="UTF-8"> -->
+<!--     <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+<!--     <title></title> -->
+<!--   <link href="/public/output.css" rel="stylesheet"> -->
+<!--   </head> -->
+<!--   <body> -->
+    <div class="flex flex-col w-screen h-screen">
+
+      <div class="flex flex-row flex-grow">
+
+        <!-- Canvas -->
+        <div class="bg-black border border-[#FF55FE] text-white w-5/6">
+
+        </div>
+
+        <section class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
+
+          <div class="h-5/6">
+          </div>
+
+          <div class="flex justify-center flex-col h-1/6 p-4">
+            <div class="border border-cyan-600 rounded-md p-2">
+              <input type="text" placeholder="Type here..." class="bg-[#01FFFF] w-full outline-none">
+              <div class="flex flex-row justify-between">
+                <button type="">:)</button>
+                <button type="">=></button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+        
+      </div>
+
+      <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
+
+        <button type="button">
+          <div class="bg-cyan-500">
+            <p><%= username %></p>
+            <p><%= email %></p>
+          </div>
+        </button>
+
+        <button type="button" class="p-2">Character</button>
+        <button type="button" class="p-2">Friends</button>
+      </nav>
+
+    </div>
+
+<!--   </body> -->
+<!-- </html> -->
+
+
