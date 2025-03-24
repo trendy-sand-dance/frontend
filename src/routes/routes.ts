@@ -14,7 +14,7 @@ export async function routes(fastify: FastifyInstance) {
   });
 
   fastify.get('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com" });
+    return reply.viewAsync("dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com", img_avatar: "/public/img_avatar.png" });
     // return reply.sendFile("dashboard-view.html");
   })
 
@@ -24,6 +24,10 @@ export async function routes(fastify: FastifyInstance) {
 
   fastify.get('/register-view', async function(request: FastifyRequest, reply: FastifyReply) {
     return reply.viewAsync("register-view.ejs");
+  })
+
+  fastify.get('/profile/:username', async function(request: FastifyRequest, reply: FastifyReply) {
+    return reply.viewAsync("userprofile-view.ejs");
   })
 
   // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {
