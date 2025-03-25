@@ -5,29 +5,43 @@ export async function routes(fastify: FastifyInstance) {
     return reply.sendFile('index.html');
   });
 
-  fastify.get('/login', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.sendFile('login.html');
-  });
-
-  fastify.get('/register', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.sendFile('register.html');
-  });
-
   fastify.get('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com", img_avatar: "/public/img_avatar.png" });
-    // return reply.sendFile("dashboard-view.html");
+    return reply.viewAsync("dashboard/dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com", img_avatar: "/public/img_avatar.png" });
   })
 
+  fastify.post('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
+    const userInfo = request.body as { username: string, password: string };
+
+    try {
+      console.log("TEST post /dashboard...");
+
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userInfo)
+      });
+
+      const responseData = await response.json() as { message: string };
+      console.log(responseData);
+      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "/public/img_avatar.png" });
+
+    } catch (error) {
+      request.log.error(error);
+      // reply.code(500).send({ error: 'Internal Server Error' });
+      return reply.viewAsync("errors/error-500.ejs");
+    }
+
+  })
+
+  // Logging and signing in
   fastify.get('/login-view', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("login-view.ejs");
+    return reply.viewAsync("account/login-view.ejs");
   })
 
   fastify.get('/register-view', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("register-view.ejs");
-  })
-
-  fastify.get('/profile/:username', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("userprofile-view.ejs");
+    return reply.viewAsync("account/register-view.ejs");
   })
 
   // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {
