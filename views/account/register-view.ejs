@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
-<div class="flex h-1/2 flex-col bg-black w-1/4 justify-center mx-auto px-6 py-12 lg:px-8">
+<div id="registerView" class="flex flex-col bg-black w-2/4 md:w-2/6 rounded-md justify-center mx-auto px-6 py-12 lg:px-8">
+
   <div class="sm:mx-auto sm:w-full sm:max-w-sm">
     <h2 class="text-center text-2xl/9 font-bold tracking-tight text-[#FF55FE]">Register account</h2>
   </div>
@@ -11,7 +12,7 @@
         <label for="username" class="block text-sm/6 font-medium text-white">Username</label>
         <div class="mt-2">
           <input type="username" name="username" id="username" autocomplete="username" required
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            class="block w-full rounded-md bg-black border border-[#01FFFF] px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-0 focus:border-[#FF55FE] sm:text-sm/6">
         </div>
       </div>
 
@@ -21,7 +22,7 @@
         </div>
         <div class="mt-2">
           <input type="password" name="password" id="password" autocomplete="current-password" required
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            class="block w-full rounded-md bg-black border border-[#01FFFF] px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-0 focus:border-[#FF55FE] sm:text-sm/6">
         </div>
       </div>
 
@@ -31,7 +32,7 @@
         </div>
         <div class="mt-2">
           <input type="email" name="email" id="email" autocomplete="current-email" required
-            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+            class="block w-full rounded-md bg-black border border-[#01FFFF] px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-0 focus:border-[#FF55FE] sm:text-sm/6">
         </div>
       </div>
 
@@ -45,7 +46,7 @@
 
   <div class="flex justify-center">
     <a hx-get="/" hx-target="#login-register-interface" hx-swap="innerHTML"
-      class="text-[#FF55FE] hover:text-indigo-500">Already have
+      class="text-[#FF55FE] cursor-pointer hover:text-indigo-500">Already have
       an account? Sign in here!</a>
   </div>
 </div>

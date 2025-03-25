@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-cgya-cyan: #01FFFF;
+  --color-cgya-pink: #FF55FE;
+}

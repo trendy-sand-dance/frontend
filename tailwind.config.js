@@ -1,9 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./public/*.{html,js}", "./views/*.ejs"],
+  content: ["./public/*.{html,js}", "./views/**/*.ejs"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'cgya-cyan': 'var(--color-cgya-cyan)',
+        'cgya-pink': 'var(--color-cgya-pink)'
+      }
+    },
   },
   plugins: [],
 }
-

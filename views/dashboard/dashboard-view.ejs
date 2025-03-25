@@ -46,16 +46,23 @@
     <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
 
       <div class="">
-        <div class="flex flex-row bg-cyan-500 rounded-md p-2">
-          <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
-          <p class="border-l border-black p-2">
-            <%= username %>
-          </p>
-          <i id='openProfileDialog' class='fas fa-pen cursor-pointer'></i>
+        <div class="flex flex-row bg-cyan-500 rounded-md">
 
-          <dialog id="profileDialog" class="p-8">
+          <div class="flex justify-center">
+              <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
+          </div>
 
-            <div id="closingDiv">
+          <div id='openProfileDialog' class="flex flex-row w-32 justify-between cursor-pointer hover:bg-white">
+            <p class="border-l border-black p-2">
+              <%= username %>
+            </p>
+            <i class='fas fa-pen text-xs flex'></i>
+          </div>
+
+          <dialog id="profileDialog" class="rounded-md p-4 bg-[#01FFFF]">
+
+            <div id="closingDiv" class="flex flex-col">
+
               <div class="flex justify-end">
                 <button type="button" id="closeProfileDialog">X</button>
               </div>
@@ -77,6 +84,9 @@
                   <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
                 </div>
               </div>
+            <div class="flex justify-end w-[100%] p-2 border-t border-black">
+              <a href="/" class="text-gray-700 cursor-pointer">Sign-out</a>
+            </div>
             </div>
 
           </dialog>
