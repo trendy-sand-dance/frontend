@@ -23,10 +23,14 @@ export async function routes(fastify: FastifyInstance) {
         body: JSON.stringify(userInfo)
       });
 
-      const responseData = await response.json() as { message: string };
-      console.log(responseData);
-      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "/public/img_avatar.png" });
+      const responseData = await response.json() as { message: string, error: string, statusCode: number };
+      console.log("statusCode: ", responseData.statusCode);
 
+      if (responseData.statusCode !== 200) {
+        // return reply.viewAsync("account/login-view.ejs", { login_failed: true });
+        return reply.code(404).viewAsync("account/incorrect-userdetails.ejs");
+      }
+      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "/public/img_avatar.png" });
     } catch (error) {
       request.log.error(error);
       // reply.code(500).send({ error: 'Internal Server Error' });
@@ -37,7 +41,7 @@ export async function routes(fastify: FastifyInstance) {
 
   // Logging and signing in
   fastify.get('/login-view', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("account/login-view.ejs");
+    return reply.viewAsync("account/login-view.ejs", { login_failed: false });
   })
 
   fastify.get('/register-view', async function(request: FastifyRequest, reply: FastifyReply) {

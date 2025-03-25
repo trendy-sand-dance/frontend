@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+
+
 <div id="loginView" class="flex h-1/2 bg-black w-1/4 flex-col mx-auto justify-center px-6 py-12 lg:px-8">
 
   <div class="sm:mx-auto sm:w-full sm:max-w-sm pb-16">
@@ -19,7 +21,8 @@
   </div>
 
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-    <form class="space-y-6" hx-post="/dashboard" hx-target="#login-register-interface" hx-swap="outerHTML">
+    <form class="space-y-6" hx-post="/dashboard" hx-target="#login-register-interface"
+      hx-target-404="#incorrect-username" hx-swap="outerHTML">
       <div>
         <label for="username" class="block text-sm/6 font-medium text-white">Username</label>
         <div class="mt-2">
@@ -48,11 +51,16 @@
       </div>
     </form>
 
-
   </div>
 
   <div class="flex justify-center">
     <a hx-get="/register-view" hx-target="#loginView" hx-swap="outerHTML"
       class="text-[#FF55FE] hover:text-indigo-500">No account yet? Sign up here!</a>
   </div>
+
+  <div class="bg-white text-red-950" id="incorrect-username">
+
+  </div>
+
+
 </div>
