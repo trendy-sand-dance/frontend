@@ -13,9 +13,7 @@ export async function routes(fastify: FastifyInstance) {
     const userInfo = request.body as { username: string, password: string };
 
     try {
-      console.log("TEST post /dashboard...");
-
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://user-management:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +30,8 @@ export async function routes(fastify: FastifyInstance) {
 
       else if (responseData.statusCode !== 200) {
         // return reply.viewAsync("account/login-view.ejs", { login_failed: true });
-        return reply.code(404).viewAsync("errors/incorrect-userdetails.ejs");
+        console.log("ResponseData: ", responseData);
+        return reply.code(404).viewAsync("errors/incorrect-userdetails.ejs", { code: reply.statusCode, message: responseData.message });
       }
       return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "/public/img_avatar.png" });
     } catch (error) {
