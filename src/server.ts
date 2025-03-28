@@ -29,6 +29,8 @@ const fastify: FastifyInstance = Fastify({
   }
 });
 
+
+
 fastify.register(pluginFormbody);
 
 fastify.register(pluginCORS), {

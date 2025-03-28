@@ -7,11 +7,12 @@ services:
       LISTEN_PORT: 3000
       LISTEN_ADDRESS: '0.0.0.0'
     ports:
-      - "8001:3000"
+      - "8000:3000"
     volumes:
       - ./src:/app/src  # Mount local project folder into the container
       - /app/node_modules  # Prevent overwriting node_modules
       - ./public:/app/public
       - ./client:/app/client
+      - ./views:/app/views
     tty: true
 
