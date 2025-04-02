@@ -48,7 +48,7 @@ fastify.register(pluginView, {
   engine: {
     ejs: require("ejs")
   },
-  root: path.join(path.dirname(__dirname), 'views'),
+  root: path.join(path.dirname(__dirname), 'server/views'),
   viewExt: "ejs"
 })
 

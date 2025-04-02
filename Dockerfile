@@ -16,7 +16,6 @@ ENV LISTEN_ADDRESS=${LISTEN_ADDRESS}
 ENV LISTEN_PORT=${LISTEN_PORT}
 
 RUN npm run build:server
-RUN npm run build:client
 
 # Stage 2: FIGHT (production)
 FROM node:22-slim AS production
