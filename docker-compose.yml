@@ -12,6 +12,6 @@ services:
       - ./server:/app/server  # Mount local project folder into the container
       - /app/node_modules  # Prevent overwriting node_modules
       - ./public:/app/public
-      - ./views:/app/views
+      - ./server/views:/app/server/views
     tty: true
 

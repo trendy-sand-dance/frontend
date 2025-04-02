@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
-  <link href="/public/output.css" rel="stylesheet">
+  <link href="output.css" rel="stylesheet">
   <script src="https://unpkg.com/htmx.org@2.0.4"
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
@@ -19,10 +19,11 @@
 
     <div class="flex flex-row flex-grow">
 
-      <!-- Canvas -->
-      <div class="bg-black border border-[#FF55FE] text-white w-5/6">
+      <!-- Game Canvas -->
+      <div hx-get="/game" hx-trigger="load" hx-swap="outerHTML">
 
       </div>
+
 
       <section class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
 

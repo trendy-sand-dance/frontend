@@ -1,16 +1,62 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import fs from 'node:fs';
+
+function getBundledFile() {
+  return new Promise((resolve, reject) => {
+    fs.readdir('./public', (err, files) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      for (const file of files) {
+        if (file.includes('index') && file.endsWith('.js')) {
+          console.log(file);
+          resolve(file);
+          return;
+        }
+      }
+      resolve(null);
+    });
+  });
+}
 
 export async function routes(fastify: FastifyInstance) {
+  fastify.get('/game', async function(request: FastifyRequest, reply: FastifyReply) {
+    try {
+
+      const file = await getBundledFile();
+      let html = `<div id="pixi-container" class="bg-black border border-[#FF55FE] text-white w-full">
+                  <script type="module" src="${file}"></script>
+                  </div>`
+
+      console.log(html);
+      return reply.send(html);
+
+    } catch (err) {
+
+      console.log("MAYDAY!!!!!!!");
+      return reply.send("MAYDAY!");
+
+    }
+
+  });
+
   fastify.get('/', async function(request: FastifyRequest, reply: FastifyReply) {
     return reply.sendFile('index.html');
   });
 
+
   fastify.get('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("dashboard/dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com", img_avatar: "/public/img_avatar.png" });
+    return reply.viewAsync("dashboard/dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com", img_avatar: "img_avatar.png" });
   })
 
   fastify.post('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
     const userInfo = request.body as { username: string, password: string };
+
+    if (userInfo.username === "admin" && userInfo.password === "123") {
+      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "img_avatar.png" });
+    }
 
     try {
       const response = await fetch('http://user-management:3000/login', {
@@ -24,16 +70,13 @@ export async function routes(fastify: FastifyInstance) {
       const responseData = await response.json() as { message: string, error: string, statusCode: number };
       console.log("statusCode: ", responseData.statusCode);
 
-      if (userInfo.username === "admin" && userInfo.password === "123") {
-        return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "/public/img_avatar.png" });
-      }
 
-      else if (responseData.statusCode !== 200) {
+      if (responseData.statusCode !== 200) {
         // return reply.viewAsync("account/login-view.ejs", { login_failed: true });
         console.log("ResponseData: ", responseData);
         return reply.code(404).viewAsync("errors/incorrect-userdetails.ejs", { code: reply.statusCode, message: responseData.message });
       }
-      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "/public/img_avatar.png" });
+      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "img_avatar.png" });
     } catch (error) {
       request.log.error(error);
       // reply.code(500).send({ error: 'Internal Server Error' });

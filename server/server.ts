@@ -41,7 +41,7 @@ fastify.register(pluginCORS), {
 
 fastify.register(pluginStatic, {
   root: path.join(path.dirname(__dirname), 'public'),
-  prefix: "/public"
+  // prefix: "/public"
 } as FastifyStaticOptions)
 
 fastify.register(pluginView, {
