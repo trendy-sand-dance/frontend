@@ -34,14 +34,15 @@ async function setup() {
   container?.appendChild(pixiApp.canvas);
   const map = new GameMap(settings.GRIDSIZE, settings.GRIDSIZE, settings.TILESIZE);
   const texture = await Assets.load('assets/bunny.png');
-  const player = new Player(1, new Point(2, 2), texture);
+  const player = new Player(1, new Point(4, 4), texture);
   const mapContainer = map.getContainer();
-  map.createGridFromMap(settings.TILEMAP);
+  map.createSpriteMap(settings.TILEMAP);
   pixiApp.stage.addChild(mapContainer);
   mapContainer.addChild(player.getContext());
   pixiApp.stage.eventMode = 'static';
   pixiApp.stage.hitArea = pixiApp.screen;
 
+  player.getContext().zIndex = 5;
   mouse.setupMapZoom(mousePos, map);
 
   pixiApp.ticker.add((time: Ticker) => {

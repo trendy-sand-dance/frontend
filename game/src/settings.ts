@@ -10,7 +10,6 @@ export const CGA_BLACK = '#000000';
 
 // Tile settings
 export const TILESIZE = 32;
-export const GRIDSIZE = 64;
 export const PLAYERSIZE = 5;
 export const PLAYERSPEED = 0.1;
 export const TILEMAP = [
@@ -47,4 +46,5 @@ export const TILEMAP = [
   [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
   [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
 ];
+export const GRIDSIZE = TILEMAP.length;
 
