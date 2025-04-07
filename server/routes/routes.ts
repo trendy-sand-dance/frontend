@@ -1,98 +1,28 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import fs from 'node:fs';
-
-function getBundledFile() {
-  return new Promise((resolve, reject) => {
-    fs.readdir('./public', (err, files) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      for (const file of files) {
-        if (file.includes('index') && file.endsWith('.js')) {
-          console.log(file);
-          resolve(file);
-          return;
-        }
-      }
-      resolve(null);
-    });
-  });
-}
+import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
+import { loginUser, getLoginView } from '../controllers/account/login.controller.js';
+import { getDashboard } from '../controllers/dashboard/dashboard.controller.js';
+import { getPixiGame } from '../controllers/game/game.controller.js';
 
 export async function routes(fastify: FastifyInstance) {
-  fastify.get('/game', async function(request: FastifyRequest, reply: FastifyReply) {
-    try {
 
-      const file = await getBundledFile();
-      let html = `<div id="pixi-container" class="bg-black border border-[#FF55FE] text-white w-full">
-                  <script type="module" src="${file}"></script>
-                  </div>`
-
-      console.log(html);
-      return reply.send(html);
-
-    } catch (err) {
-
-      console.log("MAYDAY!!!!!!!");
-      return reply.send("MAYDAY!");
-
-    }
-
-  });
-
+  // Root
   fastify.get('/', async function(request: FastifyRequest, reply: FastifyReply) {
     return reply.sendFile('index.html');
   });
 
+  // Account
+  fastify.get('/login-view', getLoginView);
+  fastify.get('/register-view', getRegisterView);
+  fastify.post('/register-user', registerUser);
+  fastify.post('/login-user', loginUser);
 
-  fastify.get('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("dashboard/dashboard-view.ejs", { username: "Flip", email: "flop@gmail.com", img_avatar: "img_avatar.png" });
-  })
+  // Game
+  fastify.get('/game', getPixiGame);
 
-  fastify.post('/dashboard', async function(request: FastifyRequest, reply: FastifyReply) {
-    const userInfo = request.body as { username: string, password: string };
+  // Dashboard
+  fastify.get('/dashboard', getDashboard);
 
-    if (userInfo.username === "admin" && userInfo.password === "123") {
-      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "img_avatar.png" });
-    }
-
-    try {
-      const response = await fetch('http://user-management:3000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userInfo)
-      });
-
-      const responseData = await response.json() as { message: string, error: string, statusCode: number };
-      console.log("statusCode: ", responseData.statusCode);
-
-
-      if (responseData.statusCode !== 200) {
-        // return reply.viewAsync("account/login-view.ejs", { login_failed: true });
-        console.log("ResponseData: ", responseData);
-        return reply.code(404).viewAsync("errors/incorrect-userdetails.ejs", { code: reply.statusCode, message: responseData.message });
-      }
-      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "unknown@gmail.com", img_avatar: "img_avatar.png" });
-    } catch (error) {
-      request.log.error(error);
-      // reply.code(500).send({ error: 'Internal Server Error' });
-      return reply.viewAsync("errors/error-500.ejs");
-    }
-
-  })
-
-  // Logging and signing in
-  fastify.get('/login-view', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("account/login-view.ejs", { login_failed: false });
-  })
-
-  fastify.get('/register-view', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.viewAsync("account/register-view.ejs");
-  })
 
   // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {
   //   const { username } = request.params as { username: string };
@@ -150,61 +80,6 @@ export async function routes(fastify: FastifyInstance) {
   //
   // })
 
-  // fastify.post('/login-user', async function(request: FastifyRequest, reply: FastifyReply) {
-  //   try {
-  //     const { username, password } = request.body as { username: string, password: string };
-  //
-  //     console.log("request.body: ", request.body);
-  //
-  //     const dataPackage = JSON.stringify({ username, password });
-  //
-  //     console.log("dataPackage: ", dataPackage);
-  //     const response = await fetch('http://10.11.3.10:8000/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(request.body)
-  //     });
-  //
-  //     // const responseData = await response.json();
-  //
-  //     return reply.redirect(`/dashboard/${username}`);
-  //   } catch (error) {
-  //     request.log.error(error);
-  //     return reply.code(500).send({ error: 'Internal Server Error' });
-  //   }
-  //
-  // });
 
-  const USERMANAGEMENT_URL = 'http://user_container:3000';
 
-   fastify.post('/register-user', async function(request: FastifyRequest, reply: FastifyReply) {
-     try {
-       const { username, password, email } = request.body as { username: string, password: string, email: string };
-  
-       console.log("request.body: ", request.body);
-  
-       const dataPackage = JSON.stringify({ username, password, email });
-  
-       console.log("dataPackage: ", dataPackage);
-       const response = await fetch(`${USERMANAGEMENT_URL}/register`, {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(request.body)
-       });
-  
-       const responseData = await response.json();
-  
-       // return responseData;
-       return reply.sendFile("index.html");
-  
-     } catch (error) {
-       request.log.error(error);
-       return reply.code(500).send({ error: 'Internal Server Error' });
-     }
-  
-   });
 };
