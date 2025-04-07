@@ -48,6 +48,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
       body: JSON.stringify(username)
     });
 
+
   } catch (error) {
     request.log.error(error);
     return reply.viewAsync("errors/error-500.ejs");
