@@ -2,14 +2,13 @@
   "name": "service-template",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "build:server": "npx tsc",
-    "build:client": "npx tsc --project tsconfig.client.json",
-    "build": "npm run build:server && npm run build:client",
+    "build": "npm run build:server",
     "start": "node dist/server.js",
-    "dev": "nodemon --delay 500ms --watch src --watch client --ext ts --exec \"tsc --project tsconfig.client.json && tsc --noEmit && tsx src/server.ts || exit 1\"",
+    "dev": "nodemon --delay 500ms --watch server --ext ts --exec \"tsc --noEmit && tsx server/server.ts || exit 1\"",
     "tailwind": "npx tailwindcss -i ./public/input.css -o ./public/output.css --watch",
     "dev:full": "concurrently \"npm run tailwind\" \"npm run dev\""
   },

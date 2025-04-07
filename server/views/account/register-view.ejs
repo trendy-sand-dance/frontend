@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<div id="registerView"
+  class="flex flex-col bg-black w-2/4 md:w-2/6 rounded-md justify-center mx-auto px-6 py-12 lg:px-8">
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <h2 class="text-center text-2xl/9 font-bold tracking-tight text-[#FF55FE]">Register account</h2>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <form class="space-y-6" hx-post="/login-user" hx-target="#login-register-interface"
+      hx-target-404="#registration-failure" hx-swap="outerHTML">
+      <div>
+        <label for="username" class="block text-sm/6 font-medium text-white">Username</label>
+        <div class="mt-2">
+          <input type="username" name="username" id="username" autocomplete="username" required
+            class="block w-full rounded-md bg-black border border-[#01FFFF] px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-0 focus:border-[#FF55FE] sm:text-sm/6">
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between">
+          <label for="password" class="block text-sm/6 font-medium text-white">Password</label>
+        </div>
+        <div class="mt-2">
+          <input type="password" name="password" id="password" autocomplete="current-password" required
+            class="block w-full rounded-md bg-black border border-[#01FFFF] px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-0 focus:border-[#FF55FE] sm:text-sm/6">
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between">
+          <label for="email" class="block text-sm/6 font-medium text-white">Email</label>
+        </div>
+        <div class="mt-2">
+          <input type="email" name="email" id="email" autocomplete="current-email" required
+            class="block w-full rounded-md bg-black border border-[#01FFFF] px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-0 focus:border-[#FF55FE] sm:text-sm/6">
+        </div>
+      </div>
+
+      <div>
+        <button type="submit"
+          class="flex w-full justify-center rounded-md bg-[#FF55FE] px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-[#FF55FE] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Register</button>
+      </div>
+    </form>
+
+    <div id="registration-failure">
+    </div>
+
+  </div>
+
+  <div class="flex justify-center">
+    <a hx-get="/" hx-target="#login-register-interface" hx-swap="innerHTML"
+      class="text-[#FF55FE] cursor-pointer hover:text-indigo-500">Already have
+      an account? Sign in here!</a>
+  </div>
+</div>
