@@ -177,32 +177,34 @@ export async function routes(fastify: FastifyInstance) {
   //
   // });
 
-  // fastify.post('/register-user', async function(request: FastifyRequest, reply: FastifyReply) {
-  //   try {
-  //     const { username, password, email } = request.body as { username: string, password: string, email: string };
-  //
-  //     console.log("request.body: ", request.body);
-  //
-  //     const dataPackage = JSON.stringify({ username, password, email });
-  //
-  //     console.log("dataPackage: ", dataPackage);
-  //     const response = await fetch('http://10.11.3.10:8000/register', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(request.body)
-  //     });
-  //
-  //     const responseData = await response.json();
-  //
-  //     // return responseData;
-  //     return reply.sendFile("index.html");
-  //
-  //   } catch (error) {
-  //     request.log.error(error);
-  //     return reply.code(500).send({ error: 'Internal Server Error' });
-  //   }
-  //
-  // });
+  const USERMANAGEMENT_URL = 'http://user_container:3000';
+
+   fastify.post('/register-user', async function(request: FastifyRequest, reply: FastifyReply) {
+     try {
+       const { username, password, email } = request.body as { username: string, password: string, email: string };
+  
+       console.log("request.body: ", request.body);
+  
+       const dataPackage = JSON.stringify({ username, password, email });
+  
+       console.log("dataPackage: ", dataPackage);
+       const response = await fetch(`${USERMANAGEMENT_URL}/register`, {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(request.body)
+       });
+  
+       const responseData = await response.json();
+  
+       // return responseData;
+       return reply.sendFile("index.html");
+  
+     } catch (error) {
+       request.log.error(error);
+       return reply.code(500).send({ error: 'Internal Server Error' });
+     }
+  
+   });
 };
