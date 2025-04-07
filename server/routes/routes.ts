@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
-import { loginUser, getLoginView } from '../controllers/account/login.controller.js';
-import { getDashboard } from '../controllers/dashboard/dashboard.controller.js';
+import { loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
+import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { getPixiGame } from '../controllers/game/game.controller.js';
 
 export async function routes(fastify: FastifyInstance) {
@@ -16,12 +16,15 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
   fastify.post('/login-user', loginUser);
+  fastify.get('/logout/:username', logoutUser);
+  // fastify.post('/logout/:username', logoutUser);
 
   // Game
   fastify.get('/game', getPixiGame);
 
   // Dashboard
   fastify.get('/dashboard', getDashboard);
+  fastify.get('/dashboard/:username', getDashboardUser);
 
 
   // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {
