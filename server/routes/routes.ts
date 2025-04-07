@@ -19,12 +19,14 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/logout/:username', logoutUser);
   // fastify.post('/logout/:username', logoutUser);
 
+
   // Game
   fastify.get('/game', getPixiGame);
 
   // Dashboard
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
+
 
 
   // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {

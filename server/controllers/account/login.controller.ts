@@ -36,6 +36,7 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
 
 }
 
+
 export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
 
@@ -54,4 +55,3 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
     return reply.viewAsync("errors/error-500.ejs");
   }
 }
-

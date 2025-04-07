@@ -8,7 +8,7 @@
     "build:server": "npx tsc",
     "build": "npm run build:server",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch server --ext ts --exec \"tsc --noEmit && tsx server/server.ts || exit 1\"",
+    "dev": "nodemon --delay 500ms --watch server --ext ts --exec \"tsc --noEmit && tsx server/server.ts || exit 1\"",
     "tailwind": "npx tailwindcss -i ./public/input.css -o ./public/output.css --watch",
     "dev:full": "concurrently \"npm run tailwind\" \"npm run dev\""
   },
