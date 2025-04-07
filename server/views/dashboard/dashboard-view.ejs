@@ -46,69 +46,9 @@
 
     <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
 
-      <div class="">
-        <div class="flex flex-row bg-cyan-500 rounded-md">
 
-          <div class="flex justify-center">
-            <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
-          </div>
-
-          <div id='openProfileDialog' class="flex flex-row w-32 justify-between cursor-pointer hover:bg-white">
-            <p class="border-l border-black p-2">
-              <%= username %>
-            </p>
-            <i class='fas fa-pen text-xs flex'></i>
-          </div>
-
-          <dialog id="profileDialog" class="rounded-md p-4 bg-[#01FFFF]">
-
-            <div id="closingDiv" class="flex flex-col">
-
-              <div class="flex justify-end">
-                <button type="button" id="closeProfileDialog">X</button>
-              </div>
-
-              <div class="flex flex-row">
-                <div class="flex flex-col">
-                  <p class="p-2">Username</p>
-                  <p class="p-2">E-mail</p>
-                  <p class="p-2">Avatar</p>
-                </div>
-
-                <div class="flex flex-col">
-                  <p class="p-2">
-                    <%= username %>
-                  </p>
-                  <p class="p-2">
-                    <%= email %>
-                  </p>
-                  <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
-                </div>
-              </div>
-              <div class="flex justify-end w-[100%] p-2 border-t border-black">
-                <a href="/" class="text-gray-700 cursor-pointer">Sign-out</a>
-              </div>
-            </div>
-
-          </dialog>
-
-          <script>
-            let showModal = false;
-            const dialog = document.getElementById("profileDialog");
-            function toggleModal() {
-              showModal = !showModal
-              if (showModal) {
-                dialog.showModal();
-              } else {
-                dialog.close();
-              }
-            }
-            document.getElementById("openProfileDialog").addEventListener("click", () => toggleModal());
-            dialog.addEventListener("click", (event) => {if (event.target.id !== 'closing-div') {toggleModal();} });
-          </script>
-
-        </div>
-      </div>
+      <div id="dashboard-profile-button" hx-get="/dashboard/<%=username %>" hx-swap="innerHTML" hx-trigger="load"
+        hx-target="this"></div>
 
       <button type="button" class="p-2">Character</button>
       <button type="button" class="p-2">Friends</button>

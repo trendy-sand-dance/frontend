@@ -36,3 +36,22 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
 
 }
 
+
+export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
+  const { username } = request.params as { username: string };
+
+  try {
+    const response = await fetch(`${USERMANAGEMENT_URL}/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(username)
+    });
+
+
+  } catch (error) {
+    request.log.error(error);
+    return reply.viewAsync("errors/error-500.ejs");
+  }
+}
