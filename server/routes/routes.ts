@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
 import { loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
+import { editUsername } from '../controllers/account/edit.controller.js';
 import { getPixiGame } from '../controllers/game/game.controller.js';
 
 export async function routes(fastify: FastifyInstance) {
@@ -28,6 +29,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/dashboard/:username', getDashboardUser);
 
 
+  fastify.post('/editUsername/:username', editUsername);
 
   // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {
   //   const { username } = request.params as { username: string };
@@ -54,36 +56,6 @@ export async function routes(fastify: FastifyInstance) {
   //
   // });
 
-  // fastify.post('/edit/:username', async function(request: FastifyRequest, reply: FastifyReply) {
-  //
-  //   try {
-  //     const { username } = request.params as { username: string };
-  //     const { newUsername, password, newPassword, avatar } = request.body as { newUsername: string, password: string, newPassword: string, avatar: string };
-  //
-  //     console.log("request.body: ", request.body);
-  //     console.log("username: ", username);
-  //
-  //     const dataPackage = JSON.stringify({ username, newUsername, password, newPassword, avatar });
-  //
-  //     console.log("dataPackage: ", dataPackage);
-  //     const response = await fetch('http://10.11.3.10:8000/edit', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: dataPackage
-  //     });
-  //
-  //     const responseData = await response.json() as { message: string };
-  //     console.log(responseData);
-  //     return responseData;
-  //
-  //   } catch (error) {
-  //     request.log.error(error);
-  //     return reply.code(500).send({ error: 'Internal Server Error' });
-  //   }
-  //
-  // })
 
 
 

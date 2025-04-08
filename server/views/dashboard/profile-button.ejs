@@ -23,30 +23,56 @@
 
       <div class="flex flex-row">
         <div class="flex flex-col">
-          <p class="p-2">Username</p>
-          <p class="p-2">E-mail</p>
-          <p class="p-2">Avatar</p>
+          <p class="p-2">Username: </p>
+          <p class="p-2">E-mail: </p>
+          <p class="p-2">Avatar: </p>
         </div>
 
         <div class="flex flex-col">
           <p class="p-2">
             <%= username %>
+              <i id="openUsernameInput" class='fas fa-pen text-xs flex'></i>
+              <div id="usernameInput">
+                <form action="/editUsername/<%=username %>" method="post">
+                  <input type="text">
+                  <input type="submit" value="Change Username"></input>
+                </form>
+              </div>
           </p>
           <p class="p-2">
             <%= email %>
+              <i class='fas fa-pen text-xs flex'></i>
           </p>
           <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
+          <i class='fas fa-pen text-xs flex'></i>
         </div>
       </div>
 
       <div class="flex justify-end w-[100%] p-2 border-t border-black">
-		<form action="/logout/<%=username %>" method="get">
-			<input type="submit" class="text-gray-700 cursor-pointer" value="Sign Out" />
-		</form>
+        <form action="/logout/<%=username %>" method="get">
+          <input type="submit" class="text-gray-700 cursor-pointer" value="Sign Out" />
+        </form>
       </div>
 
     </div>
   </dialog>
+
+  <script>
+    let showUsernameInput = false;
+    const input = document.getElementById("usernameInput");
+    input.style.display = 'none';
+    function toggleInput() {
+      showUsernameInput = !showUsernameInput
+      if (showUsernameInput) {
+        input.style.display = 'block';
+      } else {
+        input.style.display = 'none';
+      }
+    }
+
+    document.getElementById("openUsernameInput").addEventListener("click", () => toggleInput());
+
+  </script>
 
   <script>
     let showModal = false;
@@ -60,7 +86,8 @@
       }
     }
     document.getElementById("openProfileDialog").addEventListener("click", () => toggleModal());
-    dialog.addEventListener("click", (event) => {if (event.target.id !== 'closing-div') {toggleModal();} });
+    document.getElementById("closeProfileDialog").addEventListener("click", () => toggleModal());
+    // dialog.addEventListener("click", (event) => {if (event.target.id !== 'closing-div') {toggleModal();} });
   </script>
 
 </div>
