@@ -9,6 +9,7 @@ export async function editUsername(request: FastifyRequest, reply: FastifyReply)
 
     console.log("request.body: ", request.body);
     console.log("username: ", username);
+	console.log("newUsername: ", newUsername);
 
     const dataPackage = JSON.stringify({ username, newUsername });
 
