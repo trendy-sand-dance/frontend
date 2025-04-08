@@ -20,13 +20,12 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       },
       body: JSON.stringify(request.body)
     });
-
-    // const responseData = await response.json();
-    return reply.sendFile("index.html");
-
+	if (response.status === 500)
+		throw ({code: response.status, message: "Failed to create new user"});
+    return reply.code(201).sendFile("index.html");
   } catch (error) {
-    request.log.error(error);
-    return reply.viewAsync("errors/error-500.ejs");
+	const errStatus = error as {code: number, message: string};
+    return reply.code(errStatus.code).viewAsync("errors/incorrect-userdetails.ejs", { code: errStatus.code, message: errStatus.message });
   }
 
 }

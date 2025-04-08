@@ -21,28 +21,19 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       },
       body: JSON.stringify(userInfo)
     });
-
-	//text =  {"id":1,"username":"hi","password":"hi","email":"hi@gmail.com","avatar":"img_avatar.png","status":false}
-    // const responseData = await response.json() as { message: string, error: string, statusCode: number };
-    //const responseData = await response.json() as { message: string, error: string, statusCode: number, email: string, avatar: string };
-   // const responseData = await response.json() as { username: string, password: string, email: string, avatar: string, status: boolean };
-	//const responseData = await response.json() as { user: User };
-	//console.log("user  ----- ", responseData.email);
-
-	if (response.status === 200) {
+	if (response.status === 500)
+			throw ({code: response.status, message: "Internal Server Error"});
+	else if (response.status === 406)
+		throw ({code: response.status, message: "(Not acceptable) Invalid Credentials"});
+	else if (response.status === 200) {
 		return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username});
 	}
-    //if (response.status !== 200) {
-	//	console.error(response.status);
-    //  return reply.code(response.status).viewAsync("errors/incorrect-userdetails.ejs", { code: reply.statusCode, message: "Error" });
-    //}
-    //return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: responseData.email, img_avatar: responseData.avatar });
+
   }
   catch (error) {
-    request.log.error(error);
-    return reply.viewAsync("errors/error-page.ejs", { code: 500, message: "Internal Server Error" });
+	const errStatus = error as {code: number, message: string};
+    return reply.code(errStatus.code).viewAsync("errors/incorrect-userdetails.ejs", { code: errStatus.code, message: errStatus.message });
   }
-
 }
 
 
