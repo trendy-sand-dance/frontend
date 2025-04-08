@@ -21,17 +21,17 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       },
       body: JSON.stringify(userInfo)
     });
-	if (response.status === 500)
-			throw ({code: response.status, message: "Internal Server Error"});
-	else if (response.status === 406)
-		throw ({code: response.status, message: "(Not acceptable) Invalid Credentials"});
-	else if (response.status === 200) {
-		return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username});
-	}
+    if (response.status === 500)
+      throw ({ code: response.status, message: "Internal Server Error" });
+    else if (response.status === 406)
+      throw ({ code: response.status, message: "(Not acceptable) Invalid Credentials" });
+    else if (response.status === 200) {
+      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username });
+    }
 
   }
   catch (error) {
-	const errStatus = error as {code: number, message: string};
+    const errStatus = error as { code: number, message: string };
     return reply.code(errStatus.code).viewAsync("errors/incorrect-userdetails.ejs", { code: errStatus.code, message: errStatus.message });
   }
 }
@@ -41,8 +41,11 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
 
   try {
+    console.log("USERNAME: ", username);
     const response = await fetch(`${USERMANAGEMENT_URL}/logout/${username}`);
-	return reply.sendFile("index.html");
+    if (response.status === 200) {
+      return reply.sendFile("index.html");
+    }
   } catch (error) {
     request.log.error(error);
     return reply.viewAsync("errors/error-500.ejs");
