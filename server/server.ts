@@ -55,7 +55,6 @@ fastify.register(pluginView, {
 fastify.register(routes);
 
 async function startServer() {
-  // Delay is the number of milliseconds for the graceful close to finish
   closeWithGrace(
     { delay: 1000 },
     async ({ err }) => {
@@ -77,6 +76,20 @@ async function startServer() {
     process.exit(1);
   }
 }
+
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  fastify.close(() => {
+    console.log('HTTP server closed');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received: closing HTTP server');
+  fastify.close(() => {
+    console.log('HTTP server closed');
+  });
+});
 
 startServer();
 

@@ -25,14 +25,13 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
     // const responseData = await response.json() as { message: string, error: string, statusCode: number };
     const responseData = await response.json() as { message: string, error: string, statusCode: number, email: string, avatar: string };
     if (responseData.statusCode !== 200) {
-      console.log("SHOULD GIVE ERRORRRRRRRRRRRRRRRRR");
       return reply.code(responseData.statusCode).viewAsync("errors/incorrect-userdetails.ejs", { code: reply.statusCode, message: responseData.message });
     }
     return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: responseData.email, img_avatar: responseData.avatar });
   }
   catch (error) {
     request.log.error(error);
-    return reply.viewAsync("errors/error-500.ejs");
+    return reply.viewAsync("errors/error-page.ejs", { code: 500, message: "Internal Server Error" });
   }
 
 }
