@@ -40,7 +40,9 @@
       </div>
 
       <div class="flex justify-end w-[100%] p-2 border-t border-black">
-        <a href="/logout/<%=username %>" class="text-gray-700 cursor-pointer">Sign-out</a>
+		<form action="/logout/<%=username %>" method="get">
+			<input type="submit" class="text-gray-700 cursor-pointer" value="Sign Out" />
+		</form>
       </div>
 
     </div>
