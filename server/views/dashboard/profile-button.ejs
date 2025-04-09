@@ -33,7 +33,7 @@
             <%= username %>
               <i id="openUsernameInput" class='fas fa-pen text-xs flex'></i>
               <div id="usernameInput">
-                <form action="/editUsername/<%=username %>" method="post">
+                <form hx-post="/editUsername/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
                   <input type="text" name="newUsername">
                   <input type="submit" value="Change Username"></input>
                 </form>
@@ -57,7 +57,7 @@
     </div>
   </dialog>
 
-  <script>
+  <script type="module">
     let showUsernameInput = false;
     const input = document.getElementById("usernameInput");
     input.style.display = 'none';
@@ -74,7 +74,7 @@
 
   </script>
 
-  <script>
+  <script type="module">
     let showModal = false;
     const dialog = document.getElementById("profileDialog");
     function toggleModal() {
