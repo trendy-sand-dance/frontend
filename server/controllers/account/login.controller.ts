@@ -9,11 +9,9 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
   const userInfo = request.body as { username: string, password: string };
 
   try {
-
     if (userInfo.username === "admin" && userInfo.password === "123") {
       return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "test@test.com", img_avatar: "img_avatar.png" });
     }
-
     const response = await fetch(`${USERMANAGEMENT_URL}/login`, {
       method: 'POST',
       headers: {
@@ -21,21 +19,16 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       },
       body: JSON.stringify(userInfo)
     });
-    if (response.status === 500)
-      throw ({ code: response.status, message: "Internal Server Error" });
-    else if (response.status === 406)
-      throw ({ code: response.status, message: "(Not acceptable) Invalid Credentials" });
-    else if (response.status === 200) {
-      return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username });
-    }
-
-  }
-  catch (error) {
-    const errStatus = error as { code: number, message: string };
-    return reply.code(errStatus.code).viewAsync("errors/incorrect-userdetails.ejs", { code: errStatus.code, message: errStatus.message });
-  }
+	if (response.status !== 200) {
+		const responseBody = await response.json() as { error: string };
+		throw { code: response.status, message: responseBody.error };
+	}
+	return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username});
+	} catch (error) {
+		const err = error as { code: number, message: string };
+		return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message});
+	}
 }
-
 
 export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
