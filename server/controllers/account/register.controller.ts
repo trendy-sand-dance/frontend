@@ -20,14 +20,14 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       },
       body: JSON.stringify(request.body)
     });
-	if (!response.ok) {
-		const responseBody = await response.json() as { error: string};
-		throw { code: response.status, message: responseBody.error };
-	}
-	return reply.code(response.status).sendFile("index.html");
-	} catch (error) {
-		const err = error as { code: number, message: string };
-		return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message});
-	}
+    if (!response.ok) {
+      const responseBody = await response.json() as { error: string };
+      throw { code: response.status, message: responseBody.error };
+    }
+    return reply.code(response.status).viewAsync('info/feedback.ejs', { message: "Succesfully registered user!" });
+  } catch (error) {
+    const err = error as { code: number, message: string };
+    return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
+  }
 }
 

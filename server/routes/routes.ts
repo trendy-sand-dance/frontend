@@ -22,7 +22,7 @@ export async function routes(fastify: FastifyInstance) {
 
 
   // Game
-  fastify.get('/game', getPixiGame);
+  fastify.get('/game-canvas', getPixiGame);
 
   // Dashboard
   fastify.get('/dashboard', getDashboard);
@@ -30,33 +30,4 @@ export async function routes(fastify: FastifyInstance) {
 
 
   fastify.post('/editUsername/:username', editUsername);
-
-  // fastify.get('/dashboard/:username/settings', async function(request: FastifyRequest, reply: FastifyReply) {
-  //   const { username } = request.params as { username: string };
-  //   return reply.viewAsync("user-settings.ejs", { username: username });
-  // });
-
-  // fastify.get('/dashboard/:username', async function(request: FastifyRequest, reply: FastifyReply) {
-  //
-  //   const { username } = request.params as { username: string };
-  //
-  //   console.log("Username: ", username);
-  //   console.log("request.params: ", request.params);
-  //
-  //   const response = await fetch(`http://10.11.3.10:8000/dash/${username}`, {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     }
-  //   });
-  //
-  //   const responseData = await response.json() as { email: string };
-  //
-  //   return reply.viewAsync("dashboard.ejs", { username: username, email: JSON.stringify(responseData.email) });
-  //
-  // });
-
-
-
-
 };
