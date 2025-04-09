@@ -19,7 +19,7 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       },
       body: JSON.stringify(userInfo)
     });
-	if (response.status !== 200) {
+	if (!response.ok) {
 		const responseBody = await response.json() as { error: string };
 		throw { code: response.status, message: responseBody.error };
 	}
@@ -36,7 +36,7 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
   try {
     console.log("USERNAME: ", username);
     const response = await fetch(`${USERMANAGEMENT_URL}/logout/${username}`);
-    if (response.status === 200) {
+    if (!response.ok) {
       return reply.sendFile("index.html");
     }
   } catch (error) {

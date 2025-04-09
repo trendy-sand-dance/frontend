@@ -20,11 +20,11 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       },
       body: JSON.stringify(request.body)
     });
-	if (response.status !== 201) {
+	if (!response.ok) {
 		const responseBody = await response.json() as { error: string};
 		throw { code: response.status, message: responseBody.error };
 	}
-	return reply.code(201).sendFile("index.html");
+	return reply.code(response.status).sendFile("index.html");
 	} catch (error) {
 		const err = error as { code: number, message: string };
 		return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message});
