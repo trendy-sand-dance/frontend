@@ -9,11 +9,9 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
   const userInfo = request.body as { username: string, password: string };
 
   try {
-
     if (userInfo.username === "admin" && userInfo.password === "123") {
       return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "test@test.com", img_avatar: "img_avatar.png" });
     }
-
     const response = await fetch(`${USERMANAGEMENT_URL}/login`, {
       method: 'POST',
       headers: {
