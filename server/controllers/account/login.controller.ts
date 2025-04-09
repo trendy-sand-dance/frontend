@@ -19,26 +19,23 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
       },
       body: JSON.stringify(userInfo)
     });
-	if (!response.ok) {
-		const responseBody = await response.json() as { error: string };
-		throw { code: response.status, message: responseBody.error };
-	}
-	return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username});
-	} catch (error) {
-		const err = error as { code: number, message: string };
-		return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message});
-	}
+    if (!response.ok) {
+      const responseBody = await response.json() as { error: string };
+      throw { code: response.status, message: responseBody.error };
+    }
+    return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username });
+  } catch (error) {
+    const err = error as { code: number, message: string };
+    return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
+  }
 }
 
 export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
 
   try {
-    console.log("USERNAME: ", username);
     const response = await fetch(`${USERMANAGEMENT_URL}/logout/${username}`);
-    if (!response.ok) {
-      return reply.sendFile("index.html");
-    }
+    return reply.sendFile("index.html");
   } catch (error) {
     request.log.error(error);
     return reply.viewAsync("errors/error-500.ejs");
