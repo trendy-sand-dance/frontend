@@ -20,7 +20,7 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       },
       body: JSON.stringify(request.body)
     });
-	if (response.status !== 200) {
+	if (response.status !== 201) {
 		const responseBody = await response.json() as { error: string};
 		throw { code: response.status, message: responseBody.error };
 	}
