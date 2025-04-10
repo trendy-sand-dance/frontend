@@ -17,6 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@fastify/formbody": "^8.0.2",
+    "@fastify/multipart": "^9.0.3",
     "@fastify/view": "^11.0.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.13.10",
