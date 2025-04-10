@@ -13,9 +13,9 @@
     <i class='fas fa-pen text-xs flex'></i>
   </div>
 
-  <dialog id="profileDialog" class="rounded-md p-4 bg-[#01FFFF]">
+  <dialog id="profileDialog" class="rounded-md p-4 w-2/6 h-2/6 bg-[#01FFFF]">
 
-    <div id="closingDiv" class="flex flex-col">
+    <div id="closingDiv" class="flex flex-col h-full w-full justify-between">
 
       <div class="flex justify-end">
         <button type="button" id="closeProfileDialog">X</button>
@@ -32,23 +32,39 @@
           <p class="p-2">
             <%= username %>
               <i id="openUsernameInput" class='fas fa-pen text-xs flex'></i>
-              <div id="usernameInput">
+              <div id="usernameInput" class="hidden">
                 <form hx-post="/editUsername/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
                   <input type="text" name="newUsername">
                   <input type="submit" value="Change Username"></input>
                 </form>
               </div>
           </p>
+
+
           <p class="p-2">
             <%= email %>
-              <i class='fas fa-pen text-xs flex'></i>
+              <i id="openEmailInput" class='fas fa-pen text-xs flex'></i>
+              <div id="emailInput" class="hidden">
+                <form hx-post="/editEmail/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
+                  <input type="text" name="newEmail">
+                  <input type="submit" value="Change Email"></input>
+                </form>
+              </div>
           </p>
+
+
           <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
-          <i class='fas fa-pen text-xs flex'></i>
+          <i id="openAvatarInput" class='fas fa-pen text-xs flex'></i>
+          <div id="avatarInput" class="hidden">
+            <form hx-post="/editAvatar/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
+              <input type="file" id="myFile" name="filename">
+              <input type="submit" value="Change Avatar"></input>
+            </form>
+          </div>
         </div>
       </div>
 
-      <div class="flex justify-end w-[100%] p-2 border-t border-black">
+      <div class="flex justify-end content-end w-[100%] p-2 border-t border-black mt-auto">
         <form action="/logout/<%=username %>" method="get">
           <input type="submit" class="text-gray-700 cursor-pointer" value="Sign Out" />
         </form>
@@ -58,19 +74,39 @@
   </dialog>
 
   <script type="module">
-    let showUsernameInput = false;
-    const input = document.getElementById("usernameInput");
-    input.style.display = 'none';
-    function toggleInput() {
-      showUsernameInput = !showUsernameInput
-      if (showUsernameInput) {
+    let toggleUsernameInput = false;
+    let toggleEmailInput = false;
+    let toggleAvatarInput = false;
+
+    const usernameInput = document.getElementById("usernameInput");
+    const emailInput = document.getElementById("emailInput");
+    const avatarInput = document.getElementById("avatarInput");
+    // usernameInput.style.display = 'none';
+    // emailInput.style.display = 'none';
+    // avatarInput.style.display = 'none';
+
+    function toggleInput(input, toggle) {
+      console.info("b4 toggle: ", toggle);
+      console.info("Pressing!!");
+      toggle = !toggle
+      console.info("after toggle: ", toggle);
+      if (toggle) {
         input.style.display = 'block';
       } else {
         input.style.display = 'none';
       }
+      return toggle;
     }
 
-    document.getElementById("openUsernameInput").addEventListener("click", () => toggleInput());
+    document.getElementById("openUsernameInput").addEventListener("click", () => {
+      toggleUsernameInput = toggleInput(usernameInput, toggleUsernameInput)
+    });
+    document.getElementById("openEmailInput").addEventListener("click", () => {
+      toggleEmailInput = toggleInput(emailInput, toggleEmailInput);
+    });
+    document.getElementById("openAvatarInput").addEventListener("click", () => {
+      toggleAvatarInput = toggleInput(avatarInput, toggleAvatarInput)
+    });
 
   </script>
 

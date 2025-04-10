@@ -2,11 +2,11 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function getDashboard(request: FastifyRequest, reply: FastifyReply) {
+  console.log("GETTING DASHBOARD, RIGHTTTTTTTTTTTTTTTT?");
   try {
     if (request.headers['hx-request']) {
       return reply.viewAsync("dashboard/dashboard-view.ejs");
     }
-
     return reply.sendFile("dashboard.html");
   }
   catch (error) {
