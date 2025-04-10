@@ -35,10 +35,8 @@ export async function logoutUser(request: FastifyRequest, reply: FastifyReply) {
 
   try {
     console.log("USERNAME: ", username);
-    const response = await fetch(`${USERMANAGEMENT_URL}/logout/${username}`);
-    if (!response.ok) {
-      return reply.sendFile("index.html");
-    }
+	const response = await fetch(`${USERMANAGEMENT_URL}/logout/${username}`);
+	return reply.sendFile("index.html");
   } catch (error) {
     request.log.error(error);
     return reply.viewAsync("errors/error-500.ejs");
