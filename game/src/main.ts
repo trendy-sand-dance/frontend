@@ -32,7 +32,7 @@ async function setup() {
   //   await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: container });
   // }
   container?.appendChild(pixiApp.canvas);
-  const map = new GameMap(settings.GRIDSIZE, settings.GRIDSIZE, settings.TILESIZE);
+  const map = new GameMap(settings.GRIDHEIGHT, settings.GRIDWIDTH, settings.TILESIZE);
   const texture = await Assets.load('assets/bunny.png');
   const player = new Player(1, new Point(4, 4), texture);
   const mapContainer = map.getContainer();

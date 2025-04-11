@@ -56,7 +56,7 @@ export default class GameMap {
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-          this.tilingSprites[row][col].anchor.set(0.5);
+          // this.tilingSprites[row][col].anchor.set(0, 0);
 
           this.container.addChild(this.tilingSprites[row][col]);
         }
@@ -128,7 +128,7 @@ export default class GameMap {
         let point = new Point(col, row);
 
         // Raise Y 
-        point.asIsometric.y -= tileMap[row][col] * this.tileSize / 2;
+        point.asIsometric.y -= tileMap[row][col] * this.tileSize;
 
         this.tilingSprites[row][col].x = point.asIsometric.x;
         this.tilingSprites[row][col].y = point.asIsometric.y;
@@ -144,7 +144,7 @@ export default class GameMap {
         let point = new Point(col, row);
 
         // Raise Y 
-        point.asIsometric.y -= tileMap[row][col] * this.tileSize / 2;
+        // point.asIsometric.y -= tileMap[row][col] * this.tileSize / 2;
 
         // Draw walls
         if (tileMap[row][col] != 0) {

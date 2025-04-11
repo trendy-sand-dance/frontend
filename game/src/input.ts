@@ -35,8 +35,8 @@ export function movePlayer(player: Player, deltaTime: number) {
 
   let x = Math.ceil(pos.x);
   let y = Math.ceil(pos.y);
-  let isInBounds = (x >= 0) && (x < settings.GRIDSIZE) &&
-    (y >= 0) && (y < settings.GRIDSIZE);
+  let isInBounds = (x >= 0) && (x < settings.GRIDWIDTH) &&
+    (y >= 0) && (y < settings.GRIDHEIGHT);
 
   if (isInBounds && settings.TILEMAP[y][x] === 0) {
     player.updatePosition(pos);
