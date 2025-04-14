@@ -30,11 +30,11 @@ const fastify: FastifyInstance = Fastify({
   }
 });
 
+fastify.register(pluginFormbody);
 fastify.register(fastifyMultipart, {
 	limits: { fileSize: 10 * 1024 * 1024 }
 });
 
-fastify.register(pluginFormbody);
 
 fastify.register(pluginCORS), {
   origin: true, // Specify domains for production

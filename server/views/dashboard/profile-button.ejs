@@ -56,7 +56,7 @@
           <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
           <i id="openAvatarInput" class='fas fa-pen text-xs flex'></i>
           <div id="avatarInput" class="hidden">
-            <form hx-post="/editAvatar/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
+            <form hx-post="/editAvatar/<%=username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
               <input type="file" id="myFile" name="filename">
               <input type="submit" value="Change Avatar"></input>
             </form>
