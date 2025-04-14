@@ -62,32 +62,42 @@ const DATABASE_URL = 'http://database_container:3000';
 
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
   try {
-	console.log("edit avatar triggered");
     const { username } = request.params as { username: string };
-    const newAvatar = await request.file();
-    if (!newAvatar) {
-      return reply.code(400).send({ error: "No file uploaded!" });
-    }
-	console.log("new avatar file = ", newAvatar);
+	//const filename = request.body as { filename: string};
+	//console.log("file name = ", filename);
+	const specificFile = await request.file();
+	if (!specificFile) {
+		console.log("this failed again");
+		return reply.code(418);
+	}
+    //const newAvatar = await request.file();
+    //if (!newAvatar) {
+    //  return reply.code(400).send({ error: "No file uploaded!" });
+    //}
+	console.log("got file from quest woo");
+	//console.log("new avatar file = ", newAvatar);
 
-	
-    const avatarBuffer = await newAvatar.toBuffer();
-    const form = new FormData();
-    form.append('avatar', new Blob([avatarBuffer]), newAvatar.filename);
-	console.log("form = ", form, " file = ", newAvatar.filename);
-    const res = await fetch(`${DATABASE_URL}/editAvatar/${username}`, {
-      method: 'POST',
-	  headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      body: form,
-    });
 
-    const result = await res.json() as { email: string, avatar: string };;
-	return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: result.email, img_avatar: result.avatar });
+    //const avatarBuffer = await newAvatar.toBuffer();
+    //const formData = new FormData();
+	//formData.append('newAvatar', newAvatar);
+	console.log("get fordata and appended");
+
+    //form.append('avatar', new Blob([avatarBuffer]), newAvatar.filename);
+	//console.log("form = ", form, " file = ", newAvatar.filename);
+    //const res = await fetch(`${DATABASE_URL}/editAvatar/${username}`, {
+    //  method: 'POST',
+	//  headers: {
+    //    'Content-Type': 'multipart/form-data',
+    //  },
+    //  body: form,
+    //});
+
+    //const result = await res.json() as { email: string, avatar: string };;
+	return reply.viewAsync("dashboard/profile-button.ejs", { username: username });
     //return reply.send(result);
   } catch (error) {
-    return reply.code(500).send({ error: 'Internal Server Error' });
+    return reply.code(505).send({ error: 'Internal Server Error' });
   }
 }
 

@@ -7,7 +7,7 @@ import pluginCORS from '@fastify/cors';
 import pluginStatic from '@fastify/static';
 import pluginFormbody from '@fastify/formbody';
 import pluginView from '@fastify/view';
-import pluginMultipart from '@fastify/multipart';
+import fastifyMultipart from '@fastify/multipart';
 
 import { FastifyStaticOptions } from '@fastify/static';
 
@@ -30,9 +30,10 @@ const fastify: FastifyInstance = Fastify({
   }
 });
 
+fastify.register(fastifyMultipart, {
+	limits: { fileSize: 10 * 1024 * 1024 }
+});
 
-
-fastify.register(pluginMultipart);
 fastify.register(pluginFormbody);
 
 fastify.register(pluginCORS), {
