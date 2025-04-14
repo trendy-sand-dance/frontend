@@ -43,16 +43,16 @@
 
           <p class="p-2">
             <%= email %>
-              <i id="openEmailInput" class='fas fa-pen text-xs flex'></i>
-              <div id="emailInput" class="hidden">
-                <form hx-post="/editEmail/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
-                  <input type="text" name="newEmail">
-                  <input type="submit" value="Change Email"></input>
+			<i id="openEmailInput" class='fas fa-pen text-xs flex'></i>
+			<div id="emailInput" class="hidden">
+				<form hx-post="/editEmail/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
+					<input type="text" name="newEmail">
+					<input type="submit" value="Change Email"></input>
                 </form>
-              </div>
-          </p>
-
-
+			</div>
+		</p>
+		
+		
           <img src=<%=img_avatar %> alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
           <i id="openAvatarInput" class='fas fa-pen text-xs flex'></i>
           <div id="avatarInput" class="hidden">

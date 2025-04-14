@@ -58,24 +58,34 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
   }
 };
 
+const DATABASE_URL = 'http://database_container:3000';
+
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
   try {
+	console.log("edit avatar triggered");
     const { username } = request.params as { username: string };
     const newAvatar = await request.file();
     if (!newAvatar) {
       return reply.code(400).send({ error: "No file uploaded!" });
     }
+	console.log("new avatar file = ", newAvatar);
 
+	
     const avatarBuffer = await newAvatar.toBuffer();
     const form = new FormData();
     form.append('avatar', new Blob([avatarBuffer]), newAvatar.filename);
-    const res = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
+	console.log("form = ", form, " file = ", newAvatar.filename);
+    const res = await fetch(`${DATABASE_URL}/editAvatar/${username}`, {
       method: 'POST',
+	  headers: {
+        'Content-Type': 'multipart/form-data',
+      },
       body: form,
     });
 
-    const result = await res.json();
-    return reply.send(result);
+    const result = await res.json() as { email: string, avatar: string };;
+	return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: result.email, img_avatar: result.avatar });
+    //return reply.send(result);
   } catch (error) {
     return reply.code(500).send({ error: 'Internal Server Error' });
   }
