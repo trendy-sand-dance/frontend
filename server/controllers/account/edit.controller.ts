@@ -1,6 +1,10 @@
 import { FastifyRequest, FastifyReply, User } from 'fastify';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
+// for editing/uploading avatar
+import FormData from 'form-data';
+import fetch from 'node-fetch';
+
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
 
   try {
@@ -58,44 +62,28 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
   }
 };
 
-const DATABASE_URL = 'http://database_container:3000';
-
+/** @todo fix erroring handling + clean up */
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { username } = request.params as { username: string };
-	//const filename = request.body as { filename: string};
-	//console.log("file name = ", filename);
-	const specificFile = await request.file();
-	if (!specificFile) {
-		console.log("this failed again");
-		return reply.code(418);
+	const avatarFile = await request.file();
+	if (!avatarFile) {
+		console.log("no file");
+		return reply.code(500);
 	}
-    //const newAvatar = await request.file();
-    //if (!newAvatar) {
-    //  return reply.code(400).send({ error: "No file uploaded!" });
-    //}
-	console.log("got file from quest woo");
-	//console.log("new avatar file = ", newAvatar);
+	console.log("GOT FILE, file = ", avatarFile);
 
+	const formData = new FormData();
+	const buff = await avatarFile.toBuffer();
+	formData.append('avatar', buff, avatarFile.filename);
 
-    //const avatarBuffer = await newAvatar.toBuffer();
-    //const formData = new FormData();
-	//formData.append('newAvatar', newAvatar);
-	console.log("get fordata and appended");
+	  const res = await fetch( `${USERMANAGEMENT_URL}/editAvatar/${username}`, {
+			method: 'POST',
+			body: formData,
+		});
+		return reply.code(200).send({ messgae: "edited avatar filename for user"});
 
-    //form.append('avatar', new Blob([avatarBuffer]), newAvatar.filename);
-	//console.log("form = ", form, " file = ", newAvatar.filename);
-    //const res = await fetch(`${DATABASE_URL}/editAvatar/${username}`, {
-    //  method: 'POST',
-	//  headers: {
-    //    'Content-Type': 'multipart/form-data',
-    //  },
-    //  body: form,
-    //});
-
-    //const result = await res.json() as { email: string, avatar: string };;
-	return reply.viewAsync("dashboard/profile-button.ejs", { username: username });
-    //return reply.send(result);
+	//return reply.viewAsync("dashboard/profile-button.ejs", { username: username });
   } catch (error) {
     return reply.code(505).send({ error: 'Internal Server Error' });
   }
