@@ -5,6 +5,7 @@ import Player from './player.js';
 import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
+import * as wsGame from './websocket-game.js';
 
 let isGameFocused = false;
 let mousePos = { x: 0, y: 0 };
@@ -59,5 +60,6 @@ async function setup() {
 
 setup().then((pixiApp) => {
   console.log("Pixi app initialized:", pixiApp);
+  wsGame.sendToServer("Hey, from client");
 });
 
