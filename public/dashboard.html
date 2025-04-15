@@ -1,71 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Club Pong - Game</title>
-  <link href="output.css" rel="stylesheet">
-
-  <script src="https://unpkg.com/htmx.org@2.0.4"
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Club Pong - Game</title>
+    <link href="output.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@2.0.4"
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/3f6a90a5aa.js" crossorigin="anonymous"></script>
+  </head>
 
-  <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2"
-    integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg sha384-NtTh9TBZ2X/pFpfsVvQOjSsYWmjmqG6h5ioQWVAe2/j3AuTHRmfqvoqp+iOed+I0"
-    crossorigin="anonymous"></script>
-
-  <script src="https://kit.fontawesome.com/3f6a90a5aa.js" crossorigin="anonymous"></script>
-</head>
-
-<body hx-ext="response-targets">
+  <body>
 
 
-  <div class="flex flex-col w-screen h-screen">
+    <div class="flex flex-col w-screen h-screen">
 
-    <div class="flex flex-row flex-grow">
+      <div class="flex flex-row flex-grow">
 
-      <!-- Game Canvas -->
-      <div hx-get="/game-canvas" hx-trigger="load" hx-swap="outerHTML">
+        <!-- Game Canvas -->
+        <div hx-get="/game-canvas" hx-trigger="load" hx-swap="outerHTML">
+
+        </div>
+
+
+        <section class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
+
+          <div class="h-5/6">
+          </div>
+
+          <div class="flex justify-center flex-col h-1/6 p-4">
+            <div class="border border-cyan-600 rounded-md p-2">
+              <input type="text" placeholder="Type here..." class="bg-[#01FFFF] w-full outline-none">
+              <div class="flex flex-row justify-between">
+                <button type="">:)</button>
+                <button type="">=></button>
+              </div>
+            </div>
+          </div>
+
+        </section>
 
       </div>
 
+      <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
 
-      <section class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
+        <!-- Profile Button -->
+        <div id="dashboard-profile-button" hx-get="/dashboard/<%=username %>" hx-swap="innerHTML" hx-trigger="load"
+          hx-target="this"></div>
 
-        <div class="h-5/6">
-        </div>
+        <!-- Chat button -->
+        <button type="button" class="p-2">Chat</button>
 
-        <div class="flex justify-center flex-col h-1/6 p-4">
-          <div class="border border-cyan-600 rounded-md p-2">
-            <input type="text" placeholder="Type here..." class="bg-[#01FFFF] w-full outline-none">
-            <div class="flex flex-row justify-between">
-              <button type="">:)</button>
-              <button type="">=></button>
-            </div>
-          </div>
-        </div>
+        <!-- Players button -->
+        <button type="button" class="p-2">Players</button>
 
-      </section>
+      </nav>
 
     </div>
 
-    <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
-
-      <!-- Profile Button -->
-      <div id="dashboard-profile-button" hx-get="/dashboard/<%=username %>" hx-swap="innerHTML" hx-trigger="load"
-        hx-target="this"></div>
-
-      <!-- Chat button -->
-      <button type="button" class="p-2">Chat</button>
-
-      <!-- Players button -->
-      <button type="button" class="p-2">Players</button>
-
-    </nav>
-
-  </div>
-
-</body>
+  </body>
 
 </html>
