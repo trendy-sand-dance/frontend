@@ -20,7 +20,8 @@ const textureMap = new Map<TextureId, string>([
   [TextureId.Player, "/assets/bunny.png"],
 ]);
 
-export default class GameMap {
+class GameMap {
+  static #instance: GameMap;
 
   public container: Container;
 
@@ -30,7 +31,7 @@ export default class GameMap {
   private cols: number;
   private tileSize: number;
 
-  constructor(rows: number, cols: number, tileSize: number) {
+  private constructor(rows: number, cols: number, tileSize: number) {
 
     this.container = new Container();
 
@@ -40,6 +41,13 @@ export default class GameMap {
     this.rows = rows;
     this.cols = cols;
     this.tileSize = tileSize;
+  }
+
+  public static get instance(): GameMap {
+    if (!GameMap.#instance) {
+      GameMap.#instance = new GameMap(settings.GRIDHEIGHT, settings.GRIDWIDTH, settings.TILESIZE);
+    }
+    return GameMap.#instance;
   }
 
   async initSpriteTiles(rows: number, cols: number) {
@@ -56,7 +64,7 @@ export default class GameMap {
 
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-          this.tilingSprites[row][col].anchor.set(0.5);
+          // this.tilingSprites[row][col].anchor.set(0, 0);
 
           this.container.addChild(this.tilingSprites[row][col]);
         }
@@ -113,7 +121,7 @@ export default class GameMap {
     }
     else {
       // context.fill(settings.CGA_PINK);
-      context.fill(settings.CGA_BLACK);
+      // context.fill(settings.CGA_BLACK);
       context.stroke({ color: settings.CGA_PINK });
     }
   }
@@ -128,7 +136,7 @@ export default class GameMap {
         let point = new Point(col, row);
 
         // Raise Y 
-        point.asIsometric.y -= tileMap[row][col] * this.tileSize / 2;
+        point.asIsometric.y -= tileMap[row][col] * this.tileSize;
 
         this.tilingSprites[row][col].x = point.asIsometric.x;
         this.tilingSprites[row][col].y = point.asIsometric.y;
@@ -137,6 +145,10 @@ export default class GameMap {
   }
 
 
+  getHeightOffset(col: number, row: number, tileMap: number[][]) {
+    return tileMap[row][col] * this.tileSize / 4;
+  }
+
   async createGridFromMap(tileMap: number[][]) {
 
     for (let row = 0; row < this.rows; row++) {
@@ -144,22 +156,45 @@ export default class GameMap {
         let point = new Point(col, row);
 
         // Raise Y 
-        point.asIsometric.y -= tileMap[row][col] * this.tileSize / 2;
+        const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
+        point.asIsometric.y -= currentHeightOffset;
 
         // Draw walls
-        if (tileMap[row][col] != 0) {
-          // LB
-          this.graphicsContext.moveTo(point.asIsometric.x, point.asIsometric.y + this.tileSize)
-            .lineTo(point.asIsometric.x, point.asIsometric.y + this.tileSize * (tileMap[row][col] + 1));
-          // RB
-          this.graphicsContext.moveTo(point.asIsometric.x - this.tileSize, point.asIsometric.y + this.tileSize / 2)
-            .lineTo(point.asIsometric.x - this.tileSize, (point.asIsometric.y + (this.tileSize / 2 * (tileMap[row][col] + 1))));
-          // RT
-          this.graphicsContext.moveTo(point.asIsometric.x + this.tileSize, point.asIsometric.y + this.tileSize / 2)
-            .lineTo(point.asIsometric.x + this.tileSize, (point.asIsometric.y + (this.tileSize / 2 * (tileMap[row][col] + 1))));
-          this.graphicsContext.stroke({ color: settings.CGA_CYAN });
 
+        // // LB
+        //South Face
+        {
+          const p1 = new Point(col, row + 1);
+          const p2 = new Point(col, row + 1);
+          const p3 = new Point(col + 1, row + 1);
+          const p4 = new Point(col + 1, row + 1);
+          p1.asIsometric.y -= currentHeightOffset;
+          p4.asIsometric.y -= currentHeightOffset;
+
+
+          // this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_CYAN).fill('0xFF0000');
+          this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_PINK);
         }
+
+        // East Face
+        {
+          const p1 = new Point(col + 1, row + 1);
+          const p2 = new Point(col + 1, row + 1);
+          const p3 = new Point(col + 1, row);
+          const p4 = new Point(col + 1, row);
+          p1.asIsometric.y -= currentHeightOffset;
+          p4.asIsometric.y -= currentHeightOffset;
+          this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_CYAN);
+        }
+
+        // // RB
+        // this.graphicsContext.moveTo(point.asIsometric.x - this.tileSize, point.asIsometric.y + this.tileSize / 2)
+        //   .lineTo(point.asIsometric.x - this.tileSize, (point.asIsometric.y + (this.tileSize / 2 * (tileMap[row][col] + 1))));
+        // // RT
+        // this.graphicsContext.moveTo(point.asIsometric.x + this.tileSize, point.asIsometric.y + this.tileSize / 2)
+        //   .lineTo(point.asIsometric.x + this.tileSize, (point.asIsometric.y + (this.tileSize / 2 * (tileMap[row][col] + 1))));
+        // this.graphicsContext.stroke({ color: settings.CGA_CYAN });
+        //
 
         if (tileMap[row][col] != 0)
           this.drawIsometricTile(this.graphicsContext, point.asIsometric, this.tileSize, this.tileSize, true);
@@ -178,3 +213,6 @@ export default class GameMap {
     return this.container;
   }
 }
+
+let gameMap = GameMap.instance;
+export { gameMap };
