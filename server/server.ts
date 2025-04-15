@@ -9,7 +9,9 @@ import pluginFormbody from '@fastify/formbody';
 import pluginView from '@fastify/view';
 import pluginMultipart from '@fastify/multipart';
 
+
 import { FastifyStaticOptions } from '@fastify/static';
+import './setUpFetch';
 
 // Utility
 import path from 'node:path';
@@ -30,10 +32,12 @@ const fastify: FastifyInstance = Fastify({
   }
 });
 
+fastify.register(pluginMultipart), {
+	limits: { fileSize: 10 * 1024 * 1024 }
+};
 
-
-fastify.register(pluginMultipart);
 fastify.register(pluginFormbody);
+
 
 fastify.register(pluginCORS), {
   origin: true, // Specify domains for production

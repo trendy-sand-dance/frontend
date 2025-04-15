@@ -19,10 +19,10 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/login-user', loginUser);
   fastify.get('/logout/:username', logoutUser);
   // Editing
+
+  fastify.post('/editUsername/:username', editUsername);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
-
-
 
   // Game
   fastify.get('/game-canvas', getPixiGame);
@@ -31,6 +31,4 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
 
-
-  fastify.post('/editUsername/:username', editUsername);
 };

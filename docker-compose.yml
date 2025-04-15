@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: frontend_container
     build:
       context: .
       target: development
