@@ -84,7 +84,8 @@ async function setup() {
 setup().then((app) => {
 
   console.log("Pixi app initialized:", app);
-  cm.sendToServer("Hey, from client");
+  // cm.sendToServer("Hey, from client");
+  cm.sendToServer(JSON.stringify({ type: "newConnection" }));
   pixiApp = app;
 });
 

@@ -27,6 +27,7 @@ class PlayerManager {
   addPlayer(id: number, position: Vector2, texture: Texture) {
     const player = new Player(id, new Point(position.x, position.y), texture);
     this.players.set(id, player);
+    return this.players.get(id);
   }
 
   getLocalPlayer() {
