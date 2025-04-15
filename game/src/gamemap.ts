@@ -20,7 +20,8 @@ const textureMap = new Map<TextureId, string>([
   [TextureId.Player, "/assets/bunny.png"],
 ]);
 
-export default class GameMap {
+class GameMap {
+  static #instance: GameMap;
 
   public container: Container;
 
@@ -30,7 +31,7 @@ export default class GameMap {
   private cols: number;
   private tileSize: number;
 
-  constructor(rows: number, cols: number, tileSize: number) {
+  private constructor(rows: number, cols: number, tileSize: number) {
 
     this.container = new Container();
 
@@ -40,6 +41,13 @@ export default class GameMap {
     this.rows = rows;
     this.cols = cols;
     this.tileSize = tileSize;
+  }
+
+  public static get instance(): GameMap {
+    if (!GameMap.#instance) {
+      GameMap.#instance = new GameMap(settings.GRIDHEIGHT, settings.GRIDWIDTH, settings.TILESIZE);
+    }
+    return GameMap.#instance;
   }
 
   async initSpriteTiles(rows: number, cols: number) {
@@ -205,3 +213,6 @@ export default class GameMap {
     return this.container;
   }
 }
+
+let gameMap = GameMap.instance;
+export { gameMap };
