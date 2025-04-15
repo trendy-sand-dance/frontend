@@ -22,18 +22,62 @@ export async function editUsername(request: FastifyRequest, reply: FastifyReply)
       body: dataPackage
     });
 
-    // // If all cool
-    // const responseData = await response.json() as { message: string };
-    // if (responseData)
-
-    // Get new userdata
     const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${newUsername}`);
     const resData = await newUserData.json() as { email: string, avatar: string };
     return reply.viewAsync("dashboard/profile-button.ejs", { username: newUsername, email: resData.email, img_avatar: resData.avatar });
-    // console.log(responseData);
-    // return responseData;
+
   } catch (error) {
     request.log.error(error);
     return reply.code(500).send({ error: 'Internal Server Error' });
   }
 }
+
+export async function editEmail(request: FastifyRequest, reply: FastifyReply): Promise<any> {
+  try {
+    const { username } = request.params as { username: string };
+    const { newEmail } = request.body as { newEmail: string };
+
+    const res = await fetch(`${USERMANAGEMENT_URL}/editEmail/${username}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newEmail }),
+    });
+
+
+    if (!res.ok) {
+      const responseBody = await res.json() as { error: string };
+      throw { code: res.status, message: responseBody.error };
+    }
+
+    const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
+    const resData = await newUserData.json() as { email: string, avatar: string };
+    return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
+  } catch (error) {
+    request.log.error(error);
+    return reply.code(500).send({ error: 'Internal Server Error' });
+  }
+};
+
+export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { username } = request.params as { username: string };
+    const newAvatar = await request.file();
+    if (!newAvatar) {
+      return reply.code(400).send({ error: "No file uploaded!" });
+    }
+
+    const avatarBuffer = await newAvatar.toBuffer();
+    const form = new FormData();
+    form.append('avatar', new Blob([avatarBuffer]), newAvatar.filename);
+    const res = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
+      method: 'POST',
+      body: form,
+    });
+
+    const result = await res.json();
+    return reply.send(result);
+  } catch (error) {
+    return reply.code(500).send({ error: 'Internal Server Error' });
+  }
+}
+
