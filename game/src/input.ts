@@ -1,4 +1,5 @@
 import * as settings from "./settings.js";
+import { Vector2 } from "./interfaces.js";
 import Player from "./player.js";
 
 type KeyPressState = {
@@ -18,6 +19,17 @@ window.addEventListener('keyup', (event) => {
 
 })
 
+// Quick and dirty. To do: dedicate separate graphics container for each tile, sort z-index based on y-position;
+function dynamicIndexing(player: Player, pos: Vector2) {
+  let y = Math.ceil(pos.y + 1);
+  let x = Math.ceil(pos.x + 1);
+  if (settings.TILEMAP[y - 1][x] > 0 || settings.TILEMAP[y][x] > 0) {
+    player.getContext().zIndex = -1;
+  }
+  else
+    player.getContext().zIndex = 5;
+}
+
 export function movePlayer(player: Player, deltaTime: number) {
   let pos = { x: player.position.asCartesian.x, y: player.position.asCartesian.y };
   if (keyIsPressed['KeyW']) {
@@ -35,10 +47,14 @@ export function movePlayer(player: Player, deltaTime: number) {
 
   let x = Math.ceil(pos.x);
   let y = Math.ceil(pos.y);
-  let isInBounds = (x >= 0) && (x < settings.GRIDSIZE) &&
-    (y >= 0) && (y < settings.GRIDSIZE);
+
+  let isInBounds = (x >= 0) && (x < settings.GRIDWIDTH) &&
+    (y >= 0) && (y < settings.GRIDHEIGHT);
 
   if (isInBounds && settings.TILEMAP[y][x] === 0) {
     player.updatePosition(pos);
+
+    // Primitive and scuffed depth 
+    dynamicIndexing(player, pos);
   }
 }

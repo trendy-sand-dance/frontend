@@ -9,8 +9,7 @@ export default class Player {
   private context: Sprite;
   constructor(id: number, position: Point, texture: Texture) {
     this.context = new Sprite(texture);
-    this.context.blendMode = 'difference';
-    // this.context.anchor.set(0.5);
+    // this.context.anchor.set(-.75, .25); // This is scuffed
 
     this.position = position;
     this.id = id;
