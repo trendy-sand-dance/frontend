@@ -34,7 +34,7 @@ const fastify: FastifyInstance = Fastify({
 
 fastify.register(pluginMultipart), {
 	limits: { fileSize: 10 * 1024 * 1024 }
-});
+};
 
 fastify.register(pluginFormbody);
 
