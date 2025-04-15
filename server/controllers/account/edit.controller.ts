@@ -80,7 +80,10 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 			const responseBody = await res.json() as { error: string };
 			throw { code: res.status, message: responseBody.error };
 		}
-		return ({ code: res.status });
+		const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
+		const resData = await newUserData.json() as { email: string, avatar: string };
+		return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
+		//return ({ code: res.status });
 	} catch (error) {
 		console.error(error);
 		const err = error as { code: number, message: string };
