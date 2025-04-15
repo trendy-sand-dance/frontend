@@ -613,6 +613,10 @@ video {
   margin-top: 0.5rem;
 }
 
+.mt-auto {
+  margin-top: auto;
+}
+
 .block {
   display: block;
 }
@@ -637,12 +641,20 @@ video {
   height: 16.666667%;
 }
 
+.h-2\/6 {
+  height: 33.333333%;
+}
+
 .h-5\/6 {
   height: 83.333333%;
 }
 
 .h-auto {
   height: auto;
+}
+
+.h-full {
+  height: 100%;
 }
 
 .h-screen {
@@ -655,6 +667,10 @@ video {
 
 .w-2\/4 {
   width: 50%;
+}
+
+.w-2\/6 {
+  width: 33.333333%;
 }
 
 .w-32 {
@@ -699,6 +715,10 @@ video {
 
 .flex-col {
   flex-direction: column;
+}
+
+.content-end {
+  align-content: flex-end;
 }
 
 .items-center {
