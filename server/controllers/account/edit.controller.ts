@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply, User } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
@@ -61,13 +61,21 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	try {
 		const { username } = request.params as { username: string };
 		
+		const contentType = request.headers['content-type'];
+		if (!contentType) {
+		  throw { code: 400, message: "Missing content-type" };
+		}
+
 		const res = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
 			method: 'POST',
 			headers: {
-			  'content-type': request.headers['content-type'] as string,
+			  'content-type': contentType,
 			},
+			// @ts-ignore: `duplex` is not in standard `RequestInit` yet
+			duplex: 'half',
 			body: request.raw,
-		});
+		  });
+		
 		if (!res.ok) {
 			const responseBody = await res.json() as { error: string };
 			throw { code: res.status, message: responseBody.error };

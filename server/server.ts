@@ -10,6 +10,7 @@ import pluginView from '@fastify/view';
 import fastifyMultipart from '@fastify/multipart';
 
 import { FastifyStaticOptions } from '@fastify/static';
+import './setUpFetch';
 
 // Utility
 import path from 'node:path';
