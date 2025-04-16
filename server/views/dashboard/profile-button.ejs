@@ -54,56 +54,18 @@
 		</p>
 	
 		
-          <img src="/images/<%=img_avatar %>" alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
-          <i id="openAvatarInput" class='fas fa-pen text-xs flex'></i>
-          <div id="avatarInput" class="hidden">
-          
-			<form id="avatarForm" hx-post="/editAvatar/<%= username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
-				<input type="file" id="avatarFile" name="avatar" accept="image/*" required>
-				<input type="submit" value="Change Avatar">
-			  </form>		
-			</div>	
-				<script>
-					document.getElementById("avatarForm").addEventListener('submit', async (e) => {
-						e.preventDefault();
-			
-						const formData = new FormData();
-						const fileInput = document.getElementById('avatarFile');
-						formData.append("avatar", fileInput.files[0]);
-			
-						const response = await fetch('/uploadAvatar', {
-							method: 'POST',
-							body: formData
-						});
-			
-						const result = await response.json();
-						if (!response.ok) {
-							alert(`Error uploading file: ${result.error}`);
-						}
+		<img src="/images/<%=img_avatar %>" alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
+		<i id="openAvatarInput" class='fas fa-pen text-xs flex'></i>
+		<div id="avatarInput" class="hidden">
+		  <form hx-post="/editAvatar/<%=username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
 
-						const avatarPath = result.avatar;
-						const filename = avatarPath.split('/').pop();
-						const username = "<%= username %>";
-						
-						const dbRes = await fetch(`/editAvatar/${username}`, {
-							method: 'POST', 
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ filename })
-						});
+			<input type="file" id="myFile" name="filename">
+			<input type="submit" value="Change Avatar"></input>
+		  </form>
+		</div>
+	  </div>
+	</div>
 
-					if (!dbRes.ok) {
-						const errorData = await dbRes.json();
-						alert(`DB update failed: ${errorData.error}`);
-						return;
-					}
-
-					alert("Avatar updated successfully!");
-					location.reload(); // optional: refresh UI or replace innerHTML
-				});
-				</script>
-          </div>
-        </div>
-      </div>
 
       <div class="flex justify-end content-end w-[100%] p-2 border-t border-black mt-auto">
         <form action="/logout/<%=username %>" method="get" hx-push-url="/">

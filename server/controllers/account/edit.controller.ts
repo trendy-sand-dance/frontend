@@ -43,10 +43,9 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ newEmail }),
 		});
-
 		if (!res.ok) {
-		const responseBody = await res.json() as { error: string };
-		throw { code: res.status, message: responseBody.error };
+			const responseBody = await res.json() as { error: string };
+			throw { code: res.status, message: responseBody.error };
 		}
 
 		const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
@@ -58,88 +57,53 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
 	}
 };
 
-function fileExists(filename) {
-	const wrkdir = process.cwd();
-	const uploadDir = path.join(wrkdir, '/public/images');
-	const filePath = path.join(uploadDir, filename);
-	if (!fs.existsSync(filePath))
-			return false;
-	return true;
-}
-
-function uploadImage(filename, reply) {
-	console.log("upload file plz");
-	return reply.code(200).sendFile(`images/${filename}`);
-}
-
-
-/** upload new avatar file (if file not exists), update db with new avatar */
+// get file, check if upload is needed, pass filename on to edit endpoints for um + db, update user info then send the new info to dashboard for update
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	try {
 		const { username } = request.params as { username: string };
-		const { filename } = request.body as { filename: string };
 
-		const res = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
+		// get file
+		const file = await request.file();
+		if (!file) {
+		  throw { code: 406, message: 'No content' };
+		}
+		const buffer = await file.toBuffer();
+		const wrkdir = process.cwd();
+		const uploadDir = path.join(wrkdir, 'public/images');
+		if (!fs.existsSync(uploadDir)) {
+			fs.mkdirSync(uploadDir, { recursive: true });
+		}
+		
+		// check if upload is needed
+		const filePath = path.join(uploadDir, file.filename);
+		if (!fs.existsSync(filePath)) {
+
+			fs.writeFile(filePath, buffer, (err) => {
+				if (err) {
+					throw { code: 500, message: "Erroring uploading file" };
+				}});
+			}
+		
+		// send via um to db to update user info
+		const filename = file.filename;
+		const resEdit = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ filename }),
 		});
-		if (!res.ok) {
-			const responseBody = await res.json() as { error: string };
-			throw { code: res.status, message: responseBody.error };
+		if (!resEdit.ok) {
+			const responseBody = await resEdit.json() as { error: string };
+			throw { code: resEdit.status, message: responseBody.error };
 		}
+
+		// update dashboard info with new user info + return new view
 		const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
 		const resData = await newUserData.json() as { email: string, avatar: string };
-
-		console.log("HEREHHERHERHERE new avatar = ", resData.avatar);
 		return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
+	
 	} catch (error) {
 		console.error(error);
 		const err = error as { code: number, message: string };
 		return reply.code(err.code).send({ error: err.message });
-	}
-};
-
-export const getImage = async (request: FastifyRequest, reply: FastifyReply): Promise<any> => {
-	try{
-		const { filename } = request.params as { filename: string };
-		const filePath = path.join(process.cwd(), 'public/images', filename);
-		
-		if (!fs.existsSync(filePath)) {
-			throw { code: '404', message: "File doesn't exist" };
-		}
-		return reply.sendFile(filename);
-	} catch (error) {
-		console.error(error);
-		return reply.code(500).send({ error: "Failed to retrieve image" });
-	}
-};
-
-export async function uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
-	try {
-		const file = await request.file();
-
-		if (!file) {
-		  return reply.code(400).send({ error: 'No file uploaded' });
-		}
-	
-		const uploadDir = path.join(process.cwd(), 'public/images');
-		const filePath = path.join(uploadDir, file.filename);
-
-		if (fs.existsSync(filePath)) {
-		  return reply.code(200).send({ avatar: `/images/${file.filename}` });
-		}
-	
-		if (!fs.existsSync(uploadDir)) {
-		  fs.mkdirSync(uploadDir, { recursive: true });
-		}
-
-		const writeStream = fs.createWriteStream(filePath);
-		file.file.pipe(writeStream);
-	
-		return reply.code(200).send({ avatar: `/images/${file.filename}` });
-	} catch (error) {
-		console.error(error);
-		reply.code(500).send({ error: 'Error saving file' });
 	}
 };
