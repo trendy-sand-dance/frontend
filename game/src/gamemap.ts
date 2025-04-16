@@ -20,7 +20,7 @@ const textureMap = new Map<TextureId, string>([
   [TextureId.Player, "/assets/bunny.png"],
 ]);
 
-class GameMap {
+export default class GameMap {
   static #instance: GameMap;
 
   public container: Container;
@@ -77,6 +77,7 @@ class GameMap {
     let textures: Texture[] = new Array<Texture>;
 
     for (const [key, path] of textureMap) {
+      console.log("TextureId: " + key + ", path: " + path);
       try {
         let texture = await Assets.load(path);
         textures.push(texture);

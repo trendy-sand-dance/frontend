@@ -5,6 +5,12 @@ export interface Vector2 {
   y: number;
 }
 
+export interface ServerMessage {
+  type: string,
+  id?: number,
+  position?: Vector2,
+}
+
 export class Point {
   public asCartesian: Vector2;
   public asIsometric: Vector2;

@@ -1,6 +1,4 @@
 import { Application, Assets, Ticker } from "pixi.js";
-import { Vector2, Point } from './interfaces.js';
-import Player from './player.js';
 import { playerManager } from './playermanager.js';
 import { gameMap } from './gamemap.js';
 import * as settings from './settings.js';
@@ -29,14 +27,13 @@ window.addEventListener('focus', () => {
 async function setup() {
   const pixiApp = new Application();
   const container = document.getElementById("pixi-container");
-  await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: window });
-
-  // if (container) {
-  //   await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: container });
-  // }
+  // await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: window });
+  if (container) {
+    await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: container });
+  }
   container?.appendChild(pixiApp.canvas);
   // const map = new GameMap(settings.GRIDHEIGHT, settings.GRIDWIDTH, settings.TILESIZE);
-  const texture = await Assets.load('assets/bunny.png');
+  const texture = await Assets.load('/assets/bunny.png');
   const mapContainer = gameMap.getContainer();
 
   gameMap.createGridFromMap(settings.TILEMAP);
@@ -54,7 +51,7 @@ async function setup() {
   }
 
 
-  let prevPos: Vector2;
+  // let prevPos: Vector2;
   pixiApp.ticker.add((time: Ticker) => {
     mouse.moveMapWithMouse(mousePos, gameMap, isGameFocused);
 
@@ -72,7 +69,7 @@ async function setup() {
       //     }
       //   });
       // }
-      prevPos = player.getPosition();
+      // prevPos = player.getPosition();
     }
 
   });
@@ -84,8 +81,8 @@ async function setup() {
 setup().then((app) => {
 
   console.log("Pixi app initialized:", app);
-  // cm.sendToServer("Hey, from client");
-  cm.sendToServer(JSON.stringify({ type: "newConnection" }));
+  cm.runConnectionManager();
+  cm.sendToServer({ type: "newConnection" });
   pixiApp = app;
 });
 
