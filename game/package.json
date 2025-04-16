@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "getbundle": "mv dist/*.js ../public/",
+    "build": "tsc && vite build && npm run getbundle",
     "preview": "vite preview"
   },
   "devDependencies": {
