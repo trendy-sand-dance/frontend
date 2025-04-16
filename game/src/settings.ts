@@ -7,6 +7,7 @@ export const BGCOLOR = '#ffffff';
 export const CGA_CYAN = '#01FFFF';
 export const CGA_PINK = '#FF55FE';
 export const CGA_BLACK = '#000000';
+export const CGA_WHITE = '#ffffff';
 
 // Tile settings
 export const TILESIZE = 32;

@@ -1,24 +1,37 @@
-import { Application, Assets, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
+import { Application, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
 import { Point, Vector2 } from './interfaces.js';
 import * as settings from './settings.js';
 
 enum TextureId {
-  BlockTransparent,
-  BlockOpaque,
+  BlockTransparentBlack,
+  BlockTransparentWhite,
+  BlockOpaqueWhite,
   BlockOpaqueColor,
   BlockHalfOpaqueColor,
-  Player,
 };
 
 const textureMap = new Map<TextureId, string>([
-  // Blocks
-  [TextureId.BlockOpaque, "/assets/block_opaque_w.png"],
-  [TextureId.BlockOpaqueColor, "/assets/block_opaque_c.png"],
-  [TextureId.BlockHalfOpaqueColor, "/assets/block_opaque_half_c.png"],
-  [TextureId.BlockTransparent, "/assets/block_empty_w.png"],
-  // Players
-  [TextureId.Player, "/assets/bunny.png"],
+  [TextureId.BlockTransparentBlack, "block_empty_black"],
+  [TextureId.BlockTransparentWhite, "block_empty_white"],
+  [TextureId.BlockOpaqueColor, "block_opaque_coloured"],
+  [TextureId.BlockOpaqueWhite, "block_opaque_white"],
+  [TextureId.BlockHalfOpaqueColor, 'block_half_opaque_coloured'],
 ]);
+
+function loadTextures() {
+  let textures: Texture[] = new Array<Texture>;
+
+  for (const [id, name] of textureMap) {
+    console.log("TextureId: " + id + ", path: " + name);
+    try {
+      let texture = Texture.from(name);
+      textures.push(texture);
+    } catch (error) {
+      console.log("Hmvve", error);
+    }
+  }
+  return textures;
+}
 
 export default class GameMap {
   static #instance: GameMap;
@@ -50,50 +63,12 @@ export default class GameMap {
     return GameMap.#instance;
   }
 
-  async initSpriteTiles(rows: number, cols: number) {
-    try {
-      const path = textureMap.get(TextureId.Player)!;
-      const texture = await Assets.load(path);
-      if (!texture) {
-        console.error("Failed to load texture.");
-        return;
-      }
-      this.tilingSprites = Array.from({ length: rows }, () =>
-        Array.from({ length: cols }, () => new TilingSprite({ texture, width: 64, height: 64 }))
-      );
-
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          // this.tilingSprites[row][col].anchor.set(0, 0);
-
-          this.container.addChild(this.tilingSprites[row][col]);
-        }
-      }
-    } catch (error) {
-      console.error("Error initializing sprite tiles:", error);
-    }
-  }
-  async loadTextures() {
-    let textures: Texture[] = new Array<Texture>;
-
-    for (const [key, path] of textureMap) {
-      console.log("TextureId: " + key + ", path: " + path);
-      try {
-        let texture = await Assets.load(path);
-        textures.push(texture);
-      } catch (error) {
-        console.log("Hmvve", error);
-      }
-    }
-    return textures;
-  }
-
-  async initTilingSpritesFromMap(tileMap: number[][]) {
+  initTilingSprites(tileMap: number[][]) {
     const rows = tileMap.length;
     const cols = tileMap[0].length;
 
     try {
-      const textures = await this.loadTextures();
+      const textures = loadTextures();
       if (!textures) {
         console.error("Failed to load texture.");
         return;
@@ -105,7 +80,6 @@ export default class GameMap {
       for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
           // this.tilingSprites[row][col].anchor.set(0, -0.5);
-
           this.container.addChild(this.tilingSprites[row][col]);
         }
       }
@@ -127,10 +101,9 @@ export default class GameMap {
     }
   }
 
-  async createSpriteMap(tileMap: number[][]) {
+  async createSpriteGrid(tileMap: number[][]) {
 
-    await this.initTilingSpritesFromMap(tileMap);
-    // await this.initSpriteTiles(this.rows, this.cols);
+    this.initTilingSprites(settings.TILEMAP);
 
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
@@ -145,12 +118,7 @@ export default class GameMap {
     }
   }
 
-
-  getHeightOffset(col: number, row: number, tileMap: number[][]) {
-    return tileMap[row][col] * this.tileSize / 4;
-  }
-
-  async createGridFromMap(tileMap: number[][]) {
+  async createGraphicsGrid(tileMap: number[][]) {
 
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
@@ -161,8 +129,7 @@ export default class GameMap {
         point.asIsometric.y -= currentHeightOffset;
 
         // Draw walls
-
-        // // LB
+        // TODO Turn the following scoped bits into functions
         //South Face
         {
           const p1 = new Point(col, row + 1);
@@ -171,12 +138,8 @@ export default class GameMap {
           const p4 = new Point(col + 1, row + 1);
           p1.asIsometric.y -= currentHeightOffset;
           p4.asIsometric.y -= currentHeightOffset;
-
-
-          // this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_CYAN).fill('0xFF0000');
           this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_PINK);
         }
-
         // East Face
         {
           const p1 = new Point(col + 1, row + 1);
@@ -188,21 +151,16 @@ export default class GameMap {
           this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_CYAN);
         }
 
-        // // RB
-        // this.graphicsContext.moveTo(point.asIsometric.x - this.tileSize, point.asIsometric.y + this.tileSize / 2)
-        //   .lineTo(point.asIsometric.x - this.tileSize, (point.asIsometric.y + (this.tileSize / 2 * (tileMap[row][col] + 1))));
-        // // RT
-        // this.graphicsContext.moveTo(point.asIsometric.x + this.tileSize, point.asIsometric.y + this.tileSize / 2)
-        //   .lineTo(point.asIsometric.x + this.tileSize, (point.asIsometric.y + (this.tileSize / 2 * (tileMap[row][col] + 1))));
-        // this.graphicsContext.stroke({ color: settings.CGA_CYAN });
-        //
-
         if (tileMap[row][col] != 0)
           this.drawIsometricTile(this.graphicsContext, point.asIsometric, this.tileSize, this.tileSize, true);
         else
           this.drawIsometricTile(this.graphicsContext, point.asIsometric, this.tileSize, this.tileSize, false);
       }
     }
+  }
+
+  getHeightOffset(col: number, row: number, tileMap: number[][]) {
+    return tileMap[row][col] * this.tileSize / 4;
   }
 
   moveMap(offset: Vector2) {
@@ -219,15 +177,12 @@ export default class GameMap {
   }
 }
 
-let gameMap = GameMap.instance;
-
-export function addGameMap(pixiApp: Application): Container {
+export function addGameMap(pixiApp: Application, gameMap: GameMap): Container {
   const mapContainer = gameMap.getContainer();
-  gameMap.createGridFromMap(settings.TILEMAP);
+  gameMap.createGraphicsGrid(settings.TILEMAP);
+  // gameMap.createSpriteGrid(settings.TILEMAP);
   pixiApp.stage.addChild(mapContainer);
   mapContainer.scale = 1.25;
   return mapContainer;
 }
 
-
-export { gameMap };

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "clean": "rm -f ../public/*.js",
-    "build": "npm run clean && tsc && vite build",
+    "getbundle": "mv dist/*.js ../public/",
+    "build": "tsc && vite build && npm run getbundle",
     "preview": "vite preview"
   },
   "devDependencies": {

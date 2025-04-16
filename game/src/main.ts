@@ -1,6 +1,7 @@
 import { Application, Assets, Ticker, Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
-import { gameMap, addGameMap } from './gamemap.js';
+import { addGameMap } from './gamemap.js';
+import GameMap from './gamemap.js';
 import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
@@ -29,7 +30,6 @@ async function setup() {
     await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: container });
   }
   container?.appendChild(pixiApp.canvas);
-  mouse.setupMapZoom(input.mouse, gameMap);
   pixiApp.stage.eventMode = 'static';
   pixiApp.stage.hitArea = pixiApp.screen;
 
@@ -56,7 +56,10 @@ async function setup() {
   await preload();
 
   // Initialize map and add to pixi.stage
-  addGameMap(pixiApp);
+  let gameMap = GameMap.instance;
+  addGameMap(pixiApp, gameMap);
+  mouse.setupMapZoom(input.mouse, gameMap);
+
 
   // Initialize local player
   // TODO This should happen on inital connection
@@ -67,7 +70,7 @@ async function setup() {
   }
 
   //Network business
-  cm.runConnectionManager();
+  cm.runConnectionManager(gameMap);
   cm.sendToServer({ type: "newConnection" });
 
   //Game Loop

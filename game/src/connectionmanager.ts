@@ -1,7 +1,7 @@
 import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { ServerMessage } from './interfaces.js';
-import { gameMap } from './gamemap.js';
+import GameMap from './gamemap.js';
 
 
 export function sendToServer(data: ServerMessage) {
@@ -12,7 +12,7 @@ export function sendToServer(data: ServerMessage) {
 // Init WebSocket
 const socket = new WebSocket("ws://localhost:8003/ws-gameserver");
 
-export async function runConnectionManager() {
+export async function runConnectionManager(gameMap: GameMap) {
   const texture = Texture.from('player_bunny');
 
   socket.onopen = () => {
