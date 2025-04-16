@@ -1,4 +1,4 @@
-import { Assets, Container, Graphics, Texture, TilingSprite } from "pixi.js";
+import { Application, Assets, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
 import { Point, Vector2 } from './interfaces.js';
 import * as settings from './settings.js';
 
@@ -213,7 +213,21 @@ export default class GameMap {
   getContainer() {
     return this.container;
   }
+
+  addToContainer(context: Sprite) {
+    this.container.addChild(context);
+  }
 }
 
 let gameMap = GameMap.instance;
+
+export function addGameMap(pixiApp: Application): Container {
+  const mapContainer = gameMap.getContainer();
+  gameMap.createGridFromMap(settings.TILEMAP);
+  pixiApp.stage.addChild(mapContainer);
+  mapContainer.scale = 1.25;
+  return mapContainer;
+}
+
+
 export { gameMap };

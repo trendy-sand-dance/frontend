@@ -6,6 +6,8 @@ type KeyPressState = {
   [key: string]: boolean;
 }
 
+export let mouse = { x: 0, y: 0 } as Vector2;
+
 export let keyIsPressed: KeyPressState = {};
 // FUNCTIONS
 window.addEventListener('keydown', (event) => {
@@ -19,7 +21,7 @@ window.addEventListener('keyup', (event) => {
 
 })
 
-// Quick and dirty. To do: dedicate separate graphics container for each tile, sort z-index based on y-position;
+// Quick and dirty. TODO: dedicate separate graphics container for each tile, sort z-index based on y-position;
 function dynamicIndexing(player: Player, pos: Vector2) {
   let y = Math.ceil(pos.y + 1);
   let x = Math.ceil(pos.x + 1);

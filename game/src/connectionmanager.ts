@@ -1,8 +1,7 @@
+import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { ServerMessage } from './interfaces.js';
 import { gameMap } from './gamemap.js';
-import { Assets } from "pixi.js";
-const socket = new WebSocket("ws://localhost:8003/ws-gameserver");
 
 
 export function sendToServer(data: ServerMessage) {
@@ -10,9 +9,11 @@ export function sendToServer(data: ServerMessage) {
     socket.send(JSON.stringify(data));
   }
 }
+// Init WebSocket
+const socket = new WebSocket("ws://localhost:8003/ws-gameserver");
 
 export async function runConnectionManager() {
-  const texture = await Assets.load('/assets/bunny.png');
+  const texture = Texture.from('player_bunny');
 
   socket.onopen = () => {
     console.log("Websocket connection opened.");
@@ -32,6 +33,7 @@ export async function runConnectionManager() {
         let mapContainer = gameMap.getContainer();
 
         if (otherPlayer) {
+          otherPlayer.updatePosition(position);
           mapContainer.addChild(otherPlayer.getContext());
         }
 
@@ -64,8 +66,6 @@ export async function runConnectionManager() {
 
     }
 
-
-
     // if (data.type == "init") {
     //   console.log(`Initialized player: ${data.player.id} at pos (${data.player.position.x}, ${data.player.position.y})`);
     //
@@ -96,11 +96,6 @@ export async function runConnectionManager() {
     console.log("Websocket closed: ", message);
     socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", username: 'abusername', position: { x: 420, y: 420 } }));
   };
-
-
-  // const dc = setTimeout(socket.close, 5000);
-  // const dc = setTimeout(closeIt, 5000);
-
 
 }
 

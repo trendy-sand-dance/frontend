@@ -40,6 +40,10 @@ class PlayerManager {
     return this.players.get(id);
   }
 
+  getPlayers() {
+    return this.players;
+  }
+
   updatePlayer(id: number, newPosition: Vector2) {
     const player = this.players.get(id);
     if (player) {
