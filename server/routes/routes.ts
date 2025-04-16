@@ -2,9 +2,8 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
 import { loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
-import { editUsername, editEmail, editAvatar } from '../controllers/account/edit.controller.js';
+import { editUsername, editEmail, editAvatar, uploadAvatar, getImage } from '../controllers/account/edit.controller.js';
 import { getPixiGame } from '../controllers/game/game.controller.js';
-import { getImage } from "../controllers/dashboard/images.controller"
 
 export async function routes(fastify: FastifyInstance) {
 
@@ -24,6 +23,8 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/editUsername/:username', editUsername);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
+  fastify.post('/uploadAvatar', uploadAvatar);
+  fastify.get('/images/:filename', getImage);
 
   // Game
   fastify.get('/game-canvas', getPixiGame);
@@ -31,6 +32,5 @@ export async function routes(fastify: FastifyInstance) {
   // Dashboard
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
-//  fastify.get('/images/:filename', getImage);
 
 };

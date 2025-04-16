@@ -68,6 +68,7 @@ function fileExists(filename) {
 }
 
 function uploadImage(filename, reply) {
+	console.log("upload file plz");
 	return reply.code(200).sendFile(`images/${filename}`);
 }
 
@@ -76,14 +77,8 @@ function uploadImage(filename, reply) {
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	try {
 		const { username } = request.params as { username: string };
-		const file = await request.file();
-		const filename = file?.filename;
+		const { filename } = request.body as { filename: string };
 
-		if (fileExists( filename ) === false) {
-			uploadImage(filename, reply);
-			console.log("uploaded new image, updating db...");
-		}
-		console.log("file (now) exists, updating db for this user");
 		const res = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -105,3 +100,46 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	}
 };
 
+export const getImage = async (request: FastifyRequest, reply: FastifyReply): Promise<any> => {
+	try{
+		const { filename } = request.params as { filename: string };
+		const filePath = path.join(process.cwd(), 'public/images', filename);
+		
+		if (!fs.existsSync(filePath)) {
+			throw { code: '404', message: "File doesn't exist" };
+		}
+		return reply.sendFile(filename);
+	} catch (error) {
+		console.error(error);
+		return reply.code(500).send({ error: "Failed to retrieve image" });
+	}
+};
+
+export async function uploadAvatar(request: FastifyRequest, reply: FastifyReply) {
+	try {
+		const file = await request.file();
+
+		if (!file) {
+		  return reply.code(400).send({ error: 'No file uploaded' });
+		}
+	
+		const uploadDir = path.join(process.cwd(), 'public/images');
+		const filePath = path.join(uploadDir, file.filename);
+
+		if (fs.existsSync(filePath)) {
+		  return reply.code(200).send({ avatar: `/images/${file.filename}` });
+		}
+	
+		if (!fs.existsSync(uploadDir)) {
+		  fs.mkdirSync(uploadDir, { recursive: true });
+		}
+
+		const writeStream = fs.createWriteStream(filePath);
+		file.file.pipe(writeStream);
+	
+		return reply.code(200).send({ avatar: `/images/${file.filename}` });
+	} catch (error) {
+		console.error(error);
+		reply.code(500).send({ error: 'Error saving file' });
+	}
+};
