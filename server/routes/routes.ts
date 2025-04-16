@@ -31,6 +31,6 @@ export async function routes(fastify: FastifyInstance) {
   // Dashboard
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
-  fastify.get('/images/:filename', getImage);
+//  fastify.get('/images/:filename', getImage);
 
 };
