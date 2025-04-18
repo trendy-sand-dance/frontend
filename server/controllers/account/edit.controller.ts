@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import fs from 'fs';
-import path  from 'path';
+//import fs from 'fs';
+//import path  from 'path';
+import file from '../utils/file.controller';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
