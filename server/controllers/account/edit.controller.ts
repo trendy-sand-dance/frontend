@@ -58,12 +58,6 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
 	}
 };
 
-// add username to uploaded file -- todo
-
-//const getExtension = str => { str.slice(str.lastIndexOf("."))};
-//var fileExt = filename.split('.').pop()
-
-// get file, check if upload is needed, pass filename on to edit endpoints for um + db, update user info then send the new info to dashboard for update
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	try {
 		const { username } = request.params as { username: string };
@@ -74,17 +68,35 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 		  throw { code: 406, message: 'No content' };
 		}
 
+		//TODO Check file even has exnesiton?
+		// filename, fullname, extension, fullnamewithext
 		const extension = file.filename.split('.').pop();
-		const fileName = (username + "_avatar." + extension) as string;
+		const fileName = (username + "_avatar") as string;
+		const fileNameExt = (username + "_avatar." + extension) as string;
 		const buffer = await file.toBuffer();
 		const wrkdir = process.cwd();
 		const uploadDir = path.join(wrkdir, 'public/images');
+		
+
+		const files = fs.readdirSync(uploadDir);
+
+		files.forEach(f => {
+			if (f.split('.')[0] == fileName)
+			{
+				console.log("found a match with input file : ", fileName);
+				//fs.unlinkSync(f); // delete file
+
+
+			}
+		});
+
 		if (!fs.existsSync(uploadDir)) {
 			fs.mkdirSync(uploadDir, { recursive: true });
 		}
-		
+		// different extensions are going to mess up the checking of the file existence...
 		// check if upload is needed
 		const filePath = path.join(uploadDir, fileName);
+
 		if (!fs.existsSync(filePath)) {
 
 			fs.writeFile(filePath, buffer, (err) => {
