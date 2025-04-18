@@ -9,6 +9,19 @@ export function sendToServer(data: ServerMessage) {
     socket.send(JSON.stringify(data));
   }
 }
+
+
+// Get user data
+//
+declare global {
+  interface Window {
+    __INITIAL_STATE__: string
+  }
+}
+
+const initialData = window.__INITIAL_STATE__ || { username: "MEHHHHHHHHHHHHHH" };
+console.log("YESSSSSSSSSSSSSSSSSS", initialData);
+
 // Init WebSocket
 const socket = new WebSocket("ws://localhost:8003/ws-gameserver");
 
