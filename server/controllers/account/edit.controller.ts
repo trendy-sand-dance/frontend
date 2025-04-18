@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import fs from 'fs';
 import path  from 'path';
-//import file from '../utils/file.controller';
+//import utils from '../utils/file.controller';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
@@ -60,6 +60,9 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
 
 // add username to uploaded file -- todo
 
+//const getExtension = str => { str.slice(str.lastIndexOf("."))};
+//var fileExt = filename.split('.').pop()
+
 // get file, check if upload is needed, pass filename on to edit endpoints for um + db, update user info then send the new info to dashboard for update
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	try {
@@ -70,7 +73,9 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 		if (!file) {
 		  throw { code: 406, message: 'No content' };
 		}
-		const fileName = username + '_' + file.filename;
+
+		const extension = file.filename.split('.').pop();
+		const fileName = (username + "_avatar." + extension) as string;
 		const buffer = await file.toBuffer();
 		const wrkdir = process.cwd();
 		const uploadDir = path.join(wrkdir, 'public/images');
@@ -87,12 +92,14 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 					throw { code: 500, message: "Erroring uploading file" };
 				}});
 			}
-		
+		console.log("filename from file.filename in FE = ", file.filename);
+		console.log("filename in FE = ", fileName);
 		// send via um to db to update user info
+		const filename = fileName;
 		const resEdit = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ fileName }),
+			body: JSON.stringify({ filename }),
 		});
 		if (!resEdit.ok) {
 			const responseBody = await resEdit.json() as { error: string };

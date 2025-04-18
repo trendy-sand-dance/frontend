@@ -2,7 +2,6 @@
 //import path  from 'path';
 
 
-
 //// parse file
 //// upload image
 //// check file exists
@@ -12,5 +11,3 @@
 
 	
 //};
-
-  
