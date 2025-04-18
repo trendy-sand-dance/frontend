@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import fs from 'fs';
 import path  from 'path';
-//import utils from '../utils/file.controller';
+import parseFile from '../utils/file.controller';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
@@ -67,47 +67,43 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 		if (!file) {
 		  throw { code: 406, message: 'No content' };
 		}
-
-		//TODO Check file even has exnesiton?
-		// filename, fullname, extension, fullnamewithext
-		const extension = file.filename.split('.').pop();
-		const fileName = (username + "_avatar") as string;
-		const fileNameExt = (username + "_avatar." + extension) as string;
-		const buffer = await file.toBuffer();
-		const wrkdir = process.cwd();
-		const uploadDir = path.join(wrkdir, 'public/images');
 		
+		//TODO Check file even has exnesiton?
+		const extension = file.filename.split('.').pop();
+		//if (!extension)
+	
+		const userAvatar = (username + "_avatar") as string;
+		const filename = (username + "_avatar." + extension) as string;
 
-		const files = fs.readdirSync(uploadDir);
+		// PARSE FILE
+		//const buffer = await file.toBuffer();
+		//const wrkdir = process.cwd();
+		//const uploadDir = path.join(wrkdir, 'public/images');
+		const uploadDir = parseFile(file);
 
-		files.forEach(f => {
-			if (f.split('.')[0] == fileName)
-			{
-				console.log("found a match with input file : ", fileName);
-				//fs.unlinkSync(f); // delete file
-
-
-			}
-		});
-
+		// ensure uploads directory exists
 		if (!fs.existsSync(uploadDir)) {
 			fs.mkdirSync(uploadDir, { recursive: true });
 		}
-		// different extensions are going to mess up the checking of the file existence...
-		// check if upload is needed
-		const filePath = path.join(uploadDir, fileName);
 
-		if (!fs.existsSync(filePath)) {
-
-			fs.writeFile(filePath, buffer, (err) => {
-				if (err) {
-					throw { code: 500, message: "Erroring uploading file" };
-				}});
+		// delete existing avatar
+		const files = fs.readdirSync(uploadDir);
+		files.forEach(f => {
+			if (f.split('.')[0] == userAvatar)
+			{
+				const deleteMe = path.join(uploadDir, f);
+				fs.unlinkSync(deleteMe); // delete file
 			}
-		console.log("filename from file.filename in FE = ", file.filename);
-		console.log("filename in FE = ", fileName);
-		// send via um to db to update user info
-		const filename = fileName;
+		});
+
+		// upload
+		const buffer = await file.toBuffer();
+		const filePath = path.join(uploadDir, filename);
+		fs.writeFile(filePath, buffer, (err) => {
+			if (err) {
+				throw { code: 500, message: "Erroring uploading file" };
+			}});
+
 		const resEdit = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },

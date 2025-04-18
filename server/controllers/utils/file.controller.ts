@@ -1,13 +1,25 @@
 //import fs from 'fs';
-//import path  from 'path';
+import path  from 'path';
+//
+// parse + return uploadDir
 
+// delete existing, takes uploadDir
 
-//// parse file
-//// upload image
-//// check file exists
-
-//function parseFile(file: File) {
-
+// upload, takes uploadDir + filename(from edit controller) 
 
 	
 //};
+
+//function parseFile(file: File)
+//{
+
+//	const wrkdir = process.cwd();
+//	const uploadDir = path.join(wrkdir, 'public/images');
+
+//	return uploadDir;
+//};
+
+
+//export default parseFile;
+//export default deleteFile;
+//export default UploadFile;
