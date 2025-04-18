@@ -1,0 +1,50 @@
+<!-- <!DOCTYPE html>
+
+
+<div class="sm:mx-auto sm:w-full sm:max-w-sm pb-16">
+    <h1 class="text-center text-2xl/9 font-bold tracking-tight text-[#FF55FE]">CLUB PONG</h1>
+  </div> -->
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Frontend Playground</title>
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+	<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+  </head>
+  <body class="p-10 bg-gray-100">
+  
+	<div class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
+	  <h1 class="text-xl font-bold">Hello from htmx!</h1>
+  
+	  <button 
+		class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+		hx-get="/fake-api"
+		hx-swap="outerHTML"
+	  >
+		Click to Load
+	  </button>
+	</div>
+	<div class="p-4 bg-white rounded-lg shadow space-y-2 max-w-sm">
+		<div class="flex items-center justify-between">
+		  <div>
+			<h2 class="text-lg font-semibold">Player: <span class="text-blue-500">Alice</span></h2>
+			<p class="text-sm text-gray-500">Rating: 1520</p>
+		  </div>
+		  <button 
+			class="text-sm text-blue-600 underline"
+			hx-get="/player/alice/stats"
+			hx-target="#details-alice"
+			hx-swap="innerHTML"
+		  >
+			View Stats
+		  </button>
+		</div>
+	  
+		<div id="details-alice" class="text-sm text-gray-700">
+		  <!-- stats will load here -->
+		</div>
+	  </div>
+  </body>
+  </html>
