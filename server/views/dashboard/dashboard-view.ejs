@@ -10,10 +10,16 @@
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/3f6a90a5aa.js" crossorigin="anonymous"></script>
+
+
   </head>
 
   <body>
 
+    <script>
+    window.__INITIAL_STATE__ = <%- JSON.stringify(user) %>;
+    console.table(window.__INITIAL_STATE__);
+    </script>
 
     <div class="flex flex-col w-screen h-screen">
 
@@ -47,7 +53,7 @@
       <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
 
         <!-- Profile Button -->
-        <div id="dashboard-profile-button" hx-get="/dashboard/<%=username %>" hx-swap="innerHTML" hx-trigger="load"
+        <div id="dashboard-profile-button" hx-get="/dashboard/<%=user.username %>" hx-swap="innerHTML" hx-trigger="load"
           hx-target="this"></div>
 
         <!-- Chat button -->

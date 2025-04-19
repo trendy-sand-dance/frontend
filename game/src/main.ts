@@ -1,4 +1,4 @@
-import { Application, Assets, Ticker, Texture } from "pixi.js";
+import { Application, Assets, Ticker } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { addGameMap } from './gamemap.js';
 import GameMap from './gamemap.js';
@@ -63,18 +63,18 @@ async function setup() {
 
   // Initialize local player
   // TODO This should happen on inital connection
-  playerManager.setLocalPlayer(1, { x: 4, y: 4 }, Texture.from('player_bunny'));
-  const player = playerManager.getLocalPlayer();
-  if (player) {
-    gameMap.addToContainer(player.getContext());
-  }
+  // playerManager.setLocalPlayer(1, { x: 4, y: 4 }, Texture.from('player_bunny'));
+  // const player = playerManager.getLocalPlayer();
+  // if (player) {
+  //   gameMap.addToContainer(player.getContext());
+  // }
 
   //Network business
   cm.runConnectionManager(gameMap);
-  cm.sendToServer({ type: "newConnection" });
 
   //Game Loop
   pixiApp.ticker.add((time: Ticker) => {
+    const player = playerManager.getLocalPlayer();
 
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     if (player) {

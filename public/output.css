@@ -780,6 +780,11 @@ video {
   border-color: rgb(1 255 255 / var(--tw-border-opacity, 1));
 }
 
+.border-\[\#FF55FE\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 85 254 / var(--tw-border-opacity, 1));
+}
+
 .border-black {
   --tw-border-opacity: 1;
   border-color: rgb(0 0 0 / var(--tw-border-opacity, 1));

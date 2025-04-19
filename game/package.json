@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "getbundle": "mv dist/*.js ../public/",
-    "build": "tsc && vite build && npm run getbundle",
+    "cleanbundle": "rm -rf ../public/*.js",
+    "build": "npm run cleanbundle && tsc && vite build && npm run getbundle",
     "preview": "vite preview"
   },
   "devDependencies": {
