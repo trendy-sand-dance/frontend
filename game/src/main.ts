@@ -6,6 +6,7 @@ import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
 import * as cm from './connectionmanager.js';
+import { Vector2 } from './interfaces.js';
 
 const pixiApp: Application = new Application();
 let isGameFocused = false;
@@ -61,24 +62,32 @@ async function setup() {
   mouse.setupMapZoom(input.mouse, gameMap);
 
 
-  // Initialize local player
-  // TODO This should happen on inital connection
-  // playerManager.setLocalPlayer(1, { x: 4, y: 4 }, Texture.from('player_bunny'));
-  // const player = playerManager.getLocalPlayer();
-  // if (player) {
-  //   gameMap.addToContainer(player.getContext());
+  // interface ServerMessage {
+  //   type: string,
+  //   id?: number,
+  //   position?: Vector2,
   // }
 
   //Network business
   cm.runConnectionManager(gameMap);
 
   //Game Loop
+  let prevPos: Vector2 = { x: 0, y: 0 };
   pixiApp.ticker.add((time: Ticker) => {
     const player = playerManager.getLocalPlayer();
-
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     if (player) {
       input.movePlayer(player, time.deltaTime);
+
+      if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
+        cm.sendToServer({
+          type: "move",
+          id: player.getId(),
+          position: player.getPosition(),
+        });
+      }
+
+      prevPos = player.getPosition();
     }
 
   });

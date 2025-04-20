@@ -32,7 +32,7 @@ function dynamicIndexing(player: Player, pos: Vector2) {
     player.getContext().zIndex = 5;
 }
 
-export function movePlayer(player: Player, deltaTime: number) {
+export function movePlayer(player: Player, deltaTime: number): Vector2 {
   let pos = { x: player.position.asCartesian.x, y: player.position.asCartesian.y };
   if (keyIsPressed['KeyW']) {
     pos.y -= settings.PLAYERSPEED * deltaTime;
@@ -53,10 +53,12 @@ export function movePlayer(player: Player, deltaTime: number) {
   let isInBounds = (x >= 0) && (x < settings.GRIDWIDTH) &&
     (y >= 0) && (y < settings.GRIDHEIGHT);
 
-  if (isInBounds && settings.TILEMAP[y][x] === 0) {
+  if (isInBounds) {
+
     player.updatePosition(pos);
 
     // Primitive and scuffed depth 
     dynamicIndexing(player, pos);
   }
+  return player.position.asCartesian;
 }
