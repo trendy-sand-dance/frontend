@@ -1,5 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
+const LOCAL_GAMESERVER_URL: string = process.env.LOCAL_GAMESERVER_URL || "localhost";
+const TEST: string = process.env.USERMANAGEMENT_URL || "NOOOOO";
 
 const DATABASE_URL = 'http://database_container:3000';
 
@@ -49,6 +51,7 @@ interface User {
   status: boolean,
   player: Player,
 }
+
 export async function login(request: FastifyRequest, reply: FastifyReply) {
 
   try {
@@ -65,8 +68,12 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
     }
 
     const user = await response.json() as { user: User };
-    console.log("USER IN FRONTEND: ", user);
-    return reply.viewAsync("dashboard/dashboard-view.ejs", { user });
+    const gameserverUrl = LOCAL_GAMESERVER_URL;
+    const test = TEST;
+    console.log("TEST: ", test);
+    console.log("GAMESERVERURL: ", gameserverUrl);
+    return reply.viewAsync("dashboard/dashboard-view.ejs", { user, gameserverUrl });
+    // return reply.viewAsync("dashboard/dashboard-view.ejs", { user });
 
   } catch (error) {
     const err = error as { code: number, message: string };

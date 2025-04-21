@@ -36,14 +36,17 @@ interface PlayerData {
 declare global {
   interface Window {
     __INITIAL_STATE__: UserData;
+    __GAMESERVER_URL__: string;
   }
 }
 
 const localUser = window.__INITIAL_STATE__;
+const gameserverUrl = window.__GAMESERVER_URL__;
 console.log("LOCAL USER", localUser);
 
 // Init WebSocket
-const socket = new WebSocket("ws://localhost:8003/ws-gameserver");
+//
+const socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
 
 function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
 
@@ -67,13 +70,14 @@ function initializePlayers(players: Map<number, Vector2>, gameMap: GameMap, text
 
     console.log(`Player ${id} is at (${position.x}, ${position.y})`);
 
-    if (!isLocalPlayer(id)) {
+    if (!isLocalPlayer(id))
+    {
       const player = playerManager.addPlayer(id, { x: position.x, y: position.y }, texture);
-      if (player) {
+      if (player)
+      {
         gameMap.addPlayer(player);
       }
     }
-
   }
 }
 
@@ -130,19 +134,19 @@ export async function runConnectionManager(gameMap: GameMap) {
     // }
   };
 
-  // window.addEventListener("beforeunload", () => {
-  //   if (socket.readyState == WebSocket.OPEN) {
-  //     const player = playerManager.getLocalPlayer();
-  //     let pos: Vector2 = { x: 0, y: 0 };
-  //     if (player) {
-  //       pos = player.position.asCartesian;
-  //       socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: pos }));
-  //       sendToServer({ type: "disconnection", id: localUser.id, position: pos });
-  //     } else {
-  //       socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: { x: -4.2, y: -4.2 } }));
-  //     }
-  //   }
-  // });
+  window.addEventListener("beforeunload", () => {
+    if (socket.readyState == WebSocket.OPEN) {
+      const player = playerManager.getLocalPlayer();
+      let pos: Vector2 = { x: 0, y: 0 };
+      if (player) {
+        pos = player.position.asCartesian;
+        socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: pos }));
+        sendToServer({ type: "disconnection", id: localUser.id, position: pos });
+      } else {
+        socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: { x: -4.2, y: -4.2 } }));
+      }
+    }
+  });
 
 }
 
