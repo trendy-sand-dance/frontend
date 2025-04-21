@@ -53,7 +53,7 @@ export function movePlayer(player: Player, deltaTime: number): Vector2 {
   let isInBounds = (x >= 0) && (x < settings.GRIDWIDTH) &&
     (y >= 0) && (y < settings.GRIDHEIGHT);
 
-  if (isInBounds) {
+  if (isInBounds && settings.TILEMAP[y][x] === 0) {
 
     player.updatePosition(pos);
 

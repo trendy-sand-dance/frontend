@@ -8,11 +8,12 @@ export default class Player {
 
   private context: Sprite;
   constructor(id: number, position: Point, texture: Texture) {
+    this.id = id;
+    this.position = position;
     this.context = new Sprite(texture);
     // this.context.anchor.set(-.75, .25); // This is scuffed
 
-    this.position = position;
-    this.id = id;
+    this.updatePosition(position.asCartesian);
   }
 
   updatePosition(position: Vector2) {

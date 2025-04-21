@@ -8,6 +8,8 @@ export interface Vector2 {
 export interface ServerMessage {
   type: string,
   id?: number,
+  username?: string,
+  avatar?: string,
   position?: Vector2,
 }
 

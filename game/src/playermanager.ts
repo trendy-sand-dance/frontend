@@ -20,8 +20,16 @@ class PlayerManager {
     return PlayerManager.#instance;
   }
 
-  setLocalPlayer(id: number, position: Vector2, texture: Texture) {
+  isLocalPlayerInitialized(): boolean {
+    if (this.localPlayer) {
+      return true;
+    }
+    return false;
+  }
+
+  initLocalPlayer(id: number, position: Vector2, texture: Texture) {
     this.localPlayer = new Player(id, new Point(position.x, position.y), texture);
+    return this.localPlayer;
   }
 
   addPlayer(id: number, position: Vector2, texture: Texture) {
