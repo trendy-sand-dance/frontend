@@ -6,6 +6,7 @@ import { editUsername, editEmail, editAvatar } from '../controllers/account/edit
 import { getPixiGame } from '../controllers/game/game.controller.js';
 import { getImage } from "../controllers/dashboard/images.controller";
 import { getplaygroundView } from "../controllers/playground.controller.js";
+import sidebarController from "../controllers/playground.controller.js";
 
 export async function routes(fastify: FastifyInstance) {
 
@@ -16,23 +17,25 @@ export async function routes(fastify: FastifyInstance) {
 
   // Account
   fastify.get('/login-view', getLoginView);
-  fastify.get('/playground', getplaygroundView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
   fastify.post('/login-user', loginUser);
   fastify.get('/logout/:username', logoutUser);
   // Editing
-
+  
   fastify.post('/editUsername/:username', editUsername);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
-
+  
   // Game
   fastify.get('/game-canvas', getPixiGame);
-
+  
   // Dashboard
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
   fastify.get('/images/:filename', getImage);
 
+  //scooby doo!
+  fastify.get('/playground', getplaygroundView);
+  fastify.get('/toggle-sidebar', sidebarController);
 };
