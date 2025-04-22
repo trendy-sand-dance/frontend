@@ -16,5 +16,5 @@
 	  "forceConsistentCasingInFileNames": true
 	},
 	"include": ["server/**/*", "server/types.d.ts", "server"],
-	"exclude": ["node_modules"]
+	"exclude": ["public/node_modules"]
 }

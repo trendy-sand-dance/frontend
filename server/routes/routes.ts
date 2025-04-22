@@ -4,7 +4,6 @@ import { loginUser, logoutUser, getLoginView } from '../controllers/account/logi
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { editUsername, editEmail, editAvatar } from '../controllers/account/edit.controller.js';
 import { getPixiGame } from '../controllers/game/game.controller.js';
-import { getImage } from "../controllers/dashboard/images.controller"
 
 export async function routes(fastify: FastifyInstance) {
 
@@ -19,8 +18,8 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/register-user', registerUser);
   fastify.post('/login-user', loginUser);
   fastify.get('/logout/:username', logoutUser);
+  
   // Editing
-
   fastify.post('/editUsername/:username', editUsername);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
@@ -31,6 +30,5 @@ export async function routes(fastify: FastifyInstance) {
   // Dashboard
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
-  fastify.get('/images/:filename', getImage);
 
 };
