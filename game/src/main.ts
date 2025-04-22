@@ -6,7 +6,6 @@ import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
 import * as cm from './connectionmanager.js';
-import { Vector2 } from './interfaces.js';
 
 const pixiApp: Application = new Application();
 let isGameFocused = false;

@@ -1,5 +1,4 @@
 import * as settings from "./settings.js";
-import { Vector2 } from "./interfaces.js";
 import Player from "./player.js";
 
 type KeyPressState = {

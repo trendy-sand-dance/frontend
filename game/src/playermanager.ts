@@ -1,6 +1,9 @@
 import Player from './player.js';
+import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
-import { Vector2, Point } from './interfaces.js';
+import Point from './point.js';
+
+const playerInfoBox = document.getElementById("pixi-player-info");
 
 class PlayerManager {
   static #instance: PlayerManager;
@@ -37,8 +40,8 @@ class PlayerManager {
     const playerSprite = player.getContext();
     const filter = new ColorMatrixFilter();
 
-    playerSprite.on('pointerover', (event) =>{
-      console.log(event);
+    playerSprite.interactive = true;
+    playerSprite.on('pointerover', () =>{
       console.log(`Player: ${id}`);
       playerSprite.blendMode = 'color-dodge';
       const { matrix } = filter;
@@ -48,16 +51,30 @@ class PlayerManager {
       playerSprite.filters = [filter];
     });
 
-    playerSprite.on('pointerleave', (event) =>{
-      console.log(event);
+    playerSprite.on('pointerleave', () =>{
       playerSprite.filters = [];
     });
 
 
-    playerSprite.on('pointerdown', (event) => { 
-      alert(`${event}\nPlayer: ${id}`); });
+    playerSprite.on('pointerdown', () => { 
 
-    playerSprite.eventMode = 'dynamic';
+    // <p id="infoPlayer">Player: </p>
+    // <p id="infoUsername">Username: </p>
+    // <p id="infoAvatar">Avatar: </p>
+      const infoPlayer = document.getElementById("infoPlayer");
+      if (infoPlayer)
+      {
+        infoPlayer.innerHTML = "Id: " + String(id);
+      }
+      if (playerInfoBox)
+      {
+        playerInfoBox.style.display = "block";
+        playerInfoBox.style.top = mouse.y + "px";
+        playerInfoBox.style.left = mouse.x + "px";
+      }
+    });
+
+    // playerSprite.eventMode = 'dynamic';
     this.players.set(id, player);
     return this.players.get(id);
   }

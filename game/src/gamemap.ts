@@ -1,5 +1,5 @@
 import { Application, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
-import { Point, Vector2 } from './interfaces.js';
+import Point from './point.js';
 import Player from './player.js';
 import * as settings from './settings.js';
 

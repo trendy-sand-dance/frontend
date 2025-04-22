@@ -1,6 +1,5 @@
 import { Sprite, Texture } from "pixi.js";
-import { Vector2, Point } from './interfaces.js';
-// import * as settings from './settings.js';
+import Point from './point.js';
 
 export default class Player {
   public id: number;

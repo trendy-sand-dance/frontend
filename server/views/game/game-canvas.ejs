@@ -3,3 +3,22 @@
   <script type="module" src="<%= file %>">
   </script>
 </div>
+
+<div id="pixi-player-info" class="w-64 h-64 absolute bg-white z-10 hidden rounded-md p-2">
+  <div id="closeBtnPlayerInfo" class="flex justify-end cursor-pointer">X</div>
+  <div class="flex flex-col justify-center">
+    <p id="infoPlayer">Player: </p>
+    <p id="infoUsername">Username: </p>
+    <p id="infoAvatar">Avatar: </p>
+  </div>
+</div>
+
+<script> 
+const playerInfoBox = document.getElementById("pixi-player-info");
+const closeBtn = document.getElementById("closeBtnPlayerInfo");
+
+closeBtn.addEventListener("click", () => { 
+  playerInfoBox.style.display = "none";
+});
+
+</script>

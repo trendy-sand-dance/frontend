@@ -1,47 +1,18 @@
 import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
-import { ServerMessage } from './interfaces.js';
-import { Vector2 } from './interfaces.js';
 import GameMap from './gamemap.js';
+
+const localUser = window.__INITIAL_STATE__;
+const gameserverUrl = window.__GAMESERVER_URL__;
+
+// Init WebSocket
+const socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
 
 export function sendToServer(data: ServerMessage) {
   if (socket.readyState == WebSocket.OPEN) {
     socket.send(JSON.stringify(data));
   }
 }
-
-// Get user data
-//
-interface UserData {
-  id: number,
-  username: string,
-  password: string,
-  email: string,
-  avatar: string,
-  status: boolean,
-  player: PlayerData
-}
-
-interface PlayerData {
-  id: number,
-  userId: number,
-  x: number,
-  y: number,
-}
-
-declare global {
-  interface Window {
-    __INITIAL_STATE__: UserData;
-    __GAMESERVER_URL__: string;
-  }
-}
-
-const localUser = window.__INITIAL_STATE__;
-const gameserverUrl = window.__GAMESERVER_URL__;
-console.log("LOCAL USER", localUser);
-
-// Init WebSocket
-const socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
 
 function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
 
