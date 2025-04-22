@@ -1,5 +1,5 @@
 import Player from './player.js';
-import { Texture } from "pixi.js";
+import { Texture, ColorMatrixFilter } from "pixi.js";
 import { Vector2, Point } from './interfaces.js';
 
 class PlayerManager {
@@ -34,6 +34,30 @@ class PlayerManager {
 
   addPlayer(id: number, position: Vector2, texture: Texture) {
     const player = new Player(id, new Point(position.x, position.y), texture);
+    const playerSprite = player.getContext();
+    const filter = new ColorMatrixFilter();
+
+    playerSprite.on('pointerover', (event) =>{
+      console.log(event);
+      console.log(`Player: ${id}`);
+      playerSprite.blendMode = 'color-dodge';
+      const { matrix } = filter;
+      matrix[1] = 1.0;
+      matrix[2] = 1.0;
+      matrix[3] = 1.0;
+      playerSprite.filters = [filter];
+    });
+
+    playerSprite.on('pointerleave', (event) =>{
+      console.log(event);
+      playerSprite.filters = [];
+    });
+
+
+    playerSprite.on('pointerdown', (event) => { 
+      alert(`${event}\nPlayer: ${id}`); });
+
+    playerSprite.eventMode = 'dynamic';
     this.players.set(id, player);
     return this.players.get(id);
   }
