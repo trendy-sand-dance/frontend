@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import fs from 'fs';
+import fsSync from 'fs';
+import { promises as fs } from 'fs';
 import path  from 'path';
-import parseFile from '../utils/file.controller';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
@@ -67,43 +67,47 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 		if (!file) {
 		  throw { code: 406, message: 'No content' };
 		}
-		
-		//TODO Check file even has exnesiton?
 		const extension = file.filename.split('.').pop();
-		//if (!extension)
-	
-		const userAvatar = (username + "_avatar") as string;
-		const filename = (username + "_avatar." + extension) as string;
-
-		// PARSE FILE
-		//const buffer = await file.toBuffer();
-		//const wrkdir = process.cwd();
-		//const uploadDir = path.join(wrkdir, 'public/images');
-		const uploadDir = parseFile(file);
+		
+		// get upload directory
+		const buffer = await file.toBuffer();
+		const wrkdir = process.cwd();
+		const uploadDir = path.join(wrkdir, 'public/images');
 
 		// ensure uploads directory exists
-		if (!fs.existsSync(uploadDir)) {
-			fs.mkdirSync(uploadDir, { recursive: true });
+		if (!fsSync.existsSync(uploadDir)) {
+			fsSync.mkdirSync(uploadDir, { recursive: true });
 		}
 
+		// upload
+		const filePath = path.join(uploadDir, file.filename);
+		if (!fsSync.existsSync(filePath)) {
+			fsSync.writeFile(filePath, buffer, (err) => {
+				if (err) {
+					throw { code: 500, message: "Erroring uploading file" };
+				}});
+			}
+		
+		const userAvatar = (username + "_avatar") as string;
+		const rand = (Math.random() * 10).toString(10).substr(0, 5);
+		const filename = (username + "_avatar_E" + rand + "." + extension) as string;
+
 		// delete existing avatar
-		const files = fs.readdirSync(uploadDir);
+		const files = fsSync.readdirSync(uploadDir);
 		files.forEach(f => {
-			if (f.split('.')[0] == userAvatar)
+			if (f.split('_E')[0] == userAvatar)
 			{
+				// find existing with username_avatar name
 				const deleteMe = path.join(uploadDir, f);
-				fs.unlinkSync(deleteMe); // delete file
+				fsSync.unlinkSync(deleteMe); // delete file
 			}
 		});
+		
+		const oldPath = filePath;
+		const newPath = path.join(uploadDir, filename);
+		await fs.rename(oldPath, newPath);
 
-		// upload
-		const buffer = await file.toBuffer();
-		const filePath = path.join(uploadDir, filename);
-		fs.writeFile(filePath, buffer, (err) => {
-			if (err) {
-				throw { code: 500, message: "Erroring uploading file" };
-			}});
-
+		// update dashboard info with new user info + return new view
 		const resEdit = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -113,10 +117,9 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 			const responseBody = await resEdit.json() as { error: string };
 			throw { code: resEdit.status, message: responseBody.error };
 		}
-
-		// update dashboard info with new user info + return new view
 		const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
 		const resData = await newUserData.json() as { email: string, avatar: string };
+		console.log("resdata avatar = ", resData.avatar);
 		return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
 	
 	} catch (error) {
@@ -125,3 +128,4 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 		return reply.code(err.code).send({ error: err.message });
 	}
 };
+
