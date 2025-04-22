@@ -1,8 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import fsSync from 'fs';
-import { promises as fs } from 'fs';
-import path  from 'path';
-import uploadAvatar from '../utils/file.controller';
+import getNewAvatar from './newAvatar.controller';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
@@ -63,12 +60,11 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
 	try {
 		const { username } = request.params as { username: string };
 
-		//// get file
 		const file = await request.file();
 		if (!file) {
 			throw { code: 406, message: 'No content' };
 		}
-		const filename = await uploadAvatar(username, file);
+		const filename = await getNewAvatar(username, file);
 
 		// update dashboard info with new user info + return new view
 		const resEdit = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
