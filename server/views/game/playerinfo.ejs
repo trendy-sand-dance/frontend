@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+  <div id="closeBtnPlayerInfo" class="flex justify-end cursor-pointer">X</div>
+  <div class="flex flex-col justify-center">
+    <p id="infoUsername"><%= username %></p>
+    <img src="/images/<%= avatar%>"></img>
+  </div>
+
+<script> 
+const playerInfoBox = document.getElementById("pixi-player-info");
+const closeBtn = document.getElementById("closeBtnPlayerInfo");
+
+closeBtn.addEventListener("click", () => { 
+  playerInfoBox.style.display = "none";
+});
+
+</script>

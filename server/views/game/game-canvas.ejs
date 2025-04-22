@@ -5,12 +5,21 @@
 </div>
 
 <div id="pixi-player-info" class="w-64 h-64 absolute bg-white z-10 hidden rounded-md p-2">
-  <div id="closeBtnPlayerInfo" class="flex justify-end cursor-pointer">X</div>
-  <div class="flex flex-col justify-center">
-    <p id="infoPlayer">Player: </p>
-    <p id="infoUsername">Username: </p>
-    <p id="infoAvatar">Avatar: </p>
+
+  <div class="flex justify-end">
+    <div id="closeBtnPlayerInfo" class="cursor-pointer">X</div>
   </div>
+
+  <div id="infoCard" class="flex flex-col content-center justify-center">
+    <h1 class="font-extrabold">Player</h1>
+    <h2 id="infoUsername"></h2>
+    <img id="infoAvatar">
+  </div>
+
+  <div class="flex justify-end">
+    <button type="button" class="bg-slate-400">Send friend request</button>
+  </div>
+
 </div>
 
 <script> 

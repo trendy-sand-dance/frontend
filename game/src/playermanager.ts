@@ -2,6 +2,7 @@ import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
 import Point from './point.js';
+import 'htmx.org';
 
 const playerInfoBox = document.getElementById("pixi-player-info");
 
@@ -41,7 +42,7 @@ class PlayerManager {
     const filter = new ColorMatrixFilter();
 
     playerSprite.interactive = true;
-    playerSprite.on('pointerover', () =>{
+    playerSprite.on('pointerover', () => {
       console.log(`Player: ${id}`);
       playerSprite.blendMode = 'color-dodge';
       const { matrix } = filter;
@@ -51,26 +52,35 @@ class PlayerManager {
       playerSprite.filters = [filter];
     });
 
-    playerSprite.on('pointerleave', () =>{
+    playerSprite.on('pointerleave', () => {
       playerSprite.filters = [];
     });
 
 
-    playerSprite.on('pointerdown', () => { 
+    playerSprite.on('pointerdown', async () => {
+      // Trigger HTMX request
+      if (playerInfoBox) {
 
-    // <p id="infoPlayer">Player: </p>
-    // <p id="infoUsername">Username: </p>
-    // <p id="infoAvatar">Avatar: </p>
-      const infoPlayer = document.getElementById("infoPlayer");
-      if (infoPlayer)
-      {
-        infoPlayer.innerHTML = "Id: " + String(id);
-      }
-      if (playerInfoBox)
-      {
         playerInfoBox.style.display = "block";
-        playerInfoBox.style.top = mouse.y + "px";
-        playerInfoBox.style.left = mouse.x + "px";
+        playerInfoBox.style.top = `${mouse.y + 10}px`;
+        playerInfoBox.style.left = `${mouse.x + 10}px`;
+
+        try {
+          console.log("OKKKK, FETCHINGGG");
+          const response = await fetch(`/game/playerinfo/${id}`);
+          const data = await response.json();
+
+          console.log("OKKKK, DONE: ", data);
+          const infoUsername = document.getElementById("infoUsername");
+          const infoAvatar = document.getElementById("infoAvatar");
+          if (infoUsername)
+            infoUsername.textContent = `Username: ${data.username}`;
+          if (infoAvatar)
+            infoAvatar.outerHTML = `<img src="/images/${data.avatar}" class="w-12 h-12 rounded-full" />`;
+
+        } catch (err) {
+          console.error("Failed to fetch player info", err);
+        }
       }
     });
 

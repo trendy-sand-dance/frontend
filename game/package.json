@@ -15,6 +15,7 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
+    "htmx.org": "^1.9.12",
     "pixi.js": "^8.9.1"
   }
 }
