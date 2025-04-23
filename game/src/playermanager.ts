@@ -2,7 +2,6 @@ import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
 import Point from './point.js';
-import 'htmx.org';
 
 const playerInfoBox = document.getElementById("pixi-player-info");
 
@@ -76,7 +75,7 @@ class PlayerManager {
           if (infoUsername)
             infoUsername.textContent = `Username: ${data.username}`;
           if (infoAvatar)
-            infoAvatar.outerHTML = `<img src="/images/${data.avatar}" class="w-12 h-12 rounded-full" />`;
+            infoAvatar.outerHTML = `<img src="/images/avatars/${data.avatar}" class="w-12 h-12 rounded-full" />`;
 
         } catch (err) {
           console.error("Failed to fetch player info", err);
