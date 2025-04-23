@@ -2,6 +2,7 @@ import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
 import Point from './point.js';
+import('htmx.org');
 
 const playerInfoBox = document.getElementById("pixi-player-info");
 
@@ -67,15 +68,27 @@ class PlayerManager {
         try {
           console.log("OKKKK, FETCHINGGG");
           const response = await fetch(`/game/playerinfo/${id}`);
-          const data = await response.json();
+          const data = await response.json(); // Username, avatar(filename)
 
           console.log("OKKKK, DONE: ", data);
           const infoUsername = document.getElementById("infoUsername");
           const infoAvatar = document.getElementById("infoAvatar");
           if (infoUsername)
-            infoUsername.textContent = `Username: ${data.username}`;
+            infoUsername.textContent = `${data.username}`;
           if (infoAvatar)
             infoAvatar.outerHTML = `<img src="/images/avatars/${data.avatar}" class="w-12 h-12 rounded-full" />`;
+
+          // Set up friend request button
+          const friendReqBtn = document.getElementById("friendRequestBtn");
+          if (friendReqBtn)
+          {
+            friendReqBtn.setAttribute("hx-post", `sendReq/${id}/${window.__INITIAL_STATE__.id}`);
+            friendReqBtn.setAttribute("hx-target", "#friendRequestBtn");
+            friendReqBtn.setAttribute("hx-swap", "outerHTML");
+            friendReqBtn.setAttribute("hx-target-error", "#friendRequestBtn");
+
+            window.htmx.process(document.body);
+          }
 
         } catch (err) {
           console.error("Failed to fetch player info", err);
