@@ -1,6 +1,5 @@
 import { Sprite, Texture } from "pixi.js";
-import { Vector2, Point } from './interfaces.js';
-// import * as settings from './settings.js';
+import Point from './point.js';
 
 export default class Player {
   public id: number;
@@ -8,11 +7,12 @@ export default class Player {
 
   private context: Sprite;
   constructor(id: number, position: Point, texture: Texture) {
+    this.id = id;
+    this.position = position;
     this.context = new Sprite(texture);
     // this.context.anchor.set(-.75, .25); // This is scuffed
 
-    this.position = position;
-    this.id = id;
+    this.updatePosition(position.asCartesian);
   }
 
   updatePosition(position: Vector2) {

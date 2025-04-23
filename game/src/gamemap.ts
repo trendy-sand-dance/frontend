@@ -1,5 +1,6 @@
 import { Application, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
-import { Point, Vector2 } from './interfaces.js';
+import Point from './point.js';
+import Player from './player.js';
 import * as settings from './settings.js';
 
 enum TextureId {
@@ -157,6 +158,10 @@ export default class GameMap {
           this.drawIsometricTile(this.graphicsContext, point.asIsometric, this.tileSize, this.tileSize, false);
       }
     }
+  }
+
+  addPlayer(player: Player) {
+    this.container.addChild(player.getContext());
   }
 
   getHeightOffset(col: number, row: number, tileMap: number[][]) {

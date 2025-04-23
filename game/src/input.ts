@@ -1,5 +1,4 @@
 import * as settings from "./settings.js";
-import { Vector2 } from "./interfaces.js";
 import Player from "./player.js";
 
 type KeyPressState = {
@@ -32,7 +31,7 @@ function dynamicIndexing(player: Player, pos: Vector2) {
     player.getContext().zIndex = 5;
 }
 
-export function movePlayer(player: Player, deltaTime: number) {
+export function movePlayer(player: Player, deltaTime: number): Vector2 {
   let pos = { x: player.position.asCartesian.x, y: player.position.asCartesian.y };
   if (keyIsPressed['KeyW']) {
     pos.y -= settings.PLAYERSPEED * deltaTime;
@@ -54,9 +53,11 @@ export function movePlayer(player: Player, deltaTime: number) {
     (y >= 0) && (y < settings.GRIDHEIGHT);
 
   if (isInBounds && settings.TILEMAP[y][x] === 0) {
+
     player.updatePosition(pos);
 
     // Primitive and scuffed depth 
     dynamicIndexing(player, pos);
   }
+  return player.position.asCartesian;
 }

@@ -1,26 +1,48 @@
-import * as settings from './settings.js';
+// import * as settings from './settings.js';
 
-export interface Vector2 {
-  x: number;
-  y: number;
-}
+declare global {
 
-export interface ServerMessage {
-  type: string,
-  id?: number,
-  position?: Vector2,
-}
-
-export class Point {
-  public asCartesian: Vector2;
-  public asIsometric: Vector2;
-
-  constructor(x: number, y: number) {
-    this.asCartesian = { x, y };
-    this.asIsometric = { x: (x * settings.TILESIZE - y * settings.TILESIZE), y: (x * settings.TILESIZE / 2 + y * settings.TILESIZE / 2) };
+  interface Window {
+    __INITIAL_STATE__: UserData;
+    __GAMESERVER_URL__: string;
+    __FOCUSED_USER__: UserData;
   }
-  add(offset: Vector2) {
-    // this.asCartesian = { x: this.asCartesian.x + offset.x, y: this.asCartesian.y + offset.y };
-    this.asIsometric = { x: this.asIsometric.x + offset.x, y: this.asIsometric.y + offset.y };
+
+  interface Vector2 {
+    x: number;
+    y: number;
   }
+
+  interface Vector2 {
+    x: number;
+    y: number;
+  }
+
+  interface ServerMessage {
+    type: string,
+    id?: number,
+    username?: string,
+    avatar?: string,
+    position?: Vector2,
+  }
+
+  interface UserData {
+    id: number,
+    username: string,
+    password: string,
+    email: string,
+    avatar: string,
+    status: boolean,
+    player: PlayerData
+  }
+
+  interface PlayerData {
+    id: number,
+    userId: number,
+    x: number,
+    y: number,
+  }
+
 }
+
+
