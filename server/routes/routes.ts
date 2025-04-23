@@ -1,9 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
-import { loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
+import { login, loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { editUsername, editEmail, editAvatar } from '../controllers/account/edit.controller.js';
-import { getPixiGame } from '../controllers/game/game.controller.js';
+import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
+import { getImage } from "../controllers/dashboard/images.controller"
 
 export async function routes(fastify: FastifyInstance) {
 
@@ -16,7 +17,8 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/login-view', getLoginView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
-  fastify.post('/login-user', loginUser);
+  // fastify.post('/login-user', loginUser);
+  fastify.post('/login-user', login);
   fastify.get('/logout/:username', logoutUser);
   
   // Editing
@@ -26,6 +28,7 @@ export async function routes(fastify: FastifyInstance) {
 
   // Game
   fastify.get('/game-canvas', getPixiGame);
+  fastify.get('/game/playerinfo/:id', getPlayerInfo);
 
   // Dashboard
   fastify.get('/dashboard', getDashboard);

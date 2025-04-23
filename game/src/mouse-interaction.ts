@@ -1,5 +1,4 @@
 import { Graphics, Text } from "pixi.js";
-import { Vector2 } from './interfaces.js';
 import GameMap from './gamemap.js';
 // import * as settings from './settings.js';
 

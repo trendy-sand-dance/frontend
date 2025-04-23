@@ -59,12 +59,23 @@
 		<div id="avatarInput" class="hidden">
 		  <form hx-post="/editAvatar/<%=username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
 
-			<input type="file" id="myFile" name="filename">
+			<input type="file" id="myFile" name="filename" accept="image/*">
 			<input type="submit" value="Change Avatar"></input>
 		  </form>
 		</div>
 	  </div>
 	</div>
+
+      <script> 
+      const uploadField = document.getElementById("myFile");
+
+      uploadField.onchange = function() {
+        if(this.files[0].size > 3145728) {
+          alert("File is too big!");
+          this.value = "";
+        }
+      };
+      </script>
 
 
       <div class="flex justify-end content-end w-[100%] p-2 border-t border-black mt-auto">
