@@ -1,4 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import getNewAvatar from './newAvatar.controller';
 const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
 
 export async function editUsername(request: FastifyRequest, reply: FastifyReply) {
@@ -58,36 +59,34 @@ export async function editEmail(request: FastifyRequest, reply: FastifyReply): P
 };
 
 export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
-  try {
-    const { username } = request.params as { username: string };
+	try {
+		const { username } = request.params as { username: string };
 
-    const contentType = request.headers['content-type'];
-    if (!contentType) {
-      throw { code: 400, message: "Missing content-type" };
-    }
+		const file = await request.file();
+		if (!file) {
+			throw { code: 406, message: 'No content' };
+		}
+		const filename = await getNewAvatar(username, file);
 
-    const res = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
-      method: 'POST',
-      headers: {
-        'content-type': contentType,
-      },
-      // @ts-ignore: `duplex` is not in standard `RequestInit` yet
-      duplex: 'half',
-      body: request.raw,
-    });
-
-    if (!res.ok) {
-      const responseBody = await res.json() as { error: string };
-      throw { code: res.status, message: responseBody.error };
-    }
-    const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
-    const resData = await newUserData.json() as { email: string, avatar: string };
-    return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
-    //return ({ code: res.status });
-  } catch (error) {
-    console.error(error);
-    const err = error as { code: number, message: string };
-    return reply.code(err.code).send({ error: err.message });
-  }
+		// update dashboard info with new user info + return new view
+		const resEdit = await fetch(`${USERMANAGEMENT_URL}/editAvatar/${username}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ filename }),
+		});
+		if (!resEdit.ok) {
+			const responseBody = await resEdit.json() as { error: string };
+			throw { code: resEdit.status, message: responseBody.error };
+		}
+		const newUserData = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
+		const resData = await newUserData.json() as { email: string, avatar: string };
+		console.log("resdata avatar = ", resData.avatar);
+		return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
+	
+	} catch (error) {
+		console.error(error);
+		const err = error as { code: number, message: string };
+		return reply.code(err.code).send({ error: err.message });
+	}
 };
 

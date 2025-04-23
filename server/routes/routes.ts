@@ -20,8 +20,8 @@ export async function routes(fastify: FastifyInstance) {
   // fastify.post('/login-user', loginUser);
   fastify.post('/login-user', login);
   fastify.get('/logout/:username', logoutUser);
+  
   // Editing
-
   fastify.post('/editUsername/:username', editUsername);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
@@ -33,6 +33,5 @@ export async function routes(fastify: FastifyInstance) {
   // Dashboard
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
-  fastify.get('/images/:filename', getImage);
 
 };
