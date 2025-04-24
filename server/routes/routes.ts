@@ -1,10 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
-import { login, loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
+import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
-import { editUsername, editEmail, editAvatar } from '../controllers/account/edit.controller.js';
+import { editUsername, editPassword, editEmail, editAvatar } from '../controllers/account/editUser.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
-// import { getImage } from "../controllers/dashboard/images.controller"
 import { sendFriendReq } from '../controllers/account/friend.controller.js';
 
 export async function routes(fastify: FastifyInstance) {
@@ -23,11 +22,12 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
 
   // fastify.post('/login-user', loginUser);
-  fastify.post('/login-user', login);
-  fastify.get('/logout/:username', logoutUser);
+  fastify.post('/login', login);
+  fastify.get('/logout/:username', logout);
   
   // Editing
   fastify.post('/editUsername/:username', editUsername);
+  fastify.post('/editPassword/:username', editPassword);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
 
