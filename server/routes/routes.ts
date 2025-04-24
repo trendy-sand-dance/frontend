@@ -36,7 +36,16 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/dashboard', getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
 
+
   //scooby doo!
   fastify.get('/playground', getplaygroundView);
   fastify.get('/toggle-sidebar', sidebarController);
+
+  fastify.get('/sidebar/chat', async (req, reply) => {
+	return reply.view('/partials/sidebar-chat.ejs');
+  });
+  
+  fastify.get('/sidebar/players', async (req, reply) => {
+	return reply.view('/partials/sidebar-players.ejs');
+  });
 };
