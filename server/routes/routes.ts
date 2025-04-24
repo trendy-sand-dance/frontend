@@ -26,7 +26,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
 
   // fastify.post('/login-user', loginUser);
-  fastify.post('/login', login);
+  fastify.post('/login-user', login);
   fastify.get('/logout/:username', logout);
   
   // Editing
