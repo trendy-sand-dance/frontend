@@ -4,8 +4,6 @@ import { login, loginUser, logoutUser, getLoginView } from '../controllers/accou
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { editUsername, editEmail, editAvatar } from '../controllers/account/edit.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
-import { getImage } from "../controllers/dashboard/images.controller"
-import { getPixiGame } from '../controllers/game/game.controller.js';
 import { getImage } from "../controllers/dashboard/images.controller";
 import { getplaygroundView } from "../controllers/playground.controller.js";
 import sidebarController from "../controllers/playground.controller.js";
