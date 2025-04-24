@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
+import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { editUsername, editPassword, editEmail, editAvatar } from '../controllers/account/editUser.controller.js';
@@ -17,6 +18,9 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/login-view', getLoginView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
+  fastify.get('/stats/:username', getStats);
+  fastify.post('/addWin/:username', updateWins);
+  fastify.post('/addLoss/:username', updateLosses);
 
   // Friends
   fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
