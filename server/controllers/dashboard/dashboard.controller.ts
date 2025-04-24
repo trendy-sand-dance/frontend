@@ -17,7 +17,7 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 
 export async function getDashboardUser(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
-  console.log("username:? ", username);
+
   try {
     const response = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
     const resData = await response.json() as { email: string, avatar: string };
