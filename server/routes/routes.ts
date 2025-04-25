@@ -5,8 +5,8 @@ import { login, loginUser, logout, getLoginView } from '../controllers/account/l
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { editUsername, editPassword, editEmail, editAvatar } from '../controllers/account/editUser.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
-import { sendFriendReq } from '../controllers/account/friend.controller.js';
-
+import { sendFriendReq, viewAllFriends, viewOnlyFriends } from '../controllers/account/friend.controller.js';
+//, acceptReq, rejectReq, block
 export async function routes(fastify: FastifyInstance) {
 
   // Root
@@ -24,7 +24,12 @@ export async function routes(fastify: FastifyInstance) {
 
   // Friends
   fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
-
+//  fastify.post('/acceptReq/:senderId/:userId', acceptReq); // sender is person who sent request, this user is accepting their request
+//  fastify.delete('/rejectReq/:senderId/:userId', rejectReq); // sender is person who sent request, this user is rejecting their request
+//  fastify.post('/block/:friendId/:userId', block); // friend is person who user wants to block
+  fastify.get('/viewAllFriends/:username', viewAllFriends); 
+  fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
+ 
   // fastify.post('/login-user', loginUser);
   fastify.post('/login-user', login);
   fastify.get('/logout/:username', logout);
