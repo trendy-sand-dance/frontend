@@ -22,6 +22,22 @@ export async function sendFriendReq(request: FastifyRequest, reply: FastifyReply
   }
 };
 
+
+//typedef for friendresponse if we end up using it more
+
+// type FriendEntry = {
+// 	friend: { username: string };
+// 	status: string;
+// 	initiator: number;
+//   };
+  
+//   type FriendsResponse = {
+// 	friends: FriendEntry[];
+//   };
+
+
+
+
 export async function viewAllFriends(request: FastifyRequest, reply: FastifyReply): Promise<any> {
   try {
     const { username } = request.params as { username: string };
@@ -31,11 +47,37 @@ export async function viewAllFriends(request: FastifyRequest, reply: FastifyRepl
       throw { code: res.status, message: responseBody.error };
     }
 	//does this work, or is it different when reading multiple entries?
-	const resData = await res.json();
-	if (!resData)
-			console.log("failed to get friend");
-	console.log("resdata = ", resData.friends)
-	return reply.viewAsync("partials/sidebar-players.ejs", { friends: resData.friends });
+	// const resData = await res.json() as { friends: { username: string, status: boolean }[] };
+	// if (!resData || !resData.friends) {
+	// 	console.log("Failed to get friends");
+	// 	return reply.code(500).send({ message: "Failed to retrieve friends" });
+	// }
+	// console.log("resData.friends = ", resData.friends);
+
+	// return reply.viewAsync("partials/sidebar-players.ejs", { friends: resData.friends });
+	const raw = await res.json() as {
+		friends: {
+		  friend: { username: string, wins: number, losses: number },
+		  status: string,
+		  initiator: number
+		}[]
+	  };;
+	console.log("\x1b[33m%s\x1b[0m", "🔥 raw DB response:", raw);
+
+	const simplifiedFriends = raw.friends.map(entry =>
+	({
+		username: entry.friend.username,
+		status: entry.status,
+		wins: entry.friend.wins,
+		losses: entry.friend.losses
+		 // or make this nicer like "Online"/"Offline" if you want
+	}));
+	
+	return reply.viewAsync("partials/sidebar-players.ejs", {friends: simplifiedFriends});
+
+	// const { friends } = await res.json();
+	// return reply.viewAsync("partials/sidebar-players.ejs", { friends });
+
 } catch (error) {
 	request.log.error(error);
     const err = error as { code: number, message: string };

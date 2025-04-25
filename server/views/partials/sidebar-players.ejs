@@ -1,26 +1,31 @@
 <!-- views/partials/sidebar-players.ejs -->
 <div class="p-4 text-black animate-slide-in">
-	<h2 class="text-lg font-bold mb-2">Players</h2>
-	<ul class="space-y-2">
-		<li class="bg-white p-2 rounded">🏓  <%= username %></li>
-		<li class="bg-white p-2 rounded">  <%= status %></li>
-		<li class="bg-white p-2 rounded">🏓 Player2</li>
-	</ul>
-	<div class="p-2 bg-white rounded shadow">
-		<%= resData %>
-		<!-- <%- resData %> -->
-	</div>
-	<!-- <script>
-		console.log("all friends json string ==", <%- JSON.stringify(friends) %>);
-	  </script> -->
-	  
+	<% if (typeof friends !== 'undefined' && Array.isArray(friends))
+	{ %>
+		<h2 class="text-lg font-bold mb-2">Homies</h2>
+		<ul class="space-y-2">
+			<% friends.forEach(function(friend)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= friend.username %></strong> –
+						<li>
+							online status: soon
+						</li>
+						<li>
+							wins: <%= friend.wins %>
+						</li> 
+						<li>
+							losses: <%= friend.losses %>
+						</li>
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+		<% } 
+		else { %>
+				<p class="text-red-500">No friends found or data error.</p>
+			<% } %>
+	
 </div>
-
-
-
-
-<!-- <% friends.forEach(function(friend) { %>
-	<div class="p-2 bg-white rounded shadow">
-		<strong><%= friend.username %></strong> – Score: <%= friend.status %>
-	</div>
-	<% }); %> -->

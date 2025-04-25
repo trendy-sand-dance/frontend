@@ -63,7 +63,14 @@
         hx-target="this"></div>
 
       <!-- Chat button -->
-      <button type="button" class="p-2">Chat</button>
+	<button	
+	  	type="button"
+		hx-get="/sidebar/chat"
+		hx-target="#sidebar-content"
+		hx-swap="innerHTML"
+		class="p-2">
+		Chat💬💬💬 
+	</button>
 
       <!-- Players button -->
 	  <button 
@@ -72,7 +79,7 @@
 		hx-target="#sidebar-content"
 		hx-swap="innerHTML"
 		class="p-2">
-		Players
+		Friendos 👬👫👭
   	</button>
 
     </nav>
