@@ -1,10 +1,12 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
-import { login, loginUser, logoutUser, getLoginView } from '../controllers/account/login.controller.js';
+import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
+import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
-import { editUsername, editEmail, editAvatar } from '../controllers/account/edit.controller.js';
+import { editUsername, editPassword, editEmail, editAvatar } from '../controllers/account/editUser.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
-import { getImage } from "../controllers/dashboard/images.controller";
+import { sendFriendReq, viewAllFriends, viewOnlyFriends } from '../controllers/account/friend.controller.js';
+//, acceptReq, rejectReq, block
 import { getplaygroundView } from "../controllers/playground.controller.js";
 import sidebarController from "../controllers/playground.controller.js";
 
@@ -19,12 +21,25 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/login-view', getLoginView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
+  fastify.get('/stats/:username', getStats);
+  fastify.post('/addWin/:username', updateWins);
+  fastify.post('/addLoss/:username', updateLosses);
+
+  // Friends
+  fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
+//  fastify.post('/acceptReq/:senderId/:userId', acceptReq); // sender is person who sent request, this user is accepting their request
+//  fastify.delete('/rejectReq/:senderId/:userId', rejectReq); // sender is person who sent request, this user is rejecting their request
+//  fastify.post('/block/:friendId/:userId', block); // friend is person who user wants to block
+  fastify.get('/viewAllFriends/:username', viewAllFriends); 
+  fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
+ 
   // fastify.post('/login-user', loginUser);
   fastify.post('/login-user', login);
-  fastify.get('/logout/:username', logoutUser);
+  fastify.get('/logout/:username', logout);
   
   // Editing
   fastify.post('/editUsername/:username', editUsername);
+  fastify.post('/editPassword/:username', editPassword);
   fastify.post('/editEmail/:username', editEmail);
   fastify.post('/editAvatar/:username', editAvatar);
   

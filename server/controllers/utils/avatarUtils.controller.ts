@@ -1,4 +1,4 @@
-import { uploadFile, deleteFile, updateFilename } from '../utils/fileUtils.controller';
+import { uploadFile, deleteFile, updateFilename } from './fileUtils.controller';
 
 /**
  * @brief   - receives upload file from editAvatar endpoint
@@ -19,7 +19,7 @@ import { uploadFile, deleteFile, updateFilename } from '../utils/fileUtils.contr
  * 
  */
 async function getNewAvatar(username: string, file: any) {
-
+	
 		// get file extension + upload new avatar + get upload directory
 		const extension = file.filename.split('.').pop();
 		const imageDir = 'public/images/avatars';

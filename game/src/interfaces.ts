@@ -6,6 +6,7 @@ declare global {
     __INITIAL_STATE__: UserData;
     __GAMESERVER_URL__: string;
     __FOCUSED_USER__: UserData;
+    htmx: typeof import('htmx.org');
   }
 
   interface Vector2 {

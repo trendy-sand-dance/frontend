@@ -4,21 +4,31 @@
   </script>
 </div>
 
-<div id="pixi-player-info" class="w-64 h-64 absolute bg-white z-10 hidden rounded-md p-2">
+<div id="pixi-player-info" class="w-64 h-64 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
 
   <div class="flex justify-end">
     <div id="closeBtnPlayerInfo" class="cursor-pointer">X</div>
   </div>
 
-  <div id="infoCard" class="flex flex-col content-center justify-center">
-    <h1 class="font-extrabold">Player</h1>
-    <h2 id="infoUsername"></h2>
-    <img id="infoAvatar">
+  <div class="flex flex-col justify-between h-full"> 
+
+    <div id="infoCard" class="flex flex-row justify-center">
+      <img id="infoAvatar">
+      <h2 class="font-extrabold content-center" id="infoUsername"></h2>
+    </div>
+    <div class="flex flex-col">
+      <p>Wins: 0 (unimplemented)</p>
+      <p>Losses: 0 (unimplemented)</p>
+      <p>Status: (unimplemented)</p>
+      <p>Friends: (unimplemented)</p>
+    </div>
+
+    <div class="flex justify-center">
+      <button  id="friendRequestBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2">Send friend request</button>
+    </div>
+
   </div>
 
-  <div class="flex justify-end">
-    <button type="button" class="bg-slate-400">Send friend request</button>
-  </div>
 
 </div>
 

@@ -10,9 +10,7 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
 	// const userInfo = request.body as { username: string, password: string };
   try {
     const { username, password, email } = request.body as { username: string, password: string, email: string };
-
     const dataPackage = JSON.stringify({ username, password, email });
-    console.log("dataPackage: ", dataPackage);
 
     const response = await fetch(`${USERMANAGEMENT_URL}/register`, {
       method: 'POST',
