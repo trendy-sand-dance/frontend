@@ -2,8 +2,25 @@
 <div class="p-4 text-black animate-slide-in">
 	<h2 class="text-lg font-bold mb-2">Players</h2>
 	<ul class="space-y-2">
-	  <li class="bg-white p-2 rounded">🏓 Player1</li>
-	  <li class="bg-white p-2 rounded">🏓 Player2</li>
+		<li class="bg-white p-2 rounded">🏓  <%= username %></li>
+		<li class="bg-white p-2 rounded">  <%= status %></li>
+		<li class="bg-white p-2 rounded">🏓 Player2</li>
 	</ul>
-  </div>
-  
+	<div class="p-2 bg-white rounded shadow">
+		<%= resData %>
+		<!-- <%- resData %> -->
+	</div>
+	<!-- <script>
+		console.log("all friends json string ==", <%- JSON.stringify(friends) %>);
+	  </script> -->
+	  
+</div>
+
+
+
+
+<!-- <% friends.forEach(function(friend) { %>
+	<div class="p-2 bg-white rounded shadow">
+		<strong><%= friend.username %></strong> – Score: <%= friend.status %>
+	</div>
+	<% }); %> -->

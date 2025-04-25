@@ -30,25 +30,29 @@ export async function viewAllFriends(request: FastifyRequest, reply: FastifyRepl
       const responseBody = await res.json() as { error: string };
       throw { code: res.status, message: responseBody.error };
     }
-	const friends = await res.json();
-    return reply.code(res.status).send(friends);
-  } catch (error) {
-    request.log.error(error);
+	//does this work, or is it different when reading multiple entries?
+	const resData = await res.json();
+	if (!resData)
+			console.log("failed to get friend");
+	console.log("resdata = ", resData.friends)
+	return reply.viewAsync("partials/sidebar-players.ejs", { friends: resData.friends });
+} catch (error) {
+	request.log.error(error);
     const err = error as { code: number, message: string };
     return reply.code(err.code).send({ message: err.message});
-  }
+}
 };
 
 export async function viewOnlyFriends(request: FastifyRequest, reply: FastifyReply): Promise<any> {
-  try {
-    const { username } = request.params as { username: string };
-    const res = await fetch(`${DATABASE_URL}/viewOnlyFriends/${username}`);
-    if (!res.ok) {
-      const responseBody = await res.json() as { error: string };
-      throw { code: res.status, message: responseBody.error };
-    }
-	const friends = await res.json();
-    return reply.code(res.status).send(friends);
+	try {
+		const { username } = request.params as { username: string };
+		const res = await fetch(`${DATABASE_URL}/viewOnlyFriends/${username}`);
+		if (!res.ok) {
+			const responseBody = await res.json() as { error: string };
+			throw { code: res.status, message: responseBody.error };
+		}
+		const resData = await res.json() as { username: string, status: boolean };
+	return reply.viewAsync("partials/sidebar-players.ejs", { username: resData.username, status: resData.status });
   } catch (error) {
     request.log.error(error);
     const err = error as { code: number, message: string };

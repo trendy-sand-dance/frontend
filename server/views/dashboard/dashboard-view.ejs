@@ -33,9 +33,13 @@
       </div>
 
 
-      <section class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
+      <section
+		id="sidebar" 
+	  	 class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
 
-        <div class="h-5/6">
+        <div
+			id="sidebar-content" 
+		 	class="h-5/6">
         </div>
 
         <div class="flex justify-center flex-col h-1/6 p-4">
@@ -62,7 +66,14 @@
       <button type="button" class="p-2">Chat</button>
 
       <!-- Players button -->
-      <button type="button" class="p-2">Players</button>
+	  <button 
+		type="button"
+		hx-get="/viewAllFriends/<%=user.username %>"
+		hx-target="#sidebar-content"
+		hx-swap="innerHTML"
+		class="p-2">
+		Players
+  	</button>
 
     </nav>
 
