@@ -8,6 +8,8 @@ import pluginStatic from '@fastify/static';
 import pluginFormbody from '@fastify/formbody';
 import pluginView from '@fastify/view';
 import pluginMultipart from '@fastify/multipart';
+import pluginJwt, { FastifyJWT } from '@fastify/jwt'
+import pluginCookie from '@fastify/cookie'
 
 
 import { FastifyStaticOptions } from '@fastify/static';
@@ -28,7 +30,7 @@ const fastify: FastifyInstance = Fastify({
         colorize: true,
       }
     },
-    level: 'info'
+    level: 'warn'
   }
 });
 
@@ -57,6 +59,23 @@ fastify.register(pluginView, {
   root: path.join(path.dirname(__dirname), 'server/views'),
   viewExt: "ejs"
 })
+
+
+fastify.register(pluginJwt, {
+	secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE'
+})
+
+fastify.addHook('preHandler', (req, res, next) => {
+  req.jwt = fastify.jwt
+  return next()
+})
+
+fastify.register(pluginCookie, {
+	// TODO: Use env for this
+  secret: 'some-secret-key',
+  hook: 'preHandler',
+})
+
 
 fastify.register(routes);
 
