@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
-import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
-import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
+import { login, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAvatar } from '../controllers/account/editUser.controller.js';
 import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
+import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
@@ -19,8 +19,18 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/login-view', getLoginView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
-  
-  // fastify.post('/login-user', loginUser);
+  fastify.get('/stats/:username', getStats);
+  fastify.post('/addWin/:username', updateWins);
+  fastify.post('/addLoss/:username', updateLosses);
+
+  // Friends
+  fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
+//  fastify.post('/acceptReq/:senderId/:userId', acceptReq); // sender is person who sent request, this user is accepting their request
+//  fastify.delete('/rejectReq/:senderId/:userId', rejectReq); // sender is person who sent request, this user is rejecting their request
+//  fastify.post('/block/:friendId/:userId', block); // friend is person who user wants to block
+  fastify.get('/viewAllFriends/:username', viewAllFriends); 
+  fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
+ 
   fastify.post('/login-user', login);
   fastify.get('/logout/:username', logout);
   
