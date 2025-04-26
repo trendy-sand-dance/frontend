@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
-import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
-import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
+import { login, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAvatar } from '../controllers/account/editUser.controller.js';
 import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
+import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
@@ -19,11 +19,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/login-view', getLoginView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
-  
-  // fastify.post('/login-user', loginUser);
-  fastify.post('/login-user', login);
-  fastify.get('/logout/:username', logout);
-  
+
   // Stats
   fastify.get('/stats/:username', getStats);
   fastify.post('/addWin/:username', updateWins);
@@ -45,13 +41,21 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/viewPlayers/:username', viewPlayers);
   fastify.delete("/deleteFriend/:senderId/:userId", deleteAssociation);
  
+  fastify.post('/login', login);
+	fastify.get('/logout', {
+		preHandler: [fastify.authenticate],
+	}, logout);
+
+
   // Game
   fastify.get('/game-canvas', getPixiGame);
   fastify.get('/game/playerinfo/:id', getPlayerInfo);
 
   // Dashboard
-  fastify.get('/dashboard', getDashboard);
-  fastify.get('/dashboard/:username', getDashboardUser);
+	fastify.get('/dashboard', { 
+		preHandler: [fastify.authenticate],
+	}, getDashboard);
+  fastify.get('/dashboard/:userid', getDashboardUser);
 
 
 

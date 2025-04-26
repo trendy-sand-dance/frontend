@@ -1,4 +1,6 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import  Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { JWT_SECRET, PORT, ADDRESS, LOCAL_GAMESERVER_URL, USERMANAGEMENT_URL } from './config';
+
 import { routes } from './routes/routes.js';
 import closeWithGrace from 'close-with-grace';
 
@@ -8,6 +10,8 @@ import pluginStatic from '@fastify/static';
 import pluginFormbody from '@fastify/formbody';
 import pluginView from '@fastify/view';
 import pluginMultipart from '@fastify/multipart';
+import pluginJwt, { FastifyJWT } from '@fastify/jwt'
+import pluginCookie from '@fastify/cookie'
 
 
 import { FastifyStaticOptions } from '@fastify/static';
@@ -15,8 +19,6 @@ import './setUpFetch';
 
 // Utility
 import path from 'node:path';
-const ADDRESS: string = process.env.LISTEN_ADDRESS ? process.env.LISTEN_ADDRESS : '0.0.0.0';
-const PORT: number = process.env.LISTEN_PORT ? parseInt(process.env.LISTEN_PORT, 10) : 3000;
 
 const fastify: FastifyInstance = Fastify({
   logger: {
@@ -28,7 +30,7 @@ const fastify: FastifyInstance = Fastify({
         colorize: true,
       }
     },
-    level: 'info'
+    level: 'warn'
   }
 });
 
@@ -57,6 +59,37 @@ fastify.register(pluginView, {
   root: path.join(path.dirname(__dirname), 'server/views'),
   viewExt: "ejs"
 })
+
+
+fastify.register(pluginJwt, {
+	// TODO: Mabye this secret should be different than the one on line 76
+	secret: JWT_SECRET
+})
+
+fastify.addHook('preHandler', (req, res, next) => {
+  req.jwt = fastify.jwt
+  return next()
+})
+
+fastify.register(pluginCookie, {
+  secret: JWT_SECRET,
+  hook: 'preHandler',
+})
+
+fastify.decorate(
+	'authenticate',
+	// TODO: Add proper unauthorized page
+	async (request: FastifyRequest, reply: FastifyReply) => {
+		const token = request.cookies.access_token
+		if (!token) {
+			return reply.status(401).send({ message: 'Authentication required' })
+		}
+		// here decoded will be a different type by default but we want it to be of user-payload type
+		const decoded = request.jwt.verify<FastifyJWT['user']>(token)
+		request.user = decoded
+	},
+)
+
 
 fastify.register(routes);
 
