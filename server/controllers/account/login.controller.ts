@@ -79,6 +79,7 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
 export async function logout(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
 
+	reply.clearCookie('access_token')
   try {
     const response = await fetch(`${DATABASE_URL}/logout/${username}`);
     return reply.sendFile("index.html");

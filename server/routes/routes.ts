@@ -31,9 +31,6 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/viewAllFriends/:username', viewAllFriends); 
   fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
  
-  fastify.post('/login-user', login);
-  fastify.get('/logout/:username', logout);
-  
   // Stats
   fastify.get('/stats/:username', getStats);
   fastify.post('/addWin/:username', updateWins);
@@ -55,12 +52,20 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/viewPlayers/:username', viewPlayers);
   fastify.delete("/deleteFriend/:senderId/:userId", deleteAssociation);
  
+  fastify.post('/login', login);
+	fastify.get('/logout', {
+		preHandler: [fastify.authenticate],
+	}, logout);
+
+
   // Game
   fastify.get('/game-canvas', getPixiGame);
   fastify.get('/game/playerinfo/:id', getPlayerInfo);
 
   // Dashboard
-  fastify.get('/dashboard', getDashboard);
+	fastify.get('/dashboard', { 
+		preHandler: [fastify.authenticate],
+	}, getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
 
 

@@ -1,4 +1,5 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import  Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+
 import { routes } from './routes/routes.js';
 import closeWithGrace from 'close-with-grace';
 
@@ -75,6 +76,20 @@ fastify.register(pluginCookie, {
   secret: 'some-secret-key',
   hook: 'preHandler',
 })
+
+fastify.decorate(
+	'authenticate',
+	// TODO: Add proper unauthorized page
+	async (request: FastifyRequest, reply: FastifyReply) => {
+		const token = request.cookies.access_token
+		if (!token) {
+			return reply.status(401).send({ message: 'Authentication required' })
+		}
+		// here decoded will be a different type by default but we want it to be of user-payload type
+		const decoded = request.jwt.verify<FastifyJWT['user']>(token)
+		request.user = decoded
+	},
+)
 
 
 fastify.register(routes);
