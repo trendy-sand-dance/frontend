@@ -30,21 +30,25 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/viewAllFriends/:username', viewAllFriends); 
   fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
  
-  fastify.post('/login-user', login);
-  fastify.get('/logout/:username', logout);
-  
-  // Editing
-  fastify.post('/editUsername/:username', editUsername);
-  fastify.post('/editPassword/:username', editPassword);
-  fastify.post('/editEmail/:username', editEmail);
-  fastify.post('/editAvatar/:username', editAvatar);
+  fastify.post('/login', login);
+	fastify.get('/logout', {
+		preHandler: [fastify.authenticate],
+	}, logout);
+
+	// Editing
+	fastify.post('/editUsername/:username', editUsername);
+	fastify.post('/editPassword/:username', editPassword);
+	fastify.post('/editEmail/:username', editEmail);
+	fastify.post('/editAvatar/:username', editAvatar);
 
   // Game
   fastify.get('/game-canvas', getPixiGame);
   fastify.get('/game/playerinfo/:id', getPlayerInfo);
 
   // Dashboard
-  fastify.get('/dashboard', getDashboard);
+	fastify.get('/dashboard', { 
+		preHandler: [fastify.authenticate],
+	}, getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
 
 };
