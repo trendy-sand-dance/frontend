@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
-import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
+import { login, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { editUsername, editPassword, editEmail, editAvatar } from '../controllers/account/editUser.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
@@ -30,22 +30,25 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/viewAllFriends/:username', viewAllFriends); 
   fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
  
-  // fastify.post('/login-user', loginUser);
-  fastify.post('/login-user', login);
-  fastify.get('/logout/:username', logout);
-  
-  // Editing
-  fastify.post('/editUsername/:username', editUsername);
-  fastify.post('/editPassword/:username', editPassword);
-  fastify.post('/editEmail/:username', editEmail);
-  fastify.post('/editAvatar/:username', editAvatar);
+  fastify.post('/login', login);
+	fastify.get('/logout', {
+		preHandler: [fastify.authenticate],
+	}, logout);
+
+	// Editing
+	fastify.post('/editUsername/:username', editUsername);
+	fastify.post('/editPassword/:username', editPassword);
+	fastify.post('/editEmail/:username', editEmail);
+	fastify.post('/editAvatar/:username', editAvatar);
 
   // Game
   fastify.get('/game-canvas', getPixiGame);
   fastify.get('/game/playerinfo/:id', getPlayerInfo);
 
   // Dashboard
-  fastify.get('/dashboard', getDashboard);
+	fastify.get('/dashboard', { 
+		preHandler: [fastify.authenticate],
+	}, getDashboard);
   fastify.get('/dashboard/:username', getDashboardUser);
 
 };
