@@ -1,7 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const DATABASE_URL: string = "http://database_container:3000";
-const LOCAL_GAMESERVER_URL: string = process.env.LOCAL_GAMESERVER_URL || "localhost";
-const TEST: string = process.env.DATABASE_URL || "NOOOOO";
+const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
+const LOCAL_GAMESERVER_URL: string = process.env.LOCAL_GAMESERVER_URL || "localhost:8003";
+const TEST: string = process.env.USERMANAGEMENT_URL || "NOOOOO";
+
+const DATABASE_URL = 'http://database_container:3000';
 
 export async function getLoginView(request: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("account/login-view.ejs");
@@ -34,19 +36,43 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
+
     if (!response.ok) {
       const responseBody = await response.json() as { error: string };
-      throw { code: response.status, message: responseBody.error };
+      throw {
+				code: response.status,
+				message: responseBody.error
+			};
     }
 
     const user = await response.json() as { user: User };
-    // return reply.viewAsync("dashboard/dashboard-view.ejs", { user, LOCAL_GAMESERVER_URL });
+
+		const payload = {
+			id: user["id"],
+			email: user["email"],
+			name: user["username"],
+		}
+
+		const token = request.jwt.sign(payload)
+		reply.setCookie('access_token', token, {
+			path: '/',
+			httpOnly: true,
+			secure: true,
+		})
+
+    return reply.viewAsync("dashboard/dashboard-view.ejs", {
+			accesToken: token,
+			user: user,
+			gameserverUrl: LOCAL_GAMESERVER_URL
+		});
 		
-    return reply.send("test123");
 
   } catch (error) {
     const err = error as { code: number, message: string };
-    return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
+    return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", {
+			code: err.code,
+			message: err.message
+		});
   }
 }
 
