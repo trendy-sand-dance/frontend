@@ -98,15 +98,21 @@ export async function blockFriend(request: FastifyRequest, reply: FastifyReply):
 	}
   };
 
-export async function viewPlayers(request: FastifyRequest, reply: FastifyReply): Promise<any> {
-	try {
+export async function viewPlayers(request: FastifyRequest, reply: FastifyReply): Promise<any> 
+{
+	try 
+	{
 		const { username } = request.params as { username: string };
 		const res = await fetch(`${DATABASE_URL}/viewPlayers/${username}`);
-		if (!res.ok) {
+
+		if (!res.ok)
+		{
 			const responseBody = await res.json() as { error: string };
 			throw { code: res.status, message: responseBody.error };
 		}
-		const raw = await res.json() as {
+
+		const raw = await res.json() as 
+		{
 			requests: { 
 				request: { username: string },
 			}[],
@@ -123,6 +129,8 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 				blocks: { username: string },
 			}[],
 		  };
+		
+		
 		return reply.viewAsync("partials/sidebar-players.ejs", { 
 			requests: raw.requests,
 			friends: raw.friends,
@@ -130,9 +138,11 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 			blocked: raw.blocked,
 			 });
 	
-  } catch (error) {
-    request.log.error(error);
-    const err = error as { code: number, message: string };
-    return reply.code(err.code).send({ message: err.message});
-  }
+	}
+	catch (error)
+	{
+		request.log.error(error);
+		const err = error as { code: number, message: string };
+		return reply.code(err.code).send({ message: err.message});
+	}
 };
