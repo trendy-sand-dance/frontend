@@ -28,8 +28,8 @@ export async function getStats(request: FastifyRequest, reply: FastifyReply) {
 		const responseBody = await response.json() as { error: string };
 		throw { code: response.status, message: responseBody.error };
 	  }
-	  const user = await response.json() as { user: User };
-	  return reply.send(user); // check how/what - view?
+	  const userStats = await response.json() as { wins: number, losses: number };
+	  return reply.send({wins: userStats.wins, losses: userStats.losses});
     
 	} catch (error) {
 		console.error(error);
