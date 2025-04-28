@@ -6,9 +6,10 @@ import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
 import * as cm from './connectionmanager.js';
+import Ball from './ball.js';
 
 const pixiApp: Application = new Application();
-let isGameFocused = false;
+let isGameFocused = true;
 
 async function preload() {
   const assets = [
@@ -58,23 +59,21 @@ async function setup() {
   // Initialize map and add to pixi.stage
   let gameMap = GameMap.instance;
   addGameMap(pixiApp, gameMap);
+  // gameMap.moveMap({ x: -(30 * settings.TILESIZE / 2), y: -(22 * settings.TILESIZE) });
   mouse.setupMapZoom(input.mouse, gameMap);
 
-
-  // interface ServerMessage {
-  //   type: string,
-  //   id?: number,
-  //   position?: Vector2,
-  // }
-
   //Network business
-  cm.runConnectionManager(gameMap);
+  // cm.runConnectionManager(gameMap);
+  let ball = new Ball({ x: 37, y: 16 });
+  // let ball = new Ball({ x: 1, y: 1 });
+  gameMap.container.addChild(ball.getContext());
 
   //Game Loop
   let prevPos: Vector2 = { x: 0, y: 0 };
   pixiApp.ticker.add((time: Ticker) => {
     const player = playerManager.getLocalPlayer();
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+    ball.move(time.deltaTime, settings.TILEMAP);
     if (player) {
       input.movePlayer(player, time.deltaTime);
 
