@@ -107,8 +107,12 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 				blocks: { username: string },
 			}[],
 		  };
-		  console.log("raw data in frontend = ", raw.friends);
-		return reply.viewAsync("partials/sidebar-players.ejs", { raw });
+		return reply.viewAsync("partials/sidebar-players.ejs", { 
+			requests: raw.requests,
+			friends: raw.friends,
+			pending: raw.pending,
+			blocked: raw.blocked,
+			 });
 	
   } catch (error) {
     request.log.error(error);

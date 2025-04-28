@@ -1,14 +1,64 @@
 <!-- views/partials/sidebar-players.ejs -->
 <div class="p-4 text-black animate-slide-in">
+
+<p> REQUESTS </p>
+<% requests.forEach(function(requests)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= requests.username %></strong> –
+						<li>
+							// accept button goes here //
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
 <p> FRIENDSSSS </p>
-<% raw.friends.forEach(function(friends)
+<% friends.forEach(function(friends)
 			{ %>
 				<div class="p-2 bg-white rounded shadow">
 					<li 
 						class="p-2 bg-white rounded shadow">
 						<strong><%= friends.username %></strong> –
 						<li>
-							online status: soon
+							<%= friends.status %>
+							// make status online not 'true'/'false'
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
+<p> PENDING </p>
+<% pending.forEach(function(pending)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= pending.username %></strong> –
+						<li>
+							firendship pending
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
+<p> BLOCKED </p>
+<% blocked.forEach(function(blocked)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= blocked.username %></strong> –
+						<li>
+							firendship blocked
 						</li>
 						
 					</li>
