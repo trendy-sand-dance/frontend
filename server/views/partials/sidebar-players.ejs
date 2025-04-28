@@ -1,4 +1,19 @@
 <!-- views/partials/sidebar-players.ejs -->
 <div class="p-4 text-black animate-slide-in">
-<p> PENDING: <%=  raw.pending %> </p>
+<p> FRIENDSSSS </p>
+<% raw.friends.forEach(function(friends)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= friends.username %></strong> –
+						<li>
+							online status: soon
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
 </div>

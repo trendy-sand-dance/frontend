@@ -82,45 +82,6 @@ export async function blockFriend(request: FastifyRequest, reply: FastifyReply):
 	}
   };
 
-
-  // somewhere in these controllers for viewing, the ability to see a players info/chat with them
-  // should be removed if that players has blocked this user
-//export async function viewAllFriends(request: FastifyRequest, reply: FastifyReply): Promise<any> {
-//	try {
-//		const { username } = request.params as { username: string };
-//		const res = await fetch(`${DATABASE_URL}/viewAllFriends/${username}`);
-//		if (!res.ok) {
-//		const responseBody = await res.json() as { error: string };
-//		throw { code: res.status, message: responseBody.error };
-//		}
-		
-//		const raw = await res.json() as {
-//			friends: {
-//			friend: { username: string, wins: number, losses: number },
-//			status: string,
-//			initiator: number
-//			}[]
-//		};
-
-//		const friends = raw.friends.map(entry =>
-//		({
-//			username: entry.friend.username,
-//			status: entry.status,
-//			wins: entry.friend.wins,
-//			losses: entry.friend.losses
-//			// or make this nicer like "Online"/"Offline" if you want
-//		}));
-//		// need an error check here?
-		
-//		return reply.viewAsync("partials/sidebar-players.ejs", {friends: friends});
-
-//	} catch (error) {
-//		request.log.error(error);
-//		const err = error as { code: number, message: string };
-//		return reply.code(err.code).send({ message: err.message});
-//	}
-//};
-
 export async function viewPlayers(request: FastifyRequest, reply: FastifyReply): Promise<any> {
 	try {
 		const { username } = request.params as { username: string };
@@ -146,17 +107,7 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 				blocks: { username: string },
 			}[],
 		  };
-	
-		//const friends = raw.friends.map(entry =>
-		//({
-		//	username: entry.friend.username,
-		//	status: entry.status,
-		//	wins: entry.friend.wins,
-		//	losses: entry.friend.losses
-		//	 // or make this nicer like "Online"/"Offline" if you want
-		//}));
-		//// need an error check here?
-	
+		  console.log("raw data in frontend = ", raw.friends);
 		return reply.viewAsync("partials/sidebar-players.ejs", { raw });
 	
   } catch (error) {
