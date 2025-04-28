@@ -30,25 +30,55 @@ export async function viewAllFriends(request: FastifyRequest, reply: FastifyRepl
       const responseBody = await res.json() as { error: string };
       throw { code: res.status, message: responseBody.error };
     }
-	const friends = await res.json();
-    return reply.code(res.status).send(friends);
-  } catch (error) {
-    request.log.error(error);
+	//does this work, or is it different when reading multiple entries?
+	// const resData = await res.json() as { friends: { username: string, status: boolean }[] };
+	// if (!resData || !resData.friends) {
+	// 	console.log("Failed to get friends");
+	// 	return reply.code(500).send({ message: "Failed to retrieve friends" });
+	// }
+	// console.log("resData.friends = ", resData.friends);
+
+	// return reply.viewAsync("partials/sidebar-players.ejs", { friends: resData.friends });
+	const raw = await res.json() as {
+		friends: {
+		  friend: { username: string, wins: number, losses: number },
+		  status: string,
+		  initiator: number
+		}[]
+	  };;
+	console.log("\x1b[33m%s\x1b[0m", "🔥 raw DB response:", raw);
+
+	const simplifiedFriends = raw.friends.map(entry =>
+	({
+		username: entry.friend.username,
+		status: entry.status,
+		wins: entry.friend.wins,
+		losses: entry.friend.losses
+		 // or make this nicer like "Online"/"Offline" if you want
+	}));
+	
+	return reply.viewAsync("partials/sidebar-players.ejs", {friends: simplifiedFriends});
+
+	// const { friends } = await res.json();
+	// return reply.viewAsync("partials/sidebar-players.ejs", { friends });
+
+} catch (error) {
+	request.log.error(error);
     const err = error as { code: number, message: string };
     return reply.code(err.code).send({ message: err.message});
-  }
+}
 };
 
 export async function viewOnlyFriends(request: FastifyRequest, reply: FastifyReply): Promise<any> {
-  try {
-    const { username } = request.params as { username: string };
-    const res = await fetch(`${DATABASE_URL}/viewOnlyFriends/${username}`);
-    if (!res.ok) {
-      const responseBody = await res.json() as { error: string };
-      throw { code: res.status, message: responseBody.error };
-    }
-	const friends = await res.json();
-    return reply.code(res.status).send(friends);
+	try {
+		const { username } = request.params as { username: string };
+		const res = await fetch(`${DATABASE_URL}/viewOnlyFriends/${username}`);
+		if (!res.ok) {
+			const responseBody = await res.json() as { error: string };
+			throw { code: res.status, message: responseBody.error };
+		}
+		const resData = await res.json() as { username: string, status: boolean };
+	return reply.viewAsync("partials/sidebar-players.ejs", { username: resData.username, status: resData.status });
   } catch (error) {
     request.log.error(error);
     const err = error as { code: number, message: string };

@@ -1,0 +1,31 @@
+<!-- views/partials/sidebar-players.ejs -->
+<div class="p-4 text-black animate-slide-in">
+	<% if (typeof friends !== 'undefined' && Array.isArray(friends))
+	{ %>
+		<h2 class="text-lg font-bold mb-2">Homies</h2>
+		<ul class="space-y-2">
+			<% friends.forEach(function(friend)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= friend.username %></strong> –
+						<li>
+							online status: soon
+						</li>
+						<li>
+							wins: <%= friend.wins %>
+						</li> 
+						<li>
+							losses: <%= friend.losses %>
+						</li>
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+		<% } 
+		else { %>
+				<p class="text-red-500">No friends found or data error.</p>
+			<% } %>
+	
+</div>
