@@ -117,5 +117,3 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
     return reply.code(err.code).send({ message: err.message});
   }
 };
-
-// block check util
