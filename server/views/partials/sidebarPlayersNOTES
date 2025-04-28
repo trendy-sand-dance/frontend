@@ -1,0 +1,46 @@
+	<!--<% if (typeof raw !== 'undefined' && Array.isArray(raw))
+	{ %>
+		<h2 class="text-lg font-bold mb-2">Homies</h2>
+		<ul class="space-y-2">
+			<% raw.forEach(function(friend)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= friend.username %></strong> –
+						<li>
+							online status: soon
+						</li>
+						<li>
+							wins: <%= friend.wins %>
+						</li> 
+						<li>
+							losses: <%= friend.losses %>
+						</li>
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+		<% } 
+		else { %>
+				<p class="text-red-500">No friends found or data error.</p>
+			<% } %>-->
+	<!--<% if (Array.isArray(raw.pending))
+	{ %>
+		<h2 class="text-lg font-bold mb-2">pending</h2>
+		<ul class="space-y-2">
+		<% raw.forEach(function(raw.pending)
+		{ %>
+			<div class="p-2 bg-white rounded shadow">
+				<li 
+					class="p-2 bg-white rounded shadow">
+					<strong><%= pends.username %></strong> –
+					</li>
+				</li>
+			</div>
+			<% }); %>
+		</ul>
+	<% } 
+	else { %>
+			<p class="text-red-500">No pending reqs found</p>
+		<% } %>-->-->
