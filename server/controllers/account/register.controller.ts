@@ -7,6 +7,7 @@ export async function getRegisterView(request: FastifyRequest, reply: FastifyRep
 
 export async function registerUser(request: FastifyRequest, reply: FastifyReply) {
 
+	// const userInfo = request.body as { username: string, password: string };
   try {
     const { username, password, email } = request.body as { username: string, password: string, email: string };
     const dataPackage = JSON.stringify({ username, password, email });
@@ -22,10 +23,14 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       const responseBody = await response.json() as { error: string };
       throw { code: response.status, message: responseBody.error };
     }
-    return reply.code(response.status).viewAsync('account/info.ejs', { message: "Succesfully registered user!" });
-  } catch (error) {
-    const err = error as { code: number, message: string };
-    return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
-  }
+    // return reply.code(response.status).viewAsync('account/info.ejs', { message: "Succesfully registered user!" });
+	// return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username });
+	return reply.viewAsync("account/login-view.ejs");
+  } 
+	catch (error)
+	{
+    	const err = error as { code: number, message: string };
+    	return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
+	}
 }
 

@@ -14,7 +14,7 @@ export async function sendFriendReq(request: FastifyRequest, reply: FastifyReply
       const responseBody = await res.json() as { error: string };
       throw { code: res.status, message: responseBody.error };
     }
-    return reply.code(res.status).send("<p>Friend request sent</p>");
+    return reply.code(res.status).send("Friend request sent");
   } catch (error) {
     request.log.error(error);
     const err = error as { code: number, message: string };
@@ -22,33 +22,130 @@ export async function sendFriendReq(request: FastifyRequest, reply: FastifyReply
   }
 };
 
+export async function acceptFriendReq(request: FastifyRequest, reply: FastifyReply): Promise<any> {
+	try {
+	  const { senderId, userId } = request.params as { senderId: number, userId: number };
+	  const res = await fetch(`${DATABASE_URL}/acceptReq/${senderId}/${userId}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ userId: userId }),
+	  });
+	  if (!res.ok) {
+		const responseBody = await res.json() as { error: string };
+		throw { code: res.status, message: responseBody.error };
+	  }
+	  return reply.code(res.status).send("Friend request accepted");
+	} catch (error) {
+	  request.log.error(error);
+	  const err = error as { code: number, message: string };
+	  return reply.code(err.code).send({ message: err.message});
+	}
+  };
+
+export async function rejectFriendReq(request: FastifyRequest, reply: FastifyReply): Promise<any> {
+	try {
+	  const { senderId, userId } = request.params as { senderId: number, userId: number };
+	  const res = await fetch(`${DATABASE_URL}/rejectReq/${senderId}/${userId}`, {
+		method: 'DELETE',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ userId: userId }),
+	  });
+	  if (!res.ok) {
+		const responseBody = await res.json() as { error: string };
+		throw { code: res.status, message: responseBody.error };
+	  }
+	  return reply.code(res.status).send("Friend request rejected");
+	} catch (error) {
+	  request.log.error(error);
+	  const err = error as { code: number, message: string };
+	  return reply.code(err.code).send({ message: err.message});
+	}
+  };
+
+export async function blockFriend(request: FastifyRequest, reply: FastifyReply): Promise<any> {
+	try {
+	  const { friendId, userId } = request.params as { friendId: number, userId: number };
+	  const res = await fetch(`${DATABASE_URL}/block/${friendId}/${userId}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ userId: userId }),
+	  });
+	  if (!res.ok) {
+		const responseBody = await res.json() as { error: string };
+		throw { code: res.status, message: responseBody.error };
+	  }
+	  return reply.code(res.status).send("Successfully blocked user");
+	} catch (error) {
+	  request.log.error(error);
+	  const err = error as { code: number, message: string };
+	  return reply.code(err.code).send({ message: err.message});
+	}
+  };
+
 export async function viewAllFriends(request: FastifyRequest, reply: FastifyReply): Promise<any> {
-  try {
-    const { username } = request.params as { username: string };
-    const res = await fetch(`${DATABASE_URL}/viewAllFriends/${username}`);
-    if (!res.ok) {
-      const responseBody = await res.json() as { error: string };
-      throw { code: res.status, message: responseBody.error };
-    }
-	const friends = await res.json();
-    return reply.code(res.status).send(friends);
-  } catch (error) {
-    request.log.error(error);
-    const err = error as { code: number, message: string };
-    return reply.code(err.code).send({ message: err.message});
-  }
+	try {
+		const { username } = request.params as { username: string };
+		const res = await fetch(`${DATABASE_URL}/viewAllFriends/${username}`);
+		if (!res.ok) {
+		const responseBody = await res.json() as { error: string };
+		throw { code: res.status, message: responseBody.error };
+		}
+		
+		const raw = await res.json() as {
+			friends: {
+			friend: { username: string, wins: number, losses: number },
+			status: string,
+			initiator: number
+			}[]
+		};
+
+		const friends = raw.friends.map(entry =>
+		({
+			username: entry.friend.username,
+			status: entry.status,
+			wins: entry.friend.wins,
+			losses: entry.friend.losses
+			// or make this nicer like "Online"/"Offline" if you want
+		}));
+		// need an error check here?
+		
+		return reply.viewAsync("partials/sidebar-players.ejs", {friends: friends});
+
+	} catch (error) {
+		request.log.error(error);
+		const err = error as { code: number, message: string };
+		return reply.code(err.code).send({ message: err.message});
+	}
 };
 
 export async function viewOnlyFriends(request: FastifyRequest, reply: FastifyReply): Promise<any> {
-  try {
-    const { username } = request.params as { username: string };
-    const res = await fetch(`${DATABASE_URL}/viewOnlyFriends/${username}`);
-    if (!res.ok) {
-      const responseBody = await res.json() as { error: string };
-      throw { code: res.status, message: responseBody.error };
-    }
-	const friends = await res.json();
-    return reply.code(res.status).send(friends);
+	try {
+		const { username } = request.params as { username: string };
+		const res = await fetch(`${DATABASE_URL}/viewOnlyFriends/${username}`);
+		if (!res.ok) {
+			const responseBody = await res.json() as { error: string };
+			throw { code: res.status, message: responseBody.error };
+		}
+		const raw = await res.json() as {
+			friends: {
+			  friend: { username: string, wins: number, losses: number },
+			  status: string,
+			  initiator: number
+			}[]
+		  };
+	
+		const friends = raw.friends.map(entry =>
+		({
+			username: entry.friend.username,
+			status: entry.status,
+			wins: entry.friend.wins,
+			losses: entry.friend.losses
+			 // or make this nicer like "Online"/"Offline" if you want
+		}));
+		// need an error check here?
+	
+		return reply.viewAsync("partials/sidebar-players.ejs", {friends: friends});
+	
   } catch (error) {
     request.log.error(error);
     const err = error as { code: number, message: string };

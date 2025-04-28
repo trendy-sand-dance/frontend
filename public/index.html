@@ -7,23 +7,37 @@
   <title>Club Pong - Login</title>
   <link href="/output.css" rel="stylesheet">
 
-  <script src="https://unpkg.com/htmx.org@2.0.4"
-    integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
-    crossorigin="anonymous"></script>
+	<script
+  		src="https://unpkg.com/htmx.org@2.0.4"
+    	integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+		crossorigin="anonymous">
+	</script>
 
-  <script src="https://unpkg.com/htmx-ext-response-targets@2.0.2"
-    integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg sha384-NtTh9TBZ2X/pFpfsVvQOjSsYWmjmqG6h5ioQWVAe2/j3AuTHRmfqvoqp+iOed+I0"
-    crossorigin="anonymous"></script>
+	<script
+		src="https://unpkg.com/htmx-ext-response-targets@2.0.2"
+		integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg sha384-NtTh9TBZ2X/pFpfsVvQOjSsYWmjmqG6h5ioQWVAe2/j3AuTHRmfqvoqp+iOed+I0"
+		crossorigin="anonymous">
+	</script>
 
-  <script src="https://kit.fontawesome.com/3f6a90a5aa.js" crossorigin="anonymous"></script>
+	<script 
+		src="https://kit.fontawesome.com/3f6a90a5aa.js"
+		crossorigin="anonymous">
+	</script>
 </head>
 
-<body class="bg-[#01FFFF]" hx-ext="response-targets">
+
+<body
+	class="bg-[#01FFFF]"
+ 	hx-ext="response-targets">
 
   <!-- Login interface -->
-  <div id="login-register-interface" class="flex flex-col justify-center h-screen" hx-get="/login-view"
-    hx-trigger="load" hx-swap="innerHTML"></div>
-
+	<div
+  		id="login-register-interface"
+		class="flex flex-col justify-center h-screen"
+		hx-get="/login-view"
+    	hx-trigger="load"
+	 	hx-swap="innerHTML">
+	</div>
 </body>
 
 </html>
