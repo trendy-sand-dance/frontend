@@ -95,7 +95,7 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 				request: { avatar: string, username: string },
 			}[],
 			friends: {
-				friend: { avatar: string, username: string, status: number },
+				friend: { avatar: string, username: string, status: number, wins: number, losses: number },
 			}[],
 			pending: {
 				pends: { avatar: string, username: string },
@@ -117,3 +117,5 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
     return reply.code(err.code).send({ message: err.message});
   }
 };
+
+// block check util
