@@ -14,7 +14,7 @@ export function sendToServer(data: ServerMessage) {
   }
 }
 
-function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
+export function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
 
   let spawnPosition: Vector2;
   if (localPlayerData.x === 0 && localPlayerData.y === 0) {

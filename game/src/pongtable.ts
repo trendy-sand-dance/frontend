@@ -2,6 +2,7 @@ import {Container } from 'pixi.js';
 import Ball from './ball.js';
 import Point from './point.js';
 import Paddle from './paddle.js';
+// import Player from './player.js';
 import * as settings from './settings.js';
 
 function slice2DArray(array : number[][], fromX : number, toX : number, fromY : number, toY : number) {
@@ -37,18 +38,39 @@ export default class PongTable
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
 
-
-    // Create P1 and P2 paddles
+    // Create P1 paddle
     let p1Paddle = new Paddle({x: 0, y: 0}, 0.5, 0.05);
-    // let p2Paddle = new Paddle({x: 0, y: 4}, 5, 0.5);
     this.paddles.push(p1Paddle);
-    // this.paddles.push(p2Paddle);
     this.container.addChild(this.paddles[0].getGraphics());
+    this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
+
+    // Create P2 paddle
+    // let p2Paddle = new Paddle({x: 4, y: 0}, 0.5, 0.05);
+    // this.paddles.push(p2Paddle);
     // this.container.addChild(this.paddles[1].getGraphics());
-    // if (this.tableGrid[0][0] != undefined)
-    this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 4; // Compensate height for eleviated tiles
+    // this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 4; // Compensate height for elevated tiles
+
   }
 
+  determineP1Paddle(playerPosition : Vector2) {
+    let playerPos = {x: Math.round(playerPosition.x), y: Math.round(playerPosition.y)};
+
+    if (playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y)
+    ||  playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+      return true;
+    }
+    return false;
+  }
+
+  // determineP2Paddle(playerPosition : Vector2) {
+  //   let playerPos = {x: Math.round(playerPosition.x), y: Math.round(playerPosition.y)};
+  //
+  //   if (playerPos.x === Math.round((this.worldPosition.x + 2) + 1) && playerPos.y === Math.round(this.worldPosition.y)
+  //   ||  playerPos.x === Math.round((this.worldPosition.x + 2) + 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   collidesWithPaddle(paddle : Paddle) {
     let ballPos = this.getLocalBallPosition(this.ball);
@@ -99,12 +121,10 @@ export default class PongTable
 
     if (keyIsPressed['ArrowUp'] && pBegin > 0) {
       paddle.move(-1, deltaTime);
-      // this.paddles[1].move(-1, deltaTime);
     }
 
     if (keyIsPressed['ArrowDown'] && pEnd < this.tableHeight) {
       paddle.move(1, deltaTime);
-      // this.paddles[1].move(1, deltaTime);
     }
   }
 

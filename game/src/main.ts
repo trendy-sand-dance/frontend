@@ -1,4 +1,4 @@
-import { Application, Assets, Ticker } from "pixi.js";
+import { Application, Assets, Ticker, Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { addGameMap } from './gamemap.js';
 import GameMap from './gamemap.js';
@@ -8,6 +8,7 @@ import * as input from './input.js';
 import * as cm from './connectionmanager.js';
 //import Ball from './ball.js';
 import PongTable from './pongtable.js';
+import { initializeLocalPlayer } from './connectionmanager.js';
 
 const pixiApp: Application = new Application();
 let isGameFocused = true;
@@ -60,15 +61,20 @@ async function setup() {
   // Initialize map and add to pixi.stage
   let gameMap = GameMap.instance;
   addGameMap(pixiApp, gameMap);
-  // gameMap.moveMap({ x: -(30 * settings.TILESIZE / 2), y: -(22 * settings.TILESIZE) });
   mouse.setupMapZoom(input.mouse, gameMap);
 
   //Network business
-  // cm.runConnectionManager(gameMap);
-  //let ball = new Ball({ x: 37, y: 16 });
-  // let ball = new Ball({ x: 1, y: 1 });
-  //
-  //gameMap.container.addChild(ball.getContext());
+  if (window.__INITIAL_STATE__) {
+    cm.runConnectionManager(gameMap);
+  }
+  else {
+    const player = initializeLocalPlayer({id: 1, userId: 1, x: 0, y: 0}, gameMap, Texture.from('player_bunny'));
+    if (player)
+      gameMap.moveMap({x: (player.position.asCartesian.x * settings.TILESIZE)/ 2, y: -(player.position.asCartesian.y * settings.TILESIZE)});
+  }
+
+
+  // Testing Pong table
   let pongTable = new PongTable({x: 37, y: 15}, settings.TILEMAP);
   gameMap.container.addChild(pongTable.getContainer());
 
@@ -76,11 +82,16 @@ async function setup() {
   let prevPos: Vector2 = { x: 0, y: 0 };
   pixiApp.ticker.add((time: Ticker) => {
     const player = playerManager.getLocalPlayer();
-    mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+    // mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     pongTable.updateBall(time.deltaTime);
-    pongTable.updatePaddle(0, input.keyIsPressed, time.deltaTime);
     if (player) {
       input.movePlayer(player, time.deltaTime);
+
+      if (pongTable.determineP1Paddle(player.position.asCartesian))
+        pongTable.updatePaddle(0, input.keyIsPressed, time.deltaTime);
+      // else if (pongTable.determineP2Paddle(player.position.asCartesian))
+      //   pongTable.updatePaddle(1, input.keyIsPressed, time.deltaTime);
+
 
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
         cm.sendToServer({
