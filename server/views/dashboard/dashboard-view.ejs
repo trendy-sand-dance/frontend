@@ -14,7 +14,7 @@
 
 </head>
 
-<body>
+<body class="bg-[#01FFFF]" hx-ext="events">
 
 	<script>
 		window.__INITIAL_STATE__ = <%- JSON.stringify(user) %>;
@@ -27,9 +27,9 @@
 
 		<!-- Game Canvas -->
 		<div class="absolute inset-0 z-0">
-		<div class="w-full h-full" hx-get="/game-canvas" hx-trigger="load" hx-swap="outerHTML">
+			<div class="w-full h-full" hx-get="/game-canvas" hx-trigger="load" hx-swap="outerHTML">
 			<!-- Canvas loads here -->
-		</div>
+			</div>
 		</div>
 	
 		<!-- Sidebar -->
@@ -53,7 +53,6 @@
 			hx-get="/sidebar/chat"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
-			hx-on="htmx:afterSwap: document.getElementById('sidebar').classList.remove('hidden')"
 			class="p-2">
 			Chat 💬💬💬
 		</button>
@@ -62,7 +61,6 @@
 			hx-get="/viewPlayers/<%= user.username %>"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
-			hx-on="htmx:afterSwap: document.getElementById('sidebar').classList.remove('hidden')"
 			class="p-2">
 			Friendos 👬👫👭
 		</button>
