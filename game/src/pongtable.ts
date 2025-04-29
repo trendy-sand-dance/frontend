@@ -1,6 +1,13 @@
 import {Container } from 'pixi.js';
 import Ball from './ball.js';
+import Point from './point.js';
+import Paddle from './paddle.js';
 import * as settings from './settings.js';
+
+function slice2DArray(array : number[][], fromX : number, toX : number, fromY : number, toY : number) {
+    const slicedRows = array.slice(fromY, toY);
+    return slicedRows.map(row => row.slice(fromX, toX));
+}
 
 
 export default class PongTable 
@@ -11,6 +18,7 @@ export default class PongTable
   private tableHeight : number;
   private worldPosition : Vector2; //4x2
   private ball : Ball;
+  private paddles : Paddle[] = [];
 
   constructor (position : Vector2, parentMap : number[][]) {
     this.worldPosition = position;
@@ -18,15 +26,60 @@ export default class PongTable
     this.tableHeight = 2 * settings.TILESIZE;
 
     // Construct a sub-array from the parent map (4x2)
-    this.tableGrid = parentMap.slice(position.x, position.x + 4).map(i => i.slice(position.y, position.y + 2)); //4x2
+    let x = Math.round(position.x);
+    let y = Math.round(position.y);
+
+    this.tableGrid = slice2DArray(parentMap, x, x + 2, y, y + 2);
+
     this.ball = new Ball({x: 2, y: 1});
     this.container.addChild(this.ball.getContext());
+    let point = new Point(this.worldPosition.x, this.worldPosition.y);
+    this.container.x += point.asIsometric.x;
+    this.container.y += point.asIsometric.y;
+
+
+    // Create P1 and P2 paddles
+    let p1Paddle = new Paddle({x: 0, y: 0}, 0.5, 0.05);
+    // let p2Paddle = new Paddle({x: 0, y: 4}, 5, 0.5);
+    this.paddles.push(p1Paddle);
+    // this.paddles.push(p2Paddle);
+    this.container.addChild(this.paddles[0].getGraphics());
+    // this.container.addChild(this.paddles[1].getGraphics());
+    // if (this.tableGrid[0][0] != undefined)
+    this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 4; // Compensate height for eleviated tiles
+  }
+
+
+  collidesWithPaddle(paddle : Paddle) {
+    let ballPos = this.getLocalBallPosition(this.ball);
+    let paddlePos = this.getLocalPaddlePosition(paddle);
+    let pHeight = (paddle.getPaddleHeight() / 2) * settings.TILESIZE;
+    let pBegin = paddlePos.y - pHeight;
+    let pEnd = paddlePos.y + pHeight;
+
+
+    if (ballPos.y > pBegin && ballPos.y < pEnd)
+      return true;
+
+    return false;
   }
 
   updateBall(deltaTime: number) {
     let localBallPos = this.getLocalBallPosition(this.ball);
 
-    if (localBallPos.x < 0 || localBallPos.x > this.tableWidth) { // Flip x dir
+    if (localBallPos.x <= 0) { // Flip x dir
+      if (this.collidesWithPaddle(this.paddles[0])) {
+        console.log("BOUNCE!");
+        this.ball.bounceX();
+      }
+      else
+      {
+        // alert("P2 WON!");
+        this.ball.bounceX();
+      }
+    }
+      
+    if (localBallPos.x > this.tableWidth) { // Flip x dir
       this.ball.bounceX();
     }
 
@@ -37,8 +90,31 @@ export default class PongTable
     this.ball.move(deltaTime);
   }
 
+  updatePaddle(paddleNumber : number, keyIsPressed : KeyPressState,  deltaTime: number) {
+    let paddle = this.paddles[paddleNumber];
+    let paddlePos = this.getLocalPaddlePosition(paddle);
+    let pHeight = (paddle.getPaddleHeight() / 2) * settings.TILESIZE;
+    let pBegin = paddlePos.y - pHeight;
+    let pEnd = paddlePos.y + pHeight;
+
+    if (keyIsPressed['ArrowUp'] && pBegin > 0) {
+      paddle.move(-1, deltaTime);
+      // this.paddles[1].move(-1, deltaTime);
+    }
+
+    if (keyIsPressed['ArrowDown'] && pEnd < this.tableHeight) {
+      paddle.move(1, deltaTime);
+      // this.paddles[1].move(1, deltaTime);
+    }
+  }
+
   getLocalBallPosition(ball : Ball) : Vector2 {
     let pos = ball.getPoint().asCartesian;
+    return {x: pos.x * settings.TILESIZE, y: pos.y * settings.TILESIZE};
+  }
+
+  getLocalPaddlePosition(paddle : Paddle) : Vector2 {
+    let pos = paddle.getPoint().asCartesian;
     return {x: pos.x * settings.TILESIZE, y: pos.y * settings.TILESIZE};
   }
   

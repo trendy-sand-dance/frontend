@@ -9,6 +9,10 @@ declare global {
     htmx: typeof import('htmx.org');
   }
 
+  type KeyPressState = {
+    [key: string]: boolean;
+  }
+
   interface Vector2 {
     x: number;
     y: number;

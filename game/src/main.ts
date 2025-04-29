@@ -69,7 +69,7 @@ async function setup() {
   // let ball = new Ball({ x: 1, y: 1 });
   //
   //gameMap.container.addChild(ball.getContext());
-  let pongTable = new PongTable({x: 0, y: 0}, settings.TILEMAP);
+  let pongTable = new PongTable({x: 37, y: 15}, settings.TILEMAP);
   gameMap.container.addChild(pongTable.getContainer());
 
   //Game Loop
@@ -78,6 +78,7 @@ async function setup() {
     const player = playerManager.getLocalPlayer();
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     pongTable.updateBall(time.deltaTime);
+    pongTable.updatePaddle(0, input.keyIsPressed, time.deltaTime);
     if (player) {
       input.movePlayer(player, time.deltaTime);
 
