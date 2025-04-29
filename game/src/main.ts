@@ -6,7 +6,8 @@ import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
 import * as cm from './connectionmanager.js';
-import Ball from './ball.js';
+//import Ball from './ball.js';
+import PongTable from './pongtable.js';
 
 const pixiApp: Application = new Application();
 let isGameFocused = true;
@@ -64,16 +65,19 @@ async function setup() {
 
   //Network business
   // cm.runConnectionManager(gameMap);
-  let ball = new Ball({ x: 37, y: 16 });
+  //let ball = new Ball({ x: 37, y: 16 });
   // let ball = new Ball({ x: 1, y: 1 });
-  gameMap.container.addChild(ball.getContext());
+  //
+  //gameMap.container.addChild(ball.getContext());
+  let pongTable = new PongTable({x: 0, y: 0}, settings.TILEMAP);
+  gameMap.container.addChild(pongTable.getContainer());
 
   //Game Loop
   let prevPos: Vector2 = { x: 0, y: 0 };
   pixiApp.ticker.add((time: Ticker) => {
     const player = playerManager.getLocalPlayer();
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
-    ball.move(time.deltaTime, settings.TILEMAP);
+    pongTable.updateBall(time.deltaTime);
     if (player) {
       input.movePlayer(player, time.deltaTime);
 
