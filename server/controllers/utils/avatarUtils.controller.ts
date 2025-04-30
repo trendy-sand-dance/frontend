@@ -19,7 +19,7 @@ import { uploadFile, deleteFile, updateFilename } from './fileUtils.controller';
  * 
  */
 async function getNewAvatar(username: string, file: any) {
-	
+	try {
 		// get file extension + upload new avatar + get upload directory
 		const extension = file.filename.split('.').pop();
 		const imageDir = 'public/images/avatars';
@@ -38,6 +38,9 @@ async function getNewAvatar(username: string, file: any) {
 		await updateFilename(file, uploadDir, filename);
 
 		return filename as string;
+	} catch(error: any) {
+		throw { code: error.code, message: error.message };
+	}
 
 };
 
