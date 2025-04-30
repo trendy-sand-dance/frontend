@@ -8,17 +8,29 @@ type KeyPressState = {
 export let mouse = { x: 0, y: 0 } as Vector2;
 
 export let keyIsPressed: KeyPressState = {};
+export let keyWasPressed: KeyPressState = {};
 // FUNCTIONS
 window.addEventListener('keydown', (event) => {
+  if (!keyIsPressed[event.code]) {
+    keyWasPressed[event.code] = true;
+  }
+
   // console.log(`Key down: ${event.code}`);
   keyIsPressed[event.code] = true;
 
 });
+
 window.addEventListener('keyup', (event) => {
   // console.log(`Key up: ${event.code}`);
   keyIsPressed[event.code] = false;
 
 })
+
+export function resetKeyStates(keyWasPressed : KeyPressState) {
+    for (const key in keyWasPressed) {
+      keyWasPressed[key] = false;
+    }
+}
 
 // Quick and dirty. TODO: dedicate separate graphics container for each tile, sort z-index based on y-position;
 function dynamicIndexing(player: Player, pos: Vector2) {

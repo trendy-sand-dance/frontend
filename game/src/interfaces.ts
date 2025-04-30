@@ -13,6 +13,23 @@ declare global {
     [key: string]: boolean;
   }
 
+  interface PongGame { 
+    table: number,
+    started: boolean,
+    ball: Vector2,
+    startTimer: number,
+    playerOne?: {
+      id: number,
+      paddleY: number,
+      ready: boolean,
+    },
+    playerTwo?: {
+      id: number,
+      paddleY: number,
+      ready: boolean,
+    },
+  }
+
   interface Vector2 {
     x: number;
     y: number;

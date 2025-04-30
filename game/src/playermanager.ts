@@ -4,16 +4,34 @@ import { Texture, ColorMatrixFilter } from "pixi.js";
 import Point from './point.js';
 import('htmx.org');
 
+// interface PongGame { 
+//   table: number,
+//   started: boolean,
+//   ball: Vector2,
+//   startTimer: number,
+//   playerOne: {
+//     id: number,
+//     paddleY: number,
+//     ready: boolean,
+//   },
+//   playerTwo: {
+//     id: number,
+//     paddleY: number,
+//     ready: boolean,
+//   },
+// }
+
 const playerInfoBox = document.getElementById("pixi-player-info");
 
 class PlayerManager {
   static #instance: PlayerManager;
 
   public players = new Map<number, Player>;
+  public pongGame: PongGame;
   public localPlayer: Player | null = null;
 
   private constructor() {
-
+    this.pongGame = {table: 1, started: false, ball: {x: 0, y: 0}, startTimer: 5, playerOne: undefined, playerTwo: undefined};
   }
 
   public static get instance(): PlayerManager {
@@ -24,12 +42,28 @@ class PlayerManager {
     return PlayerManager.#instance;
   }
 
+  // Pong Thingies
+  assignPongPlayer(playerNumber: number, id : number) {
+    if (playerNumber === 1)
+      this.pongGame.playerOne = {id: id, paddleY: 0, ready: true};
+    else if (playerNumber === 2)
+      this.pongGame.playerTwo = {id: id, paddleY: 0, ready: true};
+  }
+
+  isPlayerReady(playerNumber: number) {
+    if (this.pongGame.playerOne && playerNumber === 1)
+      return this.pongGame.playerOne.ready;
+    if (this.pongGame.playerTwo && playerNumber === 2)
+      return this.pongGame.playerTwo.ready;
+  }
+
   isLocalPlayerInitialized(): boolean {
     if (this.localPlayer) {
       return true;
     }
     return false;
   }
+  // Pong Thingies end
 
   initLocalPlayer(id: number, position: Vector2, texture: Texture) {
     this.localPlayer = new Player(id, new Point(position.x, position.y), texture);

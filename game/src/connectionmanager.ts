@@ -6,7 +6,12 @@ const localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
 
 // Init WebSocket
-const socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
+let socket : WebSocket;
+
+if (window.__GAMESERVER_URL__)
+  socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
+else
+  socket = new WebSocket(`ws://localhost:8003/ws-gameserver`);
 
 export function sendToServer(data: ServerMessage) {
   if (socket.readyState == WebSocket.OPEN) {
@@ -65,6 +70,8 @@ export async function runConnectionManager(gameMap: GameMap) {
     const data = JSON.parse(message.data);
     console.warn(message.data);
 
+    // PLAYER POSITION SHENANIGANS
+
     // When a new player joins, we add it to the playerManager and gameMap
     if (data.type === "newPlayer" && !isLocalPlayer(data.id)) {
       const player = playerManager.addPlayer(data.id, data.position, texture);
@@ -92,6 +99,14 @@ export async function runConnectionManager(gameMap: GameMap) {
     if (data.type == "move" && !isLocalPlayer(data.id)) {
       const player = playerManager.getPlayer(data.id);
       player?.updatePosition(data.position);
+    }
+
+
+    // PONG SHENANIGANS
+
+    // If a player joins the pingPong table p1 side, we assign it
+    if (data.type == "p1Ready" && !isLocalPlayer(data.id)) {
+      playerManager.assignPongPlayer(1, data.id);
     }
 
   };

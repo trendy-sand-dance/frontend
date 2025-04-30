@@ -2,6 +2,7 @@ import {Container } from 'pixi.js';
 import Ball from './ball.js';
 import Point from './point.js';
 import Paddle from './paddle.js';
+import InfoBox from './infobox.js';
 // import Player from './player.js';
 import * as settings from './settings.js';
 
@@ -20,11 +21,14 @@ export default class PongTable
   private worldPosition : Vector2; //4x2
   private ball : Ball;
   private paddles : Paddle[] = [];
+  private p1Ready : boolean;
+  private p1InfoBox : InfoBox;
 
   constructor (position : Vector2, parentMap : number[][]) {
     this.worldPosition = position;
     this.tableWidth = 4 * settings.TILESIZE;
     this.tableHeight = 2 * settings.TILESIZE;
+    this.p1Ready = false;
 
     // Construct a sub-array from the parent map (4x2)
     let x = Math.round(position.x);
@@ -37,6 +41,10 @@ export default class PongTable
     let point = new Point(this.worldPosition.x, this.worldPosition.y);
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
+
+    // Create infoBox p1
+    this.p1InfoBox = new InfoBox(`Waiting for player one...`, 12, 0, 0);
+    this.container.addChild(this.p1InfoBox.getContainer());
 
     // Create P1 paddle
     let p1Paddle = new Paddle({x: 0, y: 0}, 0.5, 0.05);
@@ -52,25 +60,33 @@ export default class PongTable
 
   }
 
-  determineP1Paddle(playerPosition : Vector2) {
+  isPlayerAtP1(playerPosition : Vector2, playerName : string) {
     let playerPos = {x: Math.round(playerPosition.x), y: Math.round(playerPosition.y)};
 
     if (playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y)
-    ||  playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+      ||  playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+      if (!this.p1Ready) {
+        this.p1InfoBox.setColor(0xff8800);
+        this.p1InfoBox.setText(`Waiting for ${playerName} to ready up...`);
+      }
       return true;
+    }
+    if (!this.p1Ready) {
+      this.p1InfoBox.setColor(0xff0000);
+      this.p1InfoBox.setText("Waiting for player...");
     }
     return false;
   }
 
-  // determineP2Paddle(playerPosition : Vector2) {
-  //   let playerPos = {x: Math.round(playerPosition.x), y: Math.round(playerPosition.y)};
-  //
-  //   if (playerPos.x === Math.round((this.worldPosition.x + 2) + 1) && playerPos.y === Math.round(this.worldPosition.y)
-  //   ||  playerPos.x === Math.round((this.worldPosition.x + 2) + 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
+  setP1Ready(playerName : string) {
+    this.p1Ready = !this.p1Ready;
+    this.p1InfoBox.setColor(0x00ff00);
+    this.p1InfoBox.setText(`${playerName} is ready!`);
+  }
+
+  isP1LockedIn() {
+    return this.p1Ready;
+  }
 
   collidesWithPaddle(paddle : Paddle) {
     let ballPos = this.getLocalBallPosition(this.ball);
@@ -78,7 +94,6 @@ export default class PongTable
     let pHeight = (paddle.getPaddleHeight() / 2) * settings.TILESIZE;
     let pBegin = paddlePos.y - pHeight;
     let pEnd = paddlePos.y + pHeight;
-
 
     if (ballPos.y > pBegin && ballPos.y < pEnd)
       return true;

@@ -8,6 +8,7 @@ import * as input from './input.js';
 import * as cm from './connectionmanager.js';
 //import Ball from './ball.js';
 import PongTable from './pongtable.js';
+// import InfoBox from './infobox.js';
 import { initializeLocalPlayer } from './connectionmanager.js';
 
 const pixiApp: Application = new Application();
@@ -77,22 +78,34 @@ async function setup() {
   // Testing Pong table
   let pongTable = new PongTable({x: 37, y: 15}, settings.TILEMAP);
   gameMap.container.addChild(pongTable.getContainer());
+  let toggle = false;
 
   //Game Loop
   let prevPos: Vector2 = { x: 0, y: 0 };
   pixiApp.ticker.add((time: Ticker) => {
     const player = playerManager.getLocalPlayer();
-    // mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
-    pongTable.updateBall(time.deltaTime);
+    mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     if (player) {
-      input.movePlayer(player, time.deltaTime);
 
-      if (pongTable.determineP1Paddle(player.position.asCartesian))
-        pongTable.updatePaddle(0, input.keyIsPressed, time.deltaTime);
-      // else if (pongTable.determineP2Paddle(player.position.asCartesian))
-      //   pongTable.updatePaddle(1, input.keyIsPressed, time.deltaTime);
+      if (!pongTable.isP1LockedIn())
+        input.movePlayer(player, time.deltaTime);
+
+      if (pongTable.isPlayerAtP1(player.position.asCartesian, "testUser") && input.keyWasPressed['KeyE']) {
+        pongTable.setP1Ready("testUser");
+        cm.sendToServer({
+          type: "p1Ready",
+          id: player.getId(),
+        })
+      } else if (playerManager.isPlayerReady(1) && !toggle) {
+        toggle = true;
+        pongTable.setP1Ready("Test");
+      }
+
+      if (pongTable.isP1LockedIn())
+        pongTable.updateBall(time.deltaTime);
 
 
+      //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
         cm.sendToServer({
           type: "move",
@@ -104,6 +117,7 @@ async function setup() {
       prevPos = player.getPosition();
     }
 
+    input.resetKeyStates(input.keyWasPressed);
   });
 
 })();
