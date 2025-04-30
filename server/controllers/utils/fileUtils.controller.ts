@@ -4,25 +4,32 @@ import path  from 'path';
 
 // upload new image
 export async function uploadFile(file: any, dirPath: string) {
-	// get upload directory
-	const buffer = await file.toBuffer();
-	const wrkdir = process.cwd();
-	const uploadDir = path.join(wrkdir, dirPath);
+	try {
+		// get upload directory
+		const buffer = await file.toBuffer();
+		const wrkdir = process.cwd();
+		const uploadDir = path.join(wrkdir, dirPath);
 
-	// ensure uploads directory exists
-	if (!fsSync.existsSync(uploadDir)) {
-		fsSync.mkdirSync(uploadDir, { recursive: true });
-	}
-
-	// upload
-	const filePath = path.join(uploadDir, file.filename);
-	if (!fsSync.existsSync(filePath)) {
-		fsSync.writeFile(filePath, buffer, (err) => {
-			if (err) {
-				throw { code: 500, message: "Erroring uploading file" };
-			}});
+		// ensure uploads directory exists
+		if (!fsSync.existsSync(uploadDir)) {
+			fsSync.mkdirSync(uploadDir, { recursive: true });
 		}
-	return uploadDir as string;
+
+		// upload
+		const filePath = path.join(uploadDir, file.filename);
+		if (!fsSync.existsSync(filePath)) {
+			fsSync.writeFile(filePath, buffer, (err) => {
+				if (err) {
+					throw { code: 500, message: "Erroring uploading file" };
+				}});
+			}
+		return uploadDir as string;
+	} catch(err: any) {
+		if (err.code === 'FST_REQ_FILE_TOO_LARGE') {
+			throw { code: 413, message: "File too large" };
+		}
+		throw { code: err.code || 500, message: err.message || "Internal server error" };
+	}
 };
 
 // delete image
