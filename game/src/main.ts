@@ -78,7 +78,6 @@ async function setup() {
   // Testing Pong table
   let pongTable = new PongTable({x: 37, y: 15}, settings.TILEMAP);
   gameMap.container.addChild(pongTable.getContainer());
-  let toggle = false;
 
   //Game Loop
   let prevPos: Vector2 = { x: 0, y: 0 };
@@ -86,29 +85,16 @@ async function setup() {
     const player = playerManager.getLocalPlayer();
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     if (player) {
-
-      if (!pongTable.isP1LockedIn())
         input.movePlayer(player, time.deltaTime);
 
-      if (pongTable.isPlayerAtP1(player.position.asCartesian, "testUser") && input.keyWasPressed['KeyE']) {
-        pongTable.setP1Ready("testUser");
-        cm.sendToServer({
-          type: "p1Ready",
-          id: player.getId(),
-        })
-      } else if (playerManager.isPlayerReady(1) && !toggle) {
-        toggle = true;
-        pongTable.setP1Ready("Test");
-      }
-
-      if (pongTable.isP1LockedIn())
+        // PongTable business
         pongTable.updateBall(time.deltaTime);
 
 
       //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
         cm.sendToServer({
-          type: "move",
+          type: "player_move",
           id: player.getId(),
           position: player.getPosition(),
         });

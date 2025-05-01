@@ -1,6 +1,7 @@
 import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
+// import Player from './player.js';
 
 const localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
@@ -22,31 +23,32 @@ export function sendToServer(data: ServerMessage) {
 export function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
 
   let spawnPosition: Vector2;
+
   if (localPlayerData.x === 0 && localPlayerData.y === 0) {
     spawnPosition = { x: 36, y: 20 }; // Inits player at entrance
   } else {
     spawnPosition = { x: localPlayerData.x, y: localPlayerData.y };
   }
 
-  const player = playerManager.initLocalPlayer(localPlayerData.id, spawnPosition, texture);
+  const player = playerManager.initLocalPlayer(localPlayerData.id, localUser.username, localUser.avatar, spawnPosition, texture);
+
   if (player) {
     gameMap.addPlayer(player);
     return player;
   }
 }
 
-function initializePlayers(players: Map<number, Vector2>, gameMap: GameMap, texture: Texture) {
+function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap, texture: Texture) {
+  for (const [id, player] of players) {
 
-  for (const [id, position] of players) {
-
-    console.log(`Player ${id} is at (${position.x}, ${position.y})`);
+    console.log(`Player ${id} is at (${player.x}, ${player.y})`);
 
     if (!isLocalPlayer(id))
     {
-      const player = playerManager.addPlayer(id, { x: position.x, y: position.y }, texture);
-      if (player)
+      const newPlayer = playerManager.addPlayer(id, player.username, player.avatar, { x: player.x, y: player.y }, texture);
+      if (newPlayer)
       {
-        gameMap.addPlayer(player);
+        gameMap.addPlayer(newPlayer);
       }
     }
   }
@@ -63,25 +65,30 @@ export async function runConnectionManager(gameMap: GameMap) {
   const texture = Texture.from('player_bunny');
   const player = initializeLocalPlayer(localUser.player, gameMap, texture);
   if (player) {
-    sendToServer({ type: "newConnection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
+    sendToServer({ type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
   }
 
   socket.onmessage = (message) => {
     const data = JSON.parse(message.data);
-    console.warn(message.data);
+    // console.warn(message.data);
 
     // PLAYER POSITION SHENANIGANS
 
     // When a new player joins, we add it to the playerManager and gameMap
-    if (data.type === "newPlayer" && !isLocalPlayer(data.id)) {
-      const player = playerManager.addPlayer(data.id, data.position, texture);
+    if (data.type === "new_player" && !isLocalPlayer(data.id)) {
+      const player = playerManager.addPlayer(data.id, data.username, data.avatar, data.position, texture);
       if (player) {
         gameMap.addPlayer(player);
       }
     }
 
+    // We initialize all other connected players
+    if (data.type == "initialize_players") {
+      initializePlayers(data.players, gameMap, texture);
+    }
+
     // When a player disconnects, we remove it from the gameMap, playerManager
-    if (data.type == "disconnectPlayer" && !isLocalPlayer(data.id)) {
+    if (data.type == "disconnect_player" && !isLocalPlayer(data.id)) {
       const mapContainer = gameMap.getContainer();
       const player = playerManager.getPlayer(data.id);
       if (player) {
@@ -90,24 +97,15 @@ export async function runConnectionManager(gameMap: GameMap) {
       playerManager.removePlayer(data.id);
     }
 
-    // We initialize all other connected players
-    if (data.type == "initializePlayers") {
-      initializePlayers(data.players, gameMap, texture);
-    }
 
     // We update the player position
-    if (data.type == "move" && !isLocalPlayer(data.id)) {
+    if (data.type == "player_move" && !isLocalPlayer(data.id)) {
       const player = playerManager.getPlayer(data.id);
       player?.updatePosition(data.position);
     }
 
 
     // PONG SHENANIGANS
-
-    // If a player joins the pingPong table p1 side, we assign it
-    if (data.type == "p1Ready" && !isLocalPlayer(data.id)) {
-      playerManager.assignPongPlayer(1, data.id);
-    }
 
   };
 

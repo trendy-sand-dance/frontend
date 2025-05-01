@@ -27,7 +27,7 @@ export default class Paddle {
 
     newPos.y += this.paddleSpeed * direction * deltaTime;
 
-    this.position = new Point(newPos.x, newPos.y);
+    this.position.update(newPos);
     this.graphics.x = this.position.asIsometric.x;
     this.graphics.y = this.position.asIsometric.y;
   }

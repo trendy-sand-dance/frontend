@@ -21,7 +21,7 @@ export default class Ball {
     let currentPos: Vector2 = this.position.asCartesian;
     let newPos: Vector2 = { x: currentPos.x + this.direction.x * this.speed * deltaTime, y: currentPos.y + this.direction.y * this.speed * deltaTime }
 
-    this.position = new Point(newPos.x, newPos.y);
+    this.position.update(newPos);
     this.graphics.x = this.position.asIsometric.x;
     this.graphics.y = this.position.asIsometric.y;
   }

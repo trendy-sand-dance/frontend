@@ -3,6 +3,7 @@ import Ball from './ball.js';
 import Point from './point.js';
 import Paddle from './paddle.js';
 import InfoBox from './infobox.js';
+import Player from './player.js';
 // import Player from './player.js';
 import * as settings from './settings.js';
 
@@ -12,23 +13,24 @@ function slice2DArray(array : number[][], fromX : number, toX : number, fromY : 
 }
 
 
+
 export default class PongTable 
 {
   private container = new Container();
-  private tableGrid : number[][] = [];
+  private tableGrid : number[][] = []; //4x2
   private tableWidth : number;
   private tableHeight : number;
-  private worldPosition : Vector2; //4x2
+  private worldPosition : Vector2;
   private ball : Ball;
   private paddles : Paddle[] = [];
-  private p1Ready : boolean;
-  private p1InfoBox : InfoBox;
+  private players : [PongPlayer | null, PongPlayer | null] = [null, null];
+  private playerLeftInfoBox : InfoBox;
+  // private playerRightInfoBox : InfoBox;
 
   constructor (position : Vector2, parentMap : number[][]) {
     this.worldPosition = position;
     this.tableWidth = 4 * settings.TILESIZE;
     this.tableHeight = 2 * settings.TILESIZE;
-    this.p1Ready = false;
 
     // Construct a sub-array from the parent map (4x2)
     let x = Math.round(position.x);
@@ -42,50 +44,37 @@ export default class PongTable
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
 
-    // Create infoBox p1
-    this.p1InfoBox = new InfoBox(`Waiting for player one...`, 12, 0, 0);
-    this.container.addChild(this.p1InfoBox.getContainer());
-
-    // Create P1 paddle
+    // Create Player Left 
+    this.playerLeftInfoBox = new InfoBox(`Waiting for left player...`, 12, 0, 0);
+    this.container.addChild(this.playerLeftInfoBox.getContainer());
     let p1Paddle = new Paddle({x: 0, y: 0}, 0.5, 0.05);
     this.paddles.push(p1Paddle);
     this.container.addChild(this.paddles[0].getGraphics());
     this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
 
-    // Create P2 paddle
-    // let p2Paddle = new Paddle({x: 4, y: 0}, 0.5, 0.05);
-    // this.paddles.push(p2Paddle);
-    // this.container.addChild(this.paddles[1].getGraphics());
-    // this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 4; // Compensate height for elevated tiles
-
   }
 
-  isPlayerAtP1(playerPosition : Vector2, playerName : string) {
-    let playerPos = {x: Math.round(playerPosition.x), y: Math.round(playerPosition.y)};
+  isPlayerAtLeft(player : Player) {
+    let playerPos = {x: Math.round(player.getPosition().x), y: Math.round(player.getPosition().y)};
 
     if (playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y)
       ||  playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
-      if (!this.p1Ready) {
-        this.p1InfoBox.setColor(0xff8800);
-        this.p1InfoBox.setText(`Waiting for ${playerName} to ready up...`);
-      }
       return true;
-    }
-    if (!this.p1Ready) {
-      this.p1InfoBox.setColor(0xff0000);
-      this.p1InfoBox.setText("Waiting for player...");
     }
     return false;
   }
 
-  setP1Ready(playerName : string) {
-    this.p1Ready = !this.p1Ready;
-    this.p1InfoBox.setColor(0x00ff00);
-    this.p1InfoBox.setText(`${playerName} is ready!`);
+  setPlayerReady(player : Player, side : Side) {
+    if (!this.players[side]) {
+      this.players[side] = {id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side};
+      this.playerLeftInfoBox.setColor(0x00ff00);
+      this.playerLeftInfoBox.setText(`${player.getUsername()} is ready!`);
+    }
   }
 
-  isP1LockedIn() {
-    return this.p1Ready;
+  isPlayerReady(side : Side) {
+    if (this.players[side])
+      return this.players[side].ready;
   }
 
   collidesWithPaddle(paddle : Paddle) {

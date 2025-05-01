@@ -13,21 +13,9 @@ declare global {
     [key: string]: boolean;
   }
 
-  interface PongGame {
-    table: number,
-    started: boolean,
-    ball: Vector2,
-    startTimer: number,
-    playerOne?: {
-      id: number,
-      paddleY: number,
-      ready: boolean,
-    },
-    playerTwo?: {
-      id: number,
-      paddleY: number,
-      ready: boolean,
-    },
+  enum Side {
+    Left,
+    Right,
   }
 
   interface PongPlayer {
@@ -36,12 +24,7 @@ declare global {
     paddleY: number,
     ready: boolean,
     score: number,
-    side: string,
-  }
-
-  interface Vector2 {
-    x: number;
-    y: number;
+    side: Side,
   }
 
   interface Vector2 {
@@ -70,6 +53,14 @@ declare global {
   interface PlayerData {
     id: number,
     userId: number,
+    x: number,
+    y: number,
+  }
+
+  interface ServerPlayer { // Related to Player (on GameServer)
+    id: number,
+    username: string,
+    avatar: string,
     x: number,
     y: number,
   }
