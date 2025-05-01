@@ -7,7 +7,7 @@ const localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
 
 // Init WebSocket
-let socket : WebSocket;
+let socket: WebSocket;
 
 if (window.__GAMESERVER_URL__)
   socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
@@ -43,11 +43,9 @@ function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap,
 
     console.log(`Player ${id} is at (${player.x}, ${player.y})`);
 
-    if (!isLocalPlayer(id))
-    {
+    if (!isLocalPlayer(id)) {
       const newPlayer = playerManager.addPlayer(id, player.username, player.avatar, { x: player.x, y: player.y }, texture);
-      if (newPlayer)
-      {
+      if (newPlayer) {
         gameMap.addPlayer(newPlayer);
       }
     }
@@ -116,6 +114,7 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
     if (data.type == "leave_pong") {
+      console.log("leave_pong back!!!!");
       const pongTable = playerManager.pongTable;
       pongTable?.removePlayer(data.pongPlayer.side);
     }
