@@ -106,6 +106,19 @@ export async function runConnectionManager(gameMap: GameMap) {
 
 
     // PONG SHENANIGANS
+    if (data.type == "confirm_pong_player" && isLocalPlayer(data.pongPlayer.id)) {
+      const player = playerManager.getLocalPlayer();
+      const pongTable = playerManager.pongTable;
+      if (pongTable && player) {
+        console.log(data.pongPlayer.side)
+        pongTable.setPlayerReady(player, data.pongPlayer.side);
+      }
+    }
+
+    if (data.type == "leave_pong") {
+      const pongTable = playerManager.pongTable;
+      pongTable?.removePlayer(data.pongPlayer.side);
+    }
 
   };
 

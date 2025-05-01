@@ -1,6 +1,7 @@
 import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
+import PongTable from './pongtable.js';
 //import Point from './point.js';
 import('htmx.org');
 
@@ -11,6 +12,7 @@ class PlayerManager {
 
   public players = new Map<number, Player>;
   public localPlayer: Player | null = null;
+  public pongTable : PongTable | null = null;
 
   private constructor() {
 
@@ -34,6 +36,10 @@ class PlayerManager {
   initLocalPlayer(id: number, username: string, avatar : string, position: Vector2, texture: Texture) {
     this.localPlayer = new Player(id, username, avatar, position, texture);
     return this.localPlayer;
+  }
+
+  initPongTable(table : PongTable) {
+    this.pongTable = table;
   }
 
   addPlayer(id: number, username: string, avatar : string, position: Vector2, texture: Texture) {

@@ -12,7 +12,10 @@ function slice2DArray(array : number[][], fromX : number, toX : number, fromY : 
     return slicedRows.map(row => row.slice(fromX, toX));
 }
 
-
+enum Side {
+  Left,
+  Right,
+}
 
 export default class PongTable 
 {
@@ -45,7 +48,7 @@ export default class PongTable
     this.container.y += point.asIsometric.y;
 
     // Create Player Left 
-    this.playerLeftInfoBox = new InfoBox(`Waiting for left player...`, 12, 0, 0);
+    this.playerLeftInfoBox = new InfoBox(`Waiting for left-side player...`, 12, 0, 0);
     this.container.addChild(this.playerLeftInfoBox.getContainer());
     let p1Paddle = new Paddle({x: 0, y: 0}, 0.5, 0.05);
     this.paddles.push(p1Paddle);
@@ -64,17 +67,37 @@ export default class PongTable
     return false;
   }
 
-  setPlayerReady(player : Player, side : Side) {
-    if (!this.players[side]) {
-      this.players[side] = {id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side};
+  setPlayerReady(player : Player, side : 'left' | 'right') {
+    let pSide : Side = side === 'left' ? Side.Left : Side.Right;
+
+    if (!this.players[pSide]) {
+      this.players[pSide] = {id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side};
       this.playerLeftInfoBox.setColor(0x00ff00);
       this.playerLeftInfoBox.setText(`${player.getUsername()} is ready!`);
     }
   }
 
-  isPlayerReady(side : Side) {
-    if (this.players[side])
-      return this.players[side].ready;
+  removePlayer(side : 'left' | 'right') {
+    let pSide : Side = side === 'left' ? Side.Left : Side.Right;
+    if (this.players[pSide]) {
+      this.players[pSide] = null;
+      this.playerLeftInfoBox.setColor(0xff0000);
+      this.playerLeftInfoBox.setText("Waiting for left-side player...");
+    }
+  }
+
+  isPlayerReady(side : 'left'| 'right') {
+    let pSide : Side = side === 'left' ? Side.Left : Side.Right;
+    if (this.players[pSide])
+      return this.players[pSide].ready;
+  }
+
+  getPongPlayer(side : 'left' | 'right') {
+    let pSide : Side = side === 'left' ? Side.Left : Side.Right;
+
+    if (this.players[pSide])
+      return this.players[pSide];
+
   }
 
   collidesWithPaddle(paddle : Paddle) {

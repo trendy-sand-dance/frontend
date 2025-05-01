@@ -24,7 +24,7 @@ declare global {
     paddleY: number,
     ready: boolean,
     score: number,
-    side: Side,
+    side: string,
   }
 
   interface Vector2 {
@@ -38,6 +38,7 @@ declare global {
     username?: string,
     avatar?: string,
     position?: Vector2,
+    pongPlayer?: PongPlayer,
   }
 
   interface UserData {
