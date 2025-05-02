@@ -6,7 +6,8 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
     if (request.headers['hx-request']) {
       return reply.viewAsync("dashboard/dashboard-view.ejs");
     }
-    return reply.sendFile("dashboard.html");
+    // return reply.sendFile("dashboard.html");
+    return reply.viewAsync("dashboard/dashboard-view.ejs");
   }
   catch (error) {
     request.log.error(error);

@@ -61,7 +61,7 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
 		})
 
     return reply.viewAsync("dashboard/dashboard-view.ejs", {
-			accesToken: token,
+			// TODO: Don't return user,
 			user: user,
 			gameserverUrl: LOCAL_GAMESERVER_URL
 		});
