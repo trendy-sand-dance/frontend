@@ -113,6 +113,15 @@ export async function runConnectionManager(gameMap: GameMap) {
       }
     }
 
+    if (data.type == "player_joined_pong" && !isLocalPlayer(data.pongPlayer.id)) {
+      const player = playerManager.getPlayer(data.pongPlayer.id);
+      const pongTable = playerManager.pongTable;
+      if (pongTable && player) {
+        console.log(data.pongPlayer.side)
+        pongTable.setPlayerReady(player, data.pongPlayer.side);
+      }
+    }
+
     if (data.type == "leave_pong") {
       console.log("leave_pong back!!!!");
       const pongTable = playerManager.pongTable;

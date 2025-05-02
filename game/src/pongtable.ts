@@ -95,6 +95,14 @@ export default class PongTable {
       return this.players[pSide].ready;
   }
 
+  // TODO:Change to id parameter
+  // isPlayerReady(id : number) {
+  //   for (const player : PongPlayer in this.players) {
+  //     if (player.id === id)
+  //
+  //   }
+  // }
+
   getPongPlayer(side: 'left' | 'right') {
     let pSide: Side = side === 'left' ? Side.Left : Side.Right;
 

@@ -69,14 +69,14 @@ async function setup() {
     cm.runConnectionManager(gameMap);
   }
   else {
-    const player = initializeLocalPlayer({id: 1, userId: 1, x: 0, y: 0}, gameMap, Texture.from('player_bunny'));
+    const player = initializeLocalPlayer({ id: 1, userId: 1, x: 0, y: 0 }, gameMap, Texture.from('player_bunny'));
     if (player)
-      gameMap.moveMap({x: (player.position.asCartesian.x * settings.TILESIZE)/ 2, y: -(player.position.asCartesian.y * settings.TILESIZE)});
+      gameMap.moveMap({ x: (player.position.asCartesian.x * settings.TILESIZE) / 2, y: -(player.position.asCartesian.y * settings.TILESIZE) });
   }
 
 
   // Testing Pong table
-  let pongTable = new PongTable({x: 37, y: 15}, settings.TILEMAP);
+  let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP);
   gameMap.container.addChild(pongTable.getContainer());
   playerManager.initPongTable(pongTable);
 
@@ -86,21 +86,25 @@ async function setup() {
     const player = playerManager.getLocalPlayer();
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
     if (player) {
-      input.movePlayer(player, time.deltaTime);
+      if (!pongTable.isPlayerReady('left'))
+        input.movePlayer(player, time.deltaTime);
 
       // PongTable business
       pongTable.updateBall(time.deltaTime);
 
       // Pong join table
       if (pongTable.isPlayerAtLeft(player) && input.keyWasPressed['KeyE'] && !pongTable.isPlayerReady('left')) {
-        const pongPlayer : PongPlayer = {id: player.getId(), username: player.getUsername(), paddleY: 0, ready: false, score: 0, side: 'left'};
-        cm.sendToServer({type: "join_pong",  pongPlayer}); //Send join_table
-      } 
+        const pongPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 0, ready: false, score: 0, side: 'left' };
+        cm.sendToServer({ type: "join_pong", pongPlayer }); //Send join_table
+      }
       else if (pongTable.isPlayerAtLeft(player) && input.keyWasPressed['KeyE'] && pongTable.isPlayerReady('left')) {
-        const pongPlayer : PongPlayer | undefined = pongTable.getPongPlayer('left');
+        const pongPlayer: PongPlayer | undefined = pongTable.getPongPlayer('left');
         console.log("OK, pongPlayer: ", pongPlayer);
-        if (pongPlayer) {
-          cm.sendToServer({type: "leave_pong", pongPlayer});
+        if (pongPlayer && pongPlayer.id != player.id) {
+          alert("There's already another player at the table!");
+        }
+        else if (pongPlayer) {
+          cm.sendToServer({ type: "leave_pong", pongPlayer });
         }
       }
 
