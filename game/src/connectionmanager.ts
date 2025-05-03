@@ -3,7 +3,7 @@ import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
 // import Player from './player.js';
 
-const localUser = window.__INITIAL_STATE__;
+let localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
 
 // Init WebSocket
@@ -21,7 +21,6 @@ export function sendToServer(data: ServerMessage) {
 }
 
 export function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
-
   let spawnPosition: Vector2;
 
   if (localPlayerData.x === 0 && localPlayerData.y === 0) {
@@ -30,7 +29,18 @@ export function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: Game
     spawnPosition = { x: localPlayerData.x, y: localPlayerData.y };
   }
 
-  const player = playerManager.initLocalPlayer(localPlayerData.id, localUser.username, localUser.avatar, spawnPosition, texture);
+  let username: string;
+  let avatar: string;
+  // Create test user when in DEV mode
+  if (!window.__INITIAL_STATE__) {
+    username = "testUser";
+    avatar = "test.png";
+  }
+  else {
+    username = localUser.username;
+    avatar = localUser.avatar;
+  }
+  const player = playerManager.initLocalPlayer(localPlayerData.id, username, avatar, spawnPosition, texture);
 
   if (player) {
     gameMap.addPlayer(player);
@@ -123,9 +133,9 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
     if (data.type == "leave_pong") {
-      console.log("leave_pong back!!!!");
       const pongTable = playerManager.pongTable;
-      pongTable?.removePlayer(data.pongPlayer.side);
+      if (pongTable)
+        pongTable.removePlayer(data.pongPlayer.side);
     }
 
   };

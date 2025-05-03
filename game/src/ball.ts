@@ -1,4 +1,4 @@
-import { Graphics } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
 import Point from './point.js';
 // import * as settings from './settings.js';
 
@@ -7,6 +7,7 @@ export default class Ball {
   private graphics: Graphics;
   private direction: Vector2;
   private speed: number;
+
 
   constructor(position: Vector2) {
     this.graphics = new Graphics();

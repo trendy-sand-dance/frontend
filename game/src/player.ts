@@ -4,8 +4,8 @@ import Point from './point.js';
 export default class Player {
   public id: number;
   public position: Point;
-  private username : string;
-  private avatar : string;
+  private username: string;
+  private avatar: string;
 
   private context: Sprite;
   constructor(id: number, username: string, avatar: string, position: Vector2, texture: Texture) {
@@ -16,6 +16,7 @@ export default class Player {
 
     // Sprite Context
     this.context = new Sprite(texture);
+    this.context.anchor.set(0.75, 0);
     this.context.x = this.position.asIsometric.x;
     this.context.y = this.position.asIsometric.y;
   }
@@ -38,8 +39,16 @@ export default class Player {
     return this.username;
   }
 
+  getPoint() {
+    return this.position;
+  }
+
   getPosition() {
     return this.position.asCartesian;
+  }
+
+  getIsometricPosition() {
+    return this.position.asIsometric;
   }
 
   getContext() {

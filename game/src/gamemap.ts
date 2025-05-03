@@ -182,12 +182,12 @@ export default class GameMap {
   }
 }
 
-export function addGameMap(pixiApp: Application, gameMap: GameMap): Container {
+export function addGameMap(pixiApp: Application): GameMap {
+  let gameMap = GameMap.instance;
   const mapContainer = gameMap.getContainer();
   gameMap.createGraphicsGrid(settings.TILEMAP);
   // gameMap.createSpriteGrid(settings.TILEMAP);
   pixiApp.stage.addChild(mapContainer);
-  mapContainer.scale = 1.25;
-  return mapContainer;
+  return gameMap;
 }
 

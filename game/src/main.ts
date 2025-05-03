@@ -6,34 +6,49 @@ import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
 import * as cm from './connectionmanager.js';
-//import Ball from './ball.js';
 import PongTable from './pongtable.js';
-// import InfoBox from './infobox.js';
+import Point from './point.js';
+import Player from './player.js';
 import { initializeLocalPlayer } from './connectionmanager.js';
+import { Side, CameraMode } from './interfaces.js';
+//import Ball from './ball.js';
+// import InfoBox from './infobox.js';
 
+// Globals
 const pixiApp: Application = new Application();
+let prevPos: Vector2 = { x: 0, y: 0 };
+export let localPlayerPos: Point = new Point(0, 0);
 let isGameFocused = true;
+let screenShake = false;
+let cameraMode: CameraMode = CameraMode.Locked;
 
 async function preload() {
+
   const assets = [
+
     // Player Assets
     { alias: 'player_bunny', src: '/assets/bunny.png' },
+
     // Map Assets
     { alias: 'block_empty_black', src: '/assets/block_empty_black.png' },
     { alias: 'block_empty_white', src: '/assets/block_empty_white.png' },
     { alias: 'block_opaque_coloured', src: '/assets/block_opaque_coloured.png' },
     { alias: 'block_opaque_white', src: '/assets/block_opaque_white.png' },
     { alias: 'block_half_opaque_coloured', src: '/assets/block_half_opaque_coloured.png' },
+
   ];
+
   await Assets.load(assets);
 }
 
 async function setup() {
+
   const container = document.getElementById("pixi-container");
   if (container) {
     await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: container });
+    container.appendChild(pixiApp.canvas);
   }
-  container?.appendChild(pixiApp.canvas);
+
   pixiApp.stage.eventMode = 'static';
   pixiApp.stage.hitArea = pixiApp.screen;
 
@@ -51,29 +66,65 @@ async function setup() {
   window.addEventListener('focus', () => {
     isGameFocused = true;
   })
+
+  // Setup Map Zoom Callback
+  mouse.setupMapZoom();
+
   console.log("Pixi app initialized:", pixiApp);
 }
 
+function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
+  const side = pongTable.getPlayerSide(player);
+  if (side === null) {
+    return;
+  }
+
+
+  const stringSide: string = side === Side.Left ? 'left' : 'right';
+  const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 0, ready: false, score: 0, side: stringSide };
+
+  if (!pongTable.isSideReady(side)) {
+    cm.sendToServer({ type: "join_pong", pongPlayer: newPlayer });
+  }
+  else {
+    const existingPlayer: PongPlayer | null = pongTable.getPongPlayer(side);
+    if (existingPlayer && existingPlayer.id !== player.id) {
+      alert("There's already another player at the table!");
+    }
+    else if (existingPlayer) {
+      cm.sendToServer({ type: "leave_pong", pongPlayer: existingPlayer });
+    }
+  }
+}
+
+function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) {
+
+  if (cameraMode === CameraMode.Locked) {
+    let p = player.getPoint();
+    localPlayerPos.update({ x: p.asCartesian.x, y: p.asCartesian.y });
+    gameMap.container.x = -p.asIsometric.x + pixiApp.screen.width / 2;
+    gameMap.container.y = -p.asIsometric.y + pixiApp.screen.height / 2;
+  }
+  else
+    mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+
+}
 
 (async () => {
+
   await setup();
   await preload();
 
   // Initialize map and add to pixi.stage
-  let gameMap = GameMap.instance;
-  addGameMap(pixiApp, gameMap);
-  mouse.setupMapZoom(input.mouse, gameMap);
+  let gameMap: GameMap = addGameMap(pixiApp);
 
   //Network business
   if (window.__INITIAL_STATE__) {
     cm.runConnectionManager(gameMap);
   }
-  else {
-    const player = initializeLocalPlayer({ id: 1, userId: 1, x: 0, y: 0 }, gameMap, Texture.from('player_bunny'));
-    if (player)
-      gameMap.moveMap({ x: (player.position.asCartesian.x * settings.TILESIZE) / 2, y: -(player.position.asCartesian.y * settings.TILESIZE) });
+  else { // We set up a test player for dev mode
+    initializeLocalPlayer({ id: -1, userId: -1, x: 0, y: 0 }, gameMap, Texture.from('player_bunny'));
   }
-
 
   // Testing Pong table
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP);
@@ -81,33 +132,45 @@ async function setup() {
   playerManager.initPongTable(pongTable);
 
   //Game Loop
-  let prevPos: Vector2 = { x: 0, y: 0 };
+  let driver: number = 0;
   pixiApp.ticker.add((time: Ticker) => {
     const player = playerManager.getLocalPlayer();
-    mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+
     if (player) {
-      if (!pongTable.isPlayerReady('left'))
+
+      handleCamera(player, cameraMode, gameMap);
+
+      // Switch camera mode
+      if (input.keyWasPressed['KeyC']) {
+        cameraMode = input.switchCameraMode(cameraMode);
+      }
+
+      // Pong join table
+      if (input.keyWasPressed['KeyE'])
+        joinOrLeavePongTable(player, pongTable);
+
+      // Pong move paddle
+      if (!pongTable.isPlayerReady(player.id))
         input.movePlayer(player, time.deltaTime);
+      else {
+        const side = pongTable.getPlayerSide(player);
+        if (side !== null) {
+          pongTable.updatePaddle(side, input.keyIsPressed, time.deltaTime);
+          if (pongTable.collidesWithPaddle(side)) {
+            screenShake = true;
+            setTimeout(() => {
+              screenShake = false;
+            }, 250)
+          }
+        }
+      }
+
+      if (screenShake) {
+        pixiApp.stage.x += Math.sin(driver);
+      }
 
       // PongTable business
       pongTable.updateBall(time.deltaTime);
-
-      // Pong join table
-      if (pongTable.isPlayerAtLeft(player) && input.keyWasPressed['KeyE'] && !pongTable.isPlayerReady('left')) {
-        const pongPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 0, ready: false, score: 0, side: 'left' };
-        cm.sendToServer({ type: "join_pong", pongPlayer }); //Send join_table
-      }
-      else if (pongTable.isPlayerAtLeft(player) && input.keyWasPressed['KeyE'] && pongTable.isPlayerReady('left')) {
-        const pongPlayer: PongPlayer | undefined = pongTable.getPongPlayer('left');
-        console.log("OK, pongPlayer: ", pongPlayer);
-        if (pongPlayer && pongPlayer.id != player.id) {
-          alert("There's already another player at the table!");
-        }
-        else if (pongPlayer) {
-          cm.sendToServer({ type: "leave_pong", pongPlayer });
-        }
-      }
-
 
       //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
@@ -121,7 +184,10 @@ async function setup() {
       prevPos = player.getPosition();
     }
 
+    driver += time.deltaTime;
     input.resetKeyStates(input.keyWasPressed);
   });
 
 })();
+
+export { pixiApp };

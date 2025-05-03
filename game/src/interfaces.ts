@@ -13,11 +13,6 @@ declare global {
     [key: string]: boolean;
   }
 
-  enum Side {
-    Left,
-    Right,
-  }
-
   interface PongPlayer {
     id: number,
     username: string,
@@ -66,6 +61,16 @@ declare global {
     y: number,
   }
 
+}
+
+export enum Side {
+  Left,
+  Right,
+}
+
+export enum CameraMode {
+  Locked,
+  Free,
 }
 
 
