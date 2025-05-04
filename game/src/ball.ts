@@ -1,4 +1,4 @@
-import { Container, Graphics } from "pixi.js";
+import { Graphics } from "pixi.js";
 import Point from './point.js';
 // import * as settings from './settings.js';
 
