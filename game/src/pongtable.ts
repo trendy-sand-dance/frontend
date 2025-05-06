@@ -184,23 +184,28 @@ export default class PongTable {
     this.ball.move(deltaTime);
   }
 
-  updatePaddle(side: Side | null, keyIsPressed: KeyPressState, deltaTime: number) {
-    if (side === null)
-      return;
+  // updatePaddle(side: Side | null, keyIsPressed: KeyPressState, deltaTime: number) {
+  //   if (side === null)
+  //     return;
+  //
+  //   let paddle = this.paddles[side];
+  //   let paddlePos = this.getLocalPaddlePosition(paddle);
+  //   let pHeight = (paddle.getPaddleHeight() / 2) * settings.TILESIZE;
+  //   let pBegin = paddlePos.y - pHeight;
+  //   let pEnd = paddlePos.y + pHeight;
+  //
+  //   if (keyIsPressed['ArrowUp'] && pBegin > 0) {
+  //     paddle.move(-1, deltaTime);
+  //   }
+  //
+  //   if (keyIsPressed['ArrowDown'] && pEnd < this.tableHeight) {
+  //     paddle.move(1, deltaTime);
+  //   }
+  // }
 
-    let paddle = this.paddles[side];
-    let paddlePos = this.getLocalPaddlePosition(paddle);
-    let pHeight = (paddle.getPaddleHeight() / 2) * settings.TILESIZE;
-    let pBegin = paddlePos.y - pHeight;
-    let pEnd = paddlePos.y + pHeight;
-
-    if (keyIsPressed['ArrowUp'] && pBegin > 0) {
-      paddle.move(-1, deltaTime);
-    }
-
-    if (keyIsPressed['ArrowDown'] && pEnd < this.tableHeight) {
-      paddle.move(1, deltaTime);
-    }
+  updatePaddle(side: Side | null, paddleY: number) {
+    if (side)
+      this.paddles[side].update(paddleY);
   }
 
   getLocalBallPosition(ball: Ball): Vector2 {

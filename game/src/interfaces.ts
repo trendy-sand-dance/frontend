@@ -31,8 +31,10 @@ declare global {
     type: string,
     id?: number,
     username?: string,
+    side?: string,
     avatar?: string,
     position?: Vector2,
+    direction?: string,
     pongPlayer?: PongPlayer,
   }
 

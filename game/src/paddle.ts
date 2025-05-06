@@ -35,6 +35,15 @@ export default class Paddle {
     this.graphics.y = this.position.asIsometric.y;
   }
 
+  update(paddleY: number) {
+    console.log("cartesian: ", this.position.asIsometric.x, ", ", this.position.asCartesian.y);
+    this.position.update({ x: this.position.asCartesian.x, y: paddleY });
+    this.graphics.x = this.position.asIsometric.x;
+    this.graphics.y = this.position.asIsometric.y;
+    console.log("asIsoY: ", this.position.asIsometric.y);
+
+  }
+
   getPaddleHeight() {
     return this.paddleHeight;
   }

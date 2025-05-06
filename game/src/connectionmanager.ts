@@ -2,6 +2,7 @@ import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
 // import Player from './player.js';
+import { Side } from './interfaces.js';
 
 let localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
@@ -136,6 +137,25 @@ export async function runConnectionManager(gameMap: GameMap) {
       const pongTable = playerManager.pongTable;
       if (pongTable)
         pongTable.removePlayer(data.pongPlayer.side);
+    }
+
+    if (data.type == "countdown_pong") {
+      console.log("seconds: ", data.timer);
+    }
+
+    if (data.type == "start_pong_game") {
+      alert("Start!");
+    }
+
+    if (data.type == "pong_update") {
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        console.log("data.paddles", data.pongState.paddles);
+        console.log("data.paddles.left", data.pongState.paddles.left);
+        console.log("data.paddles.right", data.pongState.paddles.left);
+        pongTable.updatePaddle(Side.Left, data.pongState.paddles.left);
+        pongTable.updatePaddle(Side.Right, data.pongState.paddles.right);
+      }
     }
 
   };

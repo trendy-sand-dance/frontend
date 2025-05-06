@@ -154,15 +154,35 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
         input.movePlayer(player, time.deltaTime);
       else {
         const side = pongTable.getPlayerSide(player);
+
         if (side !== null) {
-          pongTable.updatePaddle(side, input.keyIsPressed, time.deltaTime);
+          const sideString: string = side === Side.Left ? 'left' : 'right';
+          console.log("side: ", sideString);
+          if (input.keyIsPressed['ArrowUp']) {
+            cm.sendToServer({
+              type: "paddle_move",
+              side: sideString,
+              direction: "up",
+            });
+          }
+          if (input.keyIsPressed['ArrowDown']) {
+            cm.sendToServer({
+              type: "paddle_move",
+              side: sideString,
+              direction: "down",
+            });
+            // pongTable.updatePaddle(side, input.keyIsPressed, time.deltaTime);
+          }
+
           if (pongTable.collidesWithPaddle(side)) {
             screenShake = true;
             setTimeout(() => {
               screenShake = false;
             }, 250)
           }
+
         }
+
       }
 
       if (screenShake) {
