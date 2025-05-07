@@ -44,3 +44,110 @@
 	else { %>
 			<p class="text-red-500">No pending reqs found</p>
 		<% } %>-->-->
+
+
+
+
+
+		after new controller
+
+
+		<!-- views/partials/sidebar-players.ejs -->
+
+<div class="p-4 text-black animate-slide-in">
+	<% if (typeof friends !== 'undefined' && Array.isArray(friends))
+	{ %>
+		<h2 class="text-lg font-bold mb-2">Homies</h2>
+		<ul class="space-y-2">
+			<% friends.forEach(function(friend)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= friend.username %></strong> –
+						<li>
+							online status: soon
+						</li>
+						<li>
+							wins: <%= friend.wins %>
+						</li> 
+						<li>
+							losses: <%= friend.losses %>
+						</li>
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+		<% } 
+		else { %>
+				<p class="text-red-500">No friends found or data error.</p>
+			<% } %>
+	
+</div>
+
+<p> REQUESTS </p>
+<% requests.forEach(function(requests)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= requests.username %></strong> –
+						<li>
+							// accept button goes here //
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
+<p> FRIENDSSSS </p>
+<% friends.forEach(function(friends)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= friends.username %></strong> –
+						<li>
+							<%= friends.status %>
+							// make status online not 'true'/'false'
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
+<p> PENDING </p>
+<% pending.forEach(function(pending)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= pending.username %></strong> –
+						<li>
+							firendship pending
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
+<p> BLOCKED </p>
+<% blocked.forEach(function(blocked)
+			{ %>
+				<div class="p-2 bg-white rounded shadow">
+					<li 
+						class="p-2 bg-white rounded shadow">
+						<strong><%= blocked.username %></strong> –
+						<li>
+							firendship blocked
+						</li>
+						
+					</li>
+				</div>
+				<% }); %>
+			</ul>
+
+</div>

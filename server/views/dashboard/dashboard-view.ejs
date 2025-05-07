@@ -14,77 +14,61 @@
 
 </head>
 
-<body>
+<body class="bg-[#01FFFF]" hx-ext="events">
 
-  <script>
-    window.__INITIAL_STATE__ = <%- JSON.stringify(user) %>;
-    window.__GAMESERVER_URL__ = <%- JSON.stringify(gameserverUrl) %>;
-    console.table(window.__INITIAL_STATE__);
-    console.table(window.__GAMESERVER_URL__);
-  </script>
+	<script>
+		window.__INITIAL_STATE__ = <%- JSON.stringify(user) %>;
+		window.__GAMESERVER_URL__ = <%- JSON.stringify(gameserverUrl) %>;
+		console.table(window.__INITIAL_STATE__);
+		console.table(window.__GAMESERVER_URL__);
+	</script>
 
-  <div class="flex flex-col w-screen h-screen">
+	<div class="relative w-screen h-screen overflow-hidden bg-black">
 
-    <div class="flex flex-row flex-grow">
-
-      <!-- Game Canvas -->
-      <div hx-get="/game-canvas" hx-trigger="load" hx-swap="outerHTML">
-
-      </div>
-
-
-      <section
-		id="sidebar" 
-	  	 class="flex flex-col bg-[#01FFFF] w-1/6 border border-cyan-400">
-
-        <div
-			id="sidebar-content" 
-		 	class="h-5/6">
-        </div>
-
-        <div class="flex justify-center flex-col h-1/6 p-4">
-          <div class="border border-cyan-600 rounded-md p-2">
-            <input type="text" placeholder="Type here..." class="bg-[#01FFFF] w-full outline-none">
-            <div class="flex flex-row justify-between">
-              <button type="">:)</button>
-              <button type="">=></button>
-            </div>
-          </div>
-        </div>
-
-      </section>
-
-    </div>
-
-    <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
-
-      <!-- Profile Button -->
-      <div id="dashboard-profile-button" hx-get="/dashboard/<%=user.username %>" hx-swap="innerHTML" hx-trigger="load"
-        hx-target="this"></div>
-
-      <!-- Chat button -->
-	<button	
-	  	type="button"
-		hx-get="/sidebar/chat"
-		hx-target="#sidebar-content"
-		hx-swap="innerHTML"
-		class="p-2">
-		Chat💬💬💬 
-	</button>
-
-      <!-- Players button -->
-	  <button 
-		type="button"
-		hx-get="/viewPlayers/<%=user.username %>"
-		hx-target="#sidebar-content"
-		hx-swap="innerHTML"
-		class="p-2">
-		Friendos 👬👫👭
-  	</button>
-
-    </nav>
-
-  </div>
+		<!-- Game Canvas -->
+		<div class="absolute inset-0 z-0">
+			<div class="w-full h-full" hx-get="/game-canvas" hx-trigger="load" hx-swap="outerHTML">
+			<!-- Canvas loads here -->
+			</div>
+		</div>
+	
+		<!-- Sidebar -->
+		<aside id="sidebar" class="hidden absolute top-0 right-0 w-1/6 h-full flex-col bg-[#01FFFF] border-l border-cyan-400 z-10">
+		<div id="sidebar-content" class="flex-1 overflow-y-auto p-4">
+			<!-- Dynamic sidebar content -->
+		</div>
+		</aside>
+	
+		<!-- Bottom Navbar -->
+		<nav class="absolute bottom-0 left-0 right-0 bg-[#01FFFF] flex items-center p-4 space-x-4 border-t border-cyan-400 z-20">
+	
+		<div id="dashboard-profile-button"
+			hx-get="/dashboard/<%= user.username %>"
+			hx-trigger="load"
+			hx-swap="innerHTML"
+			hx-target="this">
+		</div>
+	
+		<button type="button"
+			hx-get="/sidebar/chat"
+			hx-target="#sidebar-content"
+			hx-swap="innerHTML"
+			class="p-2">
+			Chat 💬💬💬
+		</button>
+	
+		<button type="button"
+			hx-get="/viewPlayers/<%= user.username %>"
+			hx-target="#sidebar-content"
+			hx-swap="innerHTML"
+			class="p-2">
+			Friendos 👬👫👭
+		</button>
+	
+		</nav>
+	
+		</div>
+	  
 
 </body>
 
