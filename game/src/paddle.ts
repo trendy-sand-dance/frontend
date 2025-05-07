@@ -8,6 +8,7 @@ export default class Paddle {
   private paddleSpeed: number;
 
   constructor(position: Vector2, paddleHeight: number, paddleSpeed: number) {
+
     this.position = new Point(position.x, position.y);
     this.paddleHeight = paddleHeight;
     this.paddleSpeed = paddleSpeed;
@@ -36,12 +37,9 @@ export default class Paddle {
   }
 
   update(paddleY: number) {
-    console.log("cartesian: ", this.position.asIsometric.x, ", ", this.position.asCartesian.y);
     this.position.update({ x: this.position.asCartesian.x, y: paddleY });
     this.graphics.x = this.position.asIsometric.x;
     this.graphics.y = this.position.asIsometric.y;
-    console.log("asIsoY: ", this.position.asIsometric.y);
-
   }
 
   getPaddleHeight() {

@@ -20,8 +20,8 @@ function isWithinRange(value: number, target: number, range: number) {
 export default class PongTable {
   private container = new Container();
   private tableGrid: number[][] = []; //4x2
-  private tableWidth: number;
-  private tableHeight: number;
+  // private tableWidth: number;
+  // private tableHeight: number;
   private worldPosition: Vector2;
   private ball: Ball;
   private paddles: Paddle[] = [];
@@ -30,8 +30,8 @@ export default class PongTable {
 
   constructor(position: Vector2, parentMap: number[][]) {
     this.worldPosition = position;
-    this.tableWidth = 4 * settings.TILESIZE;
-    this.tableHeight = 2 * settings.TILESIZE;
+    // this.tableWidth = 4 * settings.TILESIZE;
+    // this.tableHeight = 2 * settings.TILESIZE;
 
     // Construct a sub-array from the parent map (4x2)
     let x = Math.round(position.x);
@@ -41,6 +41,8 @@ export default class PongTable {
 
     this.ball = new Ball({ x: 2, y: 1 });
     this.container.addChild(this.ball.getContext());
+
+    // Give PongTable position in world
     let point = new Point(this.worldPosition.x, this.worldPosition.y);
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
@@ -136,6 +138,7 @@ export default class PongTable {
   }
 
   collidesWithPaddle(side: Side) {
+
     let ballPos = this.getLocalBallPosition(this.ball);
     let paddlePos = this.getLocalPaddlePosition(this.paddles[side]);
     let pHeight = (this.paddles[side].getPaddleHeight() / 2) * settings.TILESIZE;
@@ -152,60 +155,46 @@ export default class PongTable {
     return false;
   }
 
-  updateBall(deltaTime: number) {
-    let localBallPos = this.getLocalBallPosition(this.ball);
-
-    if (localBallPos.x <= 0) { // Flip x dir
-      if (this.collidesWithPaddle(Side.Left)) {
-        console.log("Left-side BOUNCE!");
-        this.ball.bounceX();
-      }
-      else {
-        // alert("Left-side WON!");
-        this.ball.bounceX();
-      }
-    }
-
-    if (localBallPos.x > this.tableWidth) { // Flip x dir
-      if (this.collidesWithPaddle(Side.Right)) {
-        console.log("Right-side BOUNCE!");
-        this.ball.bounceX();
-      }
-      else {
-        // alert("Right-side WON!");
-        this.ball.bounceX();
-      }
-    }
-
-    if (localBallPos.y < 0 || localBallPos.y > this.tableHeight) { // Flip y dir
-      this.ball.bounceY();
-    }
-
-    this.ball.move(deltaTime);
-  }
-
-  // updatePaddle(side: Side | null, keyIsPressed: KeyPressState, deltaTime: number) {
-  //   if (side === null)
-  //     return;
+  // updateBall(deltaTime: number) {
+  //   let localBallPos = this.getLocalBallPosition(this.ball);
   //
-  //   let paddle = this.paddles[side];
-  //   let paddlePos = this.getLocalPaddlePosition(paddle);
-  //   let pHeight = (paddle.getPaddleHeight() / 2) * settings.TILESIZE;
-  //   let pBegin = paddlePos.y - pHeight;
-  //   let pEnd = paddlePos.y + pHeight;
-  //
-  //   if (keyIsPressed['ArrowUp'] && pBegin > 0) {
-  //     paddle.move(-1, deltaTime);
+  //   if (localBallPos.x <= 0) { // Flip x dir
+  //     if (this.collidesWithPaddle(Side.Left)) {
+  //       console.log("Left-side BOUNCE!");
+  //       this.ball.bounceX();
+  //     }
+  //     else {
+  //       // alert("Left-side WON!");
+  //       this.ball.bounceX();
+  //     }
   //   }
   //
-  //   if (keyIsPressed['ArrowDown'] && pEnd < this.tableHeight) {
-  //     paddle.move(1, deltaTime);
+  //   if (localBallPos.x > this.tableWidth) { // Flip x dir
+  //     if (this.collidesWithPaddle(Side.Right)) {
+  //       console.log("Right-side BOUNCE!");
+  //       this.ball.bounceX();
+  //     }
+  //     else {
+  //       // alert("Right-side WON!");
+  //       this.ball.bounceX();
+  //     }
   //   }
+  //
+  //   if (localBallPos.y < 0 || localBallPos.y > this.tableHeight) { // Flip y dir
+  //     this.ball.bounceY();
+  //   }
+  //
+  //   this.ball.move(deltaTime);
   // }
 
+  updateBall(position: Vector2) {
+    this.ball.update(position);
+  }
+
   updatePaddle(side: Side | null, paddleY: number) {
-    if (side)
+    if (side !== null) {
       this.paddles[side].update(paddleY);
+    }
   }
 
   getLocalBallPosition(ball: Ball): Vector2 {

@@ -157,7 +157,6 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
 
         if (side !== null) {
           const sideString: string = side === Side.Left ? 'left' : 'right';
-          console.log("side: ", sideString);
           if (input.keyIsPressed['ArrowUp']) {
             cm.sendToServer({
               type: "paddle_move",
@@ -190,7 +189,6 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
       }
 
       // PongTable business
-      pongTable.updateBall(time.deltaTime);
 
       //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {

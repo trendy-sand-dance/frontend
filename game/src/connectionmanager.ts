@@ -135,8 +135,9 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     if (data.type == "leave_pong") {
       const pongTable = playerManager.pongTable;
-      if (pongTable)
+      if (pongTable) {
         pongTable.removePlayer(data.pongPlayer.side);
+      }
     }
 
     if (data.type == "countdown_pong") {
@@ -144,17 +145,23 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
     if (data.type == "start_pong_game") {
-      alert("Start!");
+      // alert("Start!");
+      console.log("Starting!");
     }
 
     if (data.type == "pong_update") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        console.log("data.paddles", data.pongState.paddles);
-        console.log("data.paddles.left", data.pongState.paddles.left);
-        console.log("data.paddles.right", data.pongState.paddles.left);
         pongTable.updatePaddle(Side.Left, data.pongState.paddles.left);
         pongTable.updatePaddle(Side.Right, data.pongState.paddles.right);
+      }
+    }
+
+    if (data.type == "ball_move") {
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        let ballPos : Vector2 = {x: data.ball.x, y: data.ball.y};
+        pongTable.updateBall(ballPos);
       }
     }
 
