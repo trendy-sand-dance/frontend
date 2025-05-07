@@ -20,13 +20,13 @@ function isWithinRange(value: number, target: number, range: number) {
 export default class PongTable {
   private container = new Container();
   private tableGrid: number[][] = []; //4x2
-  // private tableWidth: number;
-  // private tableHeight: number;
+
   private worldPosition: Vector2;
   private ball: Ball;
   private paddles: Paddle[] = [];
   private players: [PongPlayer | null, PongPlayer | null] = [null, null];
   private indicators: InfoBox[] = [];
+  private inProgress : boolean = false;
 
   constructor(position: Vector2, parentMap: number[][]) {
     this.worldPosition = position;
@@ -93,6 +93,40 @@ export default class PongTable {
     }
   }
 
+
+  startGame() {
+
+
+      if (!this.inProgress) {
+
+      this.indicators[Side.Left].setText(`${this.players[Side.Left]?.username} Score: 0`, settings.CGA_PINK);
+      this.indicators[Side.Left].setColor(settings.CGA_BLACK);
+
+      this.indicators[Side.Right].setText(`${this.players[Side.Right]?.username} Score: 0`, settings.CGA_PINK);
+      this.indicators[Side.Right].setColor(settings.CGA_BLACK);
+
+    }
+
+    this.inProgress = true;
+
+  }
+
+  isInProgress() {
+
+    return this.inProgress;
+
+  }
+
+  updateScore(side : Side, score : number) {
+
+    if (this.players[side]) {
+      this.players[side].score = score;
+      this.indicators[side].setText(`${this.players[Side.Left]?.username} Score: ${this.players[side].score}`, settings.CGA_PINK);
+      this.indicators[side].setColor(settings.CGA_BLACK);
+    }
+
+  }
+
   removePlayer(side: 'left' | 'right') {
     let pSide: Side = side === 'left' ? Side.Left : Side.Right;
 
@@ -152,38 +186,6 @@ export default class PongTable {
 
     return false;
   }
-
-  // updateBall(deltaTime: number) {
-  //   let localBallPos = this.getLocalBallPosition(this.ball);
-  //
-  //   if (localBallPos.x <= 0) { // Flip x dir
-  //     if (this.collidesWithPaddle(Side.Left)) {
-  //       console.log("Left-side BOUNCE!");
-  //       this.ball.bounceX();
-  //     }
-  //     else {
-  //       // alert("Left-side WON!");
-  //       this.ball.bounceX();
-  //     }
-  //   }
-  //
-  //   if (localBallPos.x > this.tableWidth) { // Flip x dir
-  //     if (this.collidesWithPaddle(Side.Right)) {
-  //       console.log("Right-side BOUNCE!");
-  //       this.ball.bounceX();
-  //     }
-  //     else {
-  //       // alert("Right-side WON!");
-  //       this.ball.bounceX();
-  //     }
-  //   }
-  //
-  //   if (localBallPos.y < 0 || localBallPos.y > this.tableHeight) { // Flip y dir
-  //     this.ball.bounceY();
-  //   }
-  //
-  //   this.ball.move(deltaTime);
-  // }
 
   updateBall(position: Vector2) {
     this.ball.update(position);

@@ -146,7 +146,10 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     if (data.type == "start_pong_game") {
       // alert("Start!");
-      console.log("Starting!");
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        pongTable.startGame();
+      }
     }
 
     if (data.type == "pong_update") {
@@ -160,7 +163,11 @@ export async function runConnectionManager(gameMap: GameMap) {
     if (data.type =="score_update") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        alert(`${data.side} scored! Score: ${data.score}`)
+        console.log("Data: ", data);
+          if (data.side == 'left')
+            pongTable.updateScore(Side.Right, data.score);
+          if (data.side == 'right')
+            pongTable.updateScore(Side.Left, data.score);
       }
     }
 
