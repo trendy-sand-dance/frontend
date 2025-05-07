@@ -1,24 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 const DATABASE_URL: string = "http://database_container:3000";
 
-// get this from global/shared file
-interface Player {
-	id: number,
-	userId: number,
-	x: number,
-	y: number,
-  }
-
-interface User {
-	id: number,
-	username: string,
-	password: string,
-	email: string,
-	avatar: string,
-	status: boolean,
-	player: Player,
-  }
-
 export async function getStats(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { username } = request.params as { username: string };
@@ -54,8 +36,7 @@ export async function updateWins(request: FastifyRequest, reply: FastifyReply) {
 		const responseBody = await response.json() as { error: string };
 		throw { code: response.status, message: responseBody.error };
 	  }
-	  const user = await response.json() as { user: User };
-	  return reply.send({ message: "successfully updated win count"}); // check what the return is
+	  return reply.send({ message: "successfully updated win count"});
     
 	} catch (error) {
 		console.error(error);
@@ -80,8 +61,7 @@ export async function updateLosses(request: FastifyRequest, reply: FastifyReply)
 		const responseBody = await response.json() as { error: string };
 		throw { code: response.status, message: responseBody.error };
 	  }
-	  const user = await response.json() as { user: User };
-	  return reply.send({ message: "successfully updated loss count"}); // check what the return is
+	  return reply.send({ message: "successfully updated loss count"});
     
 	} catch (error) {
 		console.error(error);

@@ -1,9 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
+const DATABASE_URL: string = "http://database_container:3000";
 const LOCAL_GAMESERVER_URL: string = process.env.LOCAL_GAMESERVER_URL || "localhost";
-const TEST: string = process.env.USERMANAGEMENT_URL || "NOOOOO";
-
-const DATABASE_URL = 'http://database_container:3000';
+const TEST: string = process.env.DATABASE_URL || "NOOOOO";
 
 export async function getLoginView(request: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("account/login-view.ejs");
@@ -16,7 +14,7 @@ export async function loginUser(request: FastifyRequest, reply: FastifyReply) {
     if (userInfo.username === "admin" && userInfo.password === "123") {
       return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username, email: "test@test.com", img_avatar: "img_avatar.png" });
     }
-    const response = await fetch(`${USERMANAGEMENT_URL}/login`, {
+    const response = await fetch(`${DATABASE_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,7 +55,7 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { username, password } = request.body as { username: string, password: string };
 
-    const response = await fetch(`${USERMANAGEMENT_URL}/login`, {
+    const response = await fetch(`${DATABASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -73,7 +71,6 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
     console.log("TEST: ", test);
     console.log("GAMESERVERURL: ", gameserverUrl);
     return reply.viewAsync("dashboard/dashboard-view.ejs", { user, gameserverUrl });
-    // return reply.viewAsync("dashboard/dashboard-view.ejs", { user });
 
   } catch (error) {
     const err = error as { code: number, message: string };
@@ -85,7 +82,7 @@ export async function logout(request: FastifyRequest, reply: FastifyReply) {
   const { username } = request.params as { username: string };
 
   try {
-    const response = await fetch(`${USERMANAGEMENT_URL}/logout/${username}`);
+    const response = await fetch(`${DATABASE_URL}/logout/${username}`);
     return reply.sendFile("index.html");
   } catch (error) {
     request.log.error(error);

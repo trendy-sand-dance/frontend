@@ -1,18 +1,16 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
+const DATABASE_URL: string = "http://database_container:3000";
 
 export async function getRegisterView(request: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("account/register-view.ejs");
 }
 
 export async function registerUser(request: FastifyRequest, reply: FastifyReply) {
-
-	// const userInfo = request.body as { username: string, password: string };
   try {
     const { username, password, email } = request.body as { username: string, password: string, email: string };
     const dataPackage = JSON.stringify({ username, password, email });
-
-    const response = await fetch(`${USERMANAGEMENT_URL}/register`, {
+	// why do we have this dataPackage? why arent we sending this as body?
+    const response = await fetch(`${DATABASE_URL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,12 +21,8 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
       const responseBody = await response.json() as { error: string };
       throw { code: response.status, message: responseBody.error };
     }
-    // return reply.code(response.status).viewAsync('account/info.ejs', { message: "Succesfully registered user!" });
-	// return reply.viewAsync("dashboard/dashboard-view.ejs", { username: userInfo.username });
 	return reply.viewAsync("account/login-view.ejs");
-  } 
-	catch (error)
-	{
+    } catch (error) {
     	const err = error as { code: number, message: string };
     	return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
 	}

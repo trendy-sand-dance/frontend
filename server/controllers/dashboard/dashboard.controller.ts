@@ -1,8 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
+const DATABASE_URL: string = "http://database_container:3000";
 
 export async function getDashboard(request: FastifyRequest, reply: FastifyReply) {
-  console.log("GETTING DASHBOARD, RIGHTTTTTTTTTTTTTTTT?");
   try {
     if (request.headers['hx-request']) {
       return reply.viewAsync("dashboard/dashboard-view.ejs");
@@ -19,7 +18,7 @@ export async function getDashboardUser(request: FastifyRequest, reply: FastifyRe
   const { username } = request.params as { username: string };
 
   try {
-    const response = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
+    const response = await fetch(`${DATABASE_URL}/dashboard/${username}`);
     const resData = await response.json() as { email: string, avatar: string };
     return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
   }

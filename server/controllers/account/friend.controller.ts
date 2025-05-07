@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-const DATABASE_URL: string = process.env.DATABASE_URL || "http://database_container:3002";
+const DATABASE_URL: string = "http://database_container:3000";
 
 export async function sendFriendReq(request: FastifyRequest, reply: FastifyReply): Promise<any> {
   try {
@@ -114,19 +114,16 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 		const raw = await res.json() as 
 		{
 			requests: { 
-				request: { username: string },
+				request: { avatar: string, username: string },
 			}[],
 			friends: {
-				friend: { username: string, wins: number, losses: number },
-				status: string,
-				initiator: number
+				friend: { avatar: string, username: string, status: number, wins: number, losses: number },
 			}[],
 			pending: {
-				pends: { username: string },
-
+				pends: { avatar: string, username: string },
 			}[],
 			blocked: {
-				blocks: { username: string },
+				blocks: { avatar: string, username: string },
 			}[],
 		  };
 		
