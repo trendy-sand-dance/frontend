@@ -1,4 +1,5 @@
 import  Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { JWT_SECRET, PORT, ADDRESS, LOCAL_GAMESERVER_URL, USERMANAGEMENT_URL } from './config';
 
 import { routes } from './routes/routes.js';
 import closeWithGrace from 'close-with-grace';
@@ -18,8 +19,6 @@ import './setUpFetch';
 
 // Utility
 import path from 'node:path';
-const ADDRESS: string = process.env.LISTEN_ADDRESS ? process.env.LISTEN_ADDRESS : '0.0.0.0';
-const PORT: number = process.env.LISTEN_PORT ? parseInt(process.env.LISTEN_PORT, 10) : 3000;
 
 const fastify: FastifyInstance = Fastify({
   logger: {
@@ -63,7 +62,8 @@ fastify.register(pluginView, {
 
 
 fastify.register(pluginJwt, {
-	secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE'
+	// TODO: Mabye this secret should be different than the one on line 76
+	secret: JWT_SECRET
 })
 
 fastify.addHook('preHandler', (req, res, next) => {
@@ -72,8 +72,7 @@ fastify.addHook('preHandler', (req, res, next) => {
 })
 
 fastify.register(pluginCookie, {
-	// TODO: Use env for this
-  secret: 'some-secret-key',
+  secret: JWT_SECRET,
   hook: 'preHandler',
 })
 

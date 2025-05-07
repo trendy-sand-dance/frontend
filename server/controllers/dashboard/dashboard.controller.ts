@@ -1,15 +1,20 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
+import { User, UserPayload } from '../../types';
+import { DATABASE_URL, LOCAL_GAMESERVER_URL, USERMANAGEMENT_URL } from '../../config';
+
 
 export async function getDashboard(request: FastifyRequest, reply: FastifyReply) {
-  console.log("GETTING DASHBOARD, RIGHTTTTTTTTTTTTTTTT?");
+	// get UserPayload from cookie, this is managed by the JWT server decoration.
+	const payload: UserPayload = request.user;
+
+	console.log("payload", payload)
+
   try {
-    if (request.headers['hx-request']) {
-      return reply.viewAsync("dashboard/dashboard-view.ejs");
-    }
-    // return reply.sendFile("dashboard.html");
-    return reply.viewAsync("dashboard/dashboard-view.ejs");
-  }
+		return reply.viewAsync("dashboard/dashboard-view.ejs", {
+			user: payload.name,
+			gameserverURL: LOCAL_GAMESERVER_URL
+		});
+	}
   catch (error) {
     request.log.error(error);
     return reply.viewAsync("errors/error-500.ejs");
@@ -17,10 +22,11 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 }
 
 export async function getDashboardUser(request: FastifyRequest, reply: FastifyReply) {
+
   const { username } = request.params as { username: string };
 
   try {
-    const response = await fetch(`${USERMANAGEMENT_URL}/dashboard/${username}`);
+    const response = await fetch(`${DATABASE_URL}/dashboard/${username}`);
     const resData = await response.json() as { email: string, avatar: string };
     return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
   }
