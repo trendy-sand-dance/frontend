@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-const DATABASE_URL: string = process.env.DATABASE_URL || "http://database_container:3002";
+const DATABASE_URL: string = "http://database_container:3000";
 
 export async function sendFriendReq(request: FastifyRequest, reply: FastifyReply): Promise<any> {
   try {
