@@ -30,8 +30,6 @@ export default class PongTable {
 
   constructor(position: Vector2, parentMap: number[][]) {
     this.worldPosition = position;
-    // this.tableWidth = 4 * settings.TILESIZE;
-    // this.tableHeight = 2 * settings.TILESIZE;
 
     // Construct a sub-array from the parent map (4x2)
     let x = Math.round(position.x);
@@ -137,7 +135,7 @@ export default class PongTable {
     return null;
   }
 
-  collidesWithPaddle(side: Side) {
+  collidesWithPaddle(side: Side) : boolean {
 
     let ballPos = this.getLocalBallPosition(this.ball);
     let paddlePos = this.getLocalPaddlePosition(this.paddles[side]);

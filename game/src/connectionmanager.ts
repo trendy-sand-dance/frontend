@@ -157,6 +157,13 @@ export async function runConnectionManager(gameMap: GameMap) {
       }
     }
 
+    if (data.type =="score_update") {
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        alert(`${data.side} scored! Score: ${data.score}`)
+      }
+    }
+
     if (data.type == "ball_move") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
