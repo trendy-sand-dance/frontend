@@ -20,3 +20,20 @@ type UserPayload = {
   email: string
   name: string
 }
+
+interface Player {
+	id: number,
+	userId: number,
+	x: number,
+	y: number,
+}
+
+interface User {
+	id: number,
+	username: string,
+	password: string,
+	email: string,
+	avatar: string,
+	status: boolean,
+	player: Player,
+}

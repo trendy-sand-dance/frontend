@@ -1,30 +1,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "http://user_container:3000";
-const LOCAL_GAMESERVER_URL: string = process.env.LOCAL_GAMESERVER_URL || "localhost:8003";
-const TEST: string = process.env.USERMANAGEMENT_URL || "NOOOOO";
+import { User } from '../../types';
+import { USERMANAGEMENT_URL } from '../../config';
 
-const DATABASE_URL = 'http://database_container:3000';
 
 export async function getLoginView(request: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("account/login-view.ejs");
 }
 
-interface Player {
-  id: number,
-  userId: number,
-  x: number,
-  y: number,
-}
-
-interface User {
-  id: number,
-  username: string,
-  password: string,
-  email: string,
-  avatar: string,
-  status: boolean,
-  player: Player,
-}
 
 export async function login(request: FastifyRequest, reply: FastifyReply) {
 
@@ -60,12 +42,7 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
 			secure: true,
 		})
 
-    return reply.viewAsync("dashboard/dashboard-view.ejs", {
-			// TODO: Don't return user,
-			user: user,
-			gameserverUrl: LOCAL_GAMESERVER_URL
-		});
-		
+		return reply.redirect('/dashboard');
 
   } catch (error) {
     const err = error as { code: number, message: string };

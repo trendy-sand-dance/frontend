@@ -66,7 +66,7 @@ export async function routes(fastify: FastifyInstance) {
 	fastify.get('/dashboard', { 
 		preHandler: [fastify.authenticate],
 	}, getDashboard);
-  fastify.get('/dashboard/:username', getDashboardUser);
+  fastify.get('/dashboard/:userid', getDashboardUser);
 
 
 

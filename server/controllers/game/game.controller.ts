@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { getBundledFile } from '../../utility/utility.js';
+import { DATABASE_URL } from '../../config.js';
 
 export async function getPixiGame(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -12,7 +13,6 @@ export async function getPixiGame(request: FastifyRequest, reply: FastifyReply) 
 
 }
 
-const DATABASE_URL: string = process.env.DATABASE_URL || "http://ok:3000";
 
 export async function getPlayerInfo(request: FastifyRequest, reply: FastifyReply) {
   try {

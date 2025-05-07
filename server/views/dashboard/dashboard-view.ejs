@@ -17,36 +17,11 @@
 <body class="bg-[#01FFFF]" hx-ext="events">
 
   <script>
-    // window.__INITIAL_STATE__ = <%- JSON.stringify(user) %>;
-    // window.__GAMESERVER_URL__ = <%- JSON.stringify(gameserverUrl) %>;
-    // console.table(window.__INITIAL_STATE__);
+    window.__INITIAL_STATE__ = <%-user%>;
+    window.__GAMESERVER_URL__ = <%-gameserverURL%>;
+
+    console.table(window.__INITIAL_STATE__);
     console.table(window.__GAMESERVER_URL__);
-
-		function getCookie(cname) {
-			let name = cname + "=";
-			let decodedCookie = decodeURIComponent(document.cookie);
-			let ca = decodedCookie.split(';');
-			for(let i = 0; i <ca.length; i++) {
-				let c = ca[i];
-				while (c.charAt(0) == ' ') {
-					c = c.substring(1);
-				}
-				if (c.indexOf(name) == 0) {
-					return c.substring(name.length, c.length);
-				}
-			}
-			return "";
-		} 
-		window.onload = () =>{
-			let token = getCookie("access_token")
-			// get that fk cookie bruh
-			console.log("token : ", token)
-			// get that user niffo
-
-		}
-		// window.addEventListener("load", function() {});	
-
-
   </script>
 
 	<div class="relative w-screen h-screen overflow-hidden bg-black">
@@ -131,7 +106,7 @@
     <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
 
       <!-- Profile Button -->
-      <!-- <div id="dashboard-profile-button" hx-get="/dashboard/<%=user.username %>" hx-swap="innerHTML" hx-trigger="load" -->
+      <div id="dashboard-profile-button" hx-get="/dashboard/<%=user%>" hx-swap="innerHTML" hx-trigger="load"
         hx-target="this"></div>
 
       <!-- Chat button -->
