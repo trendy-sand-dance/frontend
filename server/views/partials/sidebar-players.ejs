@@ -10,7 +10,8 @@
 			<div><strong><%= req.username %></strong></div>
 			<div class="space-x-2">
 				<button	class="text-green-500 hover:text-green-700"
-			  			hx-get="/viewPlayers/<%=user.username %>">
+			  			hx-get="/viewPlayers/<%=req.username %>">
+			  			<!-- hx-get="/acceptReq/<%=req.senderid %>/<%=req.userid %>"> -->
 						Accept
 				</button>
 			  <button class="text-red-500 hover:text-red-700">Decline</button>
