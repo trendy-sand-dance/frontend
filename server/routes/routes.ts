@@ -3,7 +3,7 @@ import { registerUser, getRegisterView } from '../controllers/account/register.c
 import { login, loginUser, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAvatar } from '../controllers/account/editUser.controller.js';
-import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers } from '../controllers/account/friend.controller.js';
+import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import { getplaygroundView } from "../controllers/playground.controller.js";
@@ -44,6 +44,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.delete('/rejectReq/:senderId/:userId', rejectFriendReq); // sender is person who sent request, this user is rejecting their request
   fastify.post('/block/:friendId/:userId', blockFriend); // friend is person who user wants to block
   fastify.get('/viewPlayers/:username', viewPlayers);
+  fastify.delete("/deleteFriend/:senderId/:userId", deleteAssociation);
  
   // Game
   fastify.get('/game-canvas', getPixiGame);
@@ -54,9 +55,21 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/dashboard/:username', getDashboardUser);
 
 
+
+
+
+
+
+
   //scooby doo!
   fastify.get('/playground', getplaygroundView);
   fastify.get('/toggle-sidebar', sidebarController);
+
+
+fastify.get('/placeholder', async (req, reply) => {
+	return reply.send("functionality SOON");
+  });
+
 
   fastify.get('/sidebar/chat', async (req, reply) => {
 	return reply.view('/partials/sidebar-chat.ejs');

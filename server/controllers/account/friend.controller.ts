@@ -98,6 +98,26 @@ export async function blockFriend(request: FastifyRequest, reply: FastifyReply):
 	}
   };
 
+  export async function deleteAssociation(request: FastifyRequest, reply: FastifyReply): Promise<any> {
+	try {
+	  const { senderId, userId } = request.params as { senderId: number, userId: number };
+	  const res = await fetch(`${DATABASE_URL}/deletefriend/${senderId}/${userId}`, {
+		method: 'DELETE',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ userId: userId }),
+	  });
+	  if (!res.ok) {
+		const responseBody = await res.json() as { error: string };
+		throw { code: res.status, message: responseBody.error };
+	  }
+	  return reply.code(res.status);
+	} catch (error) {
+	  request.log.error(error);
+	  const err = error as { code: number, message: string };
+	  return reply.code(err.code).send({ message: err.message});
+	}
+  };
+
 export async function viewPlayers(request: FastifyRequest, reply: FastifyReply): Promise<any> 
 {
 	try 
