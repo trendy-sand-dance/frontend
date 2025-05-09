@@ -125,6 +125,7 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 			blocked: {
 				blocks: { avatar: string, username: string, id: number },
 			}[],
+			userId: number,
 		  };
 		
 		
@@ -133,6 +134,7 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 			friends: raw.friends,
 			pending: raw.pending,
 			blocked: raw.blocked,
+			userId: raw.userId,
 			 });
 	
 	}
