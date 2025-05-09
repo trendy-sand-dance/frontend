@@ -114,17 +114,18 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 		const raw = await res.json() as 
 		{
 			requests: { 
-				request: { avatar: string, username: string },
+				request: { avatar: string, username: string, id: number},
 			}[],
 			friends: {
-				friend: { avatar: string, username: string, status: number, wins: number, losses: number },
+				friend: { avatar: string, username: string, id: number, status: number, wins: number, losses: number },
 			}[],
 			pending: {
-				pends: { avatar: string, username: string },
+				pends: { avatar: string, username: string, id: number },
 			}[],
 			blocked: {
-				blocks: { avatar: string, username: string },
+				blocks: { avatar: string, username: string, id: number },
 			}[],
+			userId: number,
 		  };
 		
 		
@@ -133,6 +134,7 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 			friends: raw.friends,
 			pending: raw.pending,
 			blocked: raw.blocked,
+			userId: raw.userId,
 			 });
 	
 	}
