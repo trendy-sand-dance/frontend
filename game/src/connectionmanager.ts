@@ -2,7 +2,6 @@ import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
 // import Player from './player.js';
-import { Side } from './interfaces.js';
 
 let localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
@@ -141,7 +140,11 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
     if (data.type == "countdown_pong") {
-      console.log("seconds: ", data.timer);
+      // console.log("seconds: ", data.timer);
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        pongTable.setCountdownTimer(Number(data.timer));
+      }
     }
 
     if (data.type == "start_pong_game") {
@@ -155,26 +158,26 @@ export async function runConnectionManager(gameMap: GameMap) {
     if (data.type == "pong_update") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        pongTable.updatePaddle(Side.Left, data.pongState.paddles.left);
-        pongTable.updatePaddle(Side.Right, data.pongState.paddles.right);
+        pongTable.updatePaddle('left', data.pongState.paddles.left);
+        pongTable.updatePaddle('right', data.pongState.paddles.right);
       }
     }
 
-    if (data.type =="score_update") {
+    if (data.type == "score_update") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
         console.log("Data: ", data);
-          if (data.side == 'left')
-            pongTable.updateScore(Side.Right, data.score);
-          if (data.side == 'right')
-            pongTable.updateScore(Side.Left, data.score);
+        if (data.side == 'left')
+          pongTable.updateScore('right', data.score);
+        if (data.side == 'right')
+          pongTable.updateScore('left', data.score);
       }
     }
 
     if (data.type == "ball_move") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        let ballPos : Vector2 = {x: data.ball.x, y: data.ball.y};
+        let ballPos: Vector2 = { x: data.ball.x, y: data.ball.y };
         pongTable.updateBall(ballPos);
       }
     }

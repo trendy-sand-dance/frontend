@@ -6,7 +6,6 @@ import InfoBox from './infobox.js';
 import Player from './player.js';
 // import Player from './player.js';
 import * as settings from './settings.js';
-import { Side } from './interfaces.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
   const slicedRows = array.slice(fromY, toY);
@@ -18,15 +17,18 @@ function isWithinRange(value: number, target: number, range: number) {
 }
 
 export default class PongTable {
+
   private container = new Container();
+  private worldPosition: Vector2;
   private tableGrid: number[][] = []; //4x2
 
-  private worldPosition: Vector2;
   private ball: Ball;
-  private paddles: Paddle[] = [];
-  private players: [PongPlayer | null, PongPlayer | null] = [null, null];
-  private indicators: InfoBox[] = [];
-  private inProgress : boolean = false;
+  private paddles: Paddles = { left: new Paddle({ x: 0, y: 0 }, 0.5, 0.05), right: new Paddle({ x: 4, y: 0 }, 0.5, 0.05) };
+  private players: PongPlayers = { left: null, right: null };
+  private indicators: Indicators = { left: new InfoBox(`Waiting for player...`, 12, 0, 0), right: new InfoBox(`Waiting for player...`, 12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
+  private countdownTimer: InfoBox = new InfoBox('3', 24, settings.TILESIZE * 2, 0);
+
+  private inProgress: boolean = false;
 
   constructor(position: Vector2, parentMap: number[][]) {
     this.worldPosition = position;
@@ -45,65 +47,90 @@ export default class PongTable {
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
 
-    // Create Player Left 
-    this.indicators.push(new InfoBox(`Waiting for left-side player...`, 12, 0, 0));
-    this.container.addChild(this.indicators[Side.Left].getContainer());
-    let p1Paddle = new Paddle({ x: 0, y: 0 }, 0.5, 0.05);
-    this.paddles.push(p1Paddle);
-    this.container.addChild(this.paddles[Side.Left].getGraphics());
-
-    this.indicators.push(new InfoBox('Waiting for right-side player...', 12, 4 * settings.TILESIZE, 4 * settings.TILESIZE / 2));
-    this.container.addChild(this.indicators[Side.Right].getContainer());
-    let p2Paddle = new Paddle({ x: 4, y: 0 }, 0.5, 0.05);
-    this.paddles.push(p2Paddle);
-    this.container.addChild(this.paddles[Side.Right].getGraphics());
-
+    // Add containers/graphics to main container
+    this.countdownTimer.container.renderable = false;
+    this.container.addChild(this.indicators['left'].getContainer());
+    this.container.addChild(this.indicators['right'].getContainer());
+    this.container.addChild(this.countdownTimer.getContainer());
+    this.container.addChild(this.paddles['left'].getGraphics());
+    this.container.addChild(this.paddles['right'].getGraphics());
 
     this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
-    this.container.zIndex = 1000;
+    this.container.zIndex = 10;
   }
 
-  isPlayerAtLeft(position: Vector2) {
+  setCountdownTimer(seconds: number) {
+
+    if (seconds === -1) {
+      this.countdownTimer.container.renderable = false;
+    }
+    else {
+      this.countdownTimer.container.renderable = true;
+      this.countdownTimer.setText(`Starting in: ${seconds}`, settings.CGA_WHITE);
+      this.countdownTimer.setColor(settings.CGA_BLACK);
+    }
+
+  }
+
+  isPlayerAtLeft(position: Vector2): boolean {
+
     let playerPos = { x: Math.round(position.x), y: Math.round(position.y) };
 
     if (playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y)
       || playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
       return true;
     }
+
     return false;
   }
 
-  isPlayerAtRight(position: Vector2) {
+  isPlayerAtRight(position: Vector2): boolean {
+
     let playerPos = { x: Math.round(position.x), y: Math.round(position.y) };
 
     if (playerPos.x === Math.round(this.worldPosition.x + 3) && playerPos.y === Math.round(this.worldPosition.y)
       || playerPos.x === Math.round(this.worldPosition.x + 3) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
       return true;
     }
+
     return false;
+
   }
 
   setPlayerReady(player: Player, side: 'left' | 'right') {
-    let pSide: Side = side === 'left' ? Side.Left : Side.Right;
 
-    if (!this.players[pSide]) {
-      this.players[pSide] = { id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side };
-      this.indicators[pSide].setText(`${player.getUsername()} is ready!`, settings.CGA_CYAN);
-      this.indicators[pSide].setColor(settings.CGA_BLACK);
+    if (!this.players[side]) {
+      this.players[side] = { id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side };
+      this.indicators[side].setText(`${player.getUsername()} is ready!`, settings.CGA_CYAN);
+      this.indicators[side].setColor(settings.CGA_BLACK);
     }
+
   }
 
+  joinIndicator(side: 'left' | 'right') {
+
+    this.indicators[side].setText(`Press 'E' to ready up`, settings.CGA_CYAN);
+    this.indicators[side].setColor(settings.CGA_BLACK);
+
+  }
+
+  resetIndicator(side: 'left' | 'right') {
+
+    this.indicators[side].setText('Waiting for player...', settings.CGA_PINK);
+    this.indicators[side].setColor(settings.CGA_BLACK);
+
+  }
 
   startGame() {
 
 
-      if (!this.inProgress) {
+    if (!this.inProgress) {
 
-      this.indicators[Side.Left].setText(`${this.players[Side.Left]?.username} Score: 0`, settings.CGA_PINK);
-      this.indicators[Side.Left].setColor(settings.CGA_BLACK);
+      this.indicators['left'].setText(`${this.players['left']?.username} Score: 0`, settings.CGA_PINK);
+      this.indicators['left'].setColor(settings.CGA_BLACK);
 
-      this.indicators[Side.Right].setText(`${this.players[Side.Right]?.username} Score: 0`, settings.CGA_PINK);
-      this.indicators[Side.Right].setColor(settings.CGA_BLACK);
+      this.indicators['right'].setText(`${this.players['right']?.username} Score: 0`, settings.CGA_PINK);
+      this.indicators['right'].setColor(settings.CGA_BLACK);
 
     }
 
@@ -117,59 +144,69 @@ export default class PongTable {
 
   }
 
-  updateScore(side : Side, score : number) {
+  updateScore(side: 'left' | 'right', score: number) {
 
     if (this.players[side]) {
       this.players[side].score = score;
-      this.indicators[side].setText(`${this.players[Side.Left]?.username} Score: ${this.players[side].score}`, settings.CGA_PINK);
+      this.indicators[side].setText(`${this.players[side]?.username} Score: ${this.players[side].score}`, settings.CGA_PINK);
       this.indicators[side].setColor(settings.CGA_BLACK);
     }
 
   }
 
   removePlayer(side: 'left' | 'right') {
-    let pSide: Side = side === 'left' ? Side.Left : Side.Right;
 
-    if (this.players[pSide]) {
-      this.players[pSide] = null;
-      this.indicators[pSide].setText("Waiting for left-side player...", settings.CGA_PINK);
-      this.indicators[pSide].setColor(settings.CGA_BLACK);
+    if (this.players[side]) {
+      this.players[side] = null;
+      this.indicators[side].setText("Waiting for left-side player...", settings.CGA_PINK);
+      this.indicators[side].setColor(settings.CGA_BLACK);
     }
+
   }
 
-  isSideReady(side: Side) {
+  isSideReady(side: 'left' | 'right') {
+
     if (this.players[side])
       return this.players[side].ready;
+
   }
 
   isPlayerReady(id: number): boolean {
-    for (const player of this.players) {
-      if (player && player.id === id && player.ready) {
-        return true;
-      }
-    }
+
+    if (this.players['left'] && this.players['left'].id === id)
+      return this.players['left'].ready;
+
+    if (this.players['right'] && this.players['right'].id === id)
+      return this.players['right'].ready;
+
     return false;
   }
 
-  getPongPlayer(side: Side): PongPlayer | null {
+  getPongPlayer(side: 'left' | 'right'): PongPlayer | null {
+
     if (this.players[side])
       return this.players[side];
+
     return null;
+
   }
 
-  getPlayerSide(player: Player): Side | null {
+  getPlayerSide(player: Player): string | null {
+
     let position = player.getPosition();
 
     if (this.isPlayerAtLeft(position)) {
-      return Side.Left;
+      return 'left';
     }
     else if (this.isPlayerAtRight(position)) {
-      return Side.Right;
+      return 'right';
     }
+
     return null;
+
   }
 
-  collidesWithPaddle(side: Side) : boolean {
+  collidesWithPaddle(side: 'left' | 'right'): boolean {
 
     let ballPos = this.getLocalBallPosition(this.ball);
     let paddlePos = this.getLocalPaddlePosition(this.paddles[side]);
@@ -178,37 +215,50 @@ export default class PongTable {
     let pEnd = paddlePos.y + pHeight;
 
     let offset: number = 0;
-    if (side === Side.Right)
+    if (side === 'right')
       offset = settings.TILESIZE * 4;
 
     if (ballPos.y > pBegin && ballPos.y < pEnd && isWithinRange(offset, ballPos.x, 2))
       return true;
 
     return false;
+
   }
 
   updateBall(position: Vector2) {
+
     this.ball.update(position);
+
   }
 
-  updatePaddle(side: Side | null, paddleY: number) {
+  updatePaddle(side: 'left' | 'right' | null, paddleY: number) {
+
     if (side !== null) {
       this.paddles[side].update(paddleY);
     }
+
   }
 
   getLocalBallPosition(ball: Ball): Vector2 {
+
     let pos = ball.getPoint().asCartesian;
+
     return { x: pos.x * settings.TILESIZE, y: pos.y * settings.TILESIZE };
+
   }
 
   getLocalPaddlePosition(paddle: Paddle): Vector2 {
+
     let pos = paddle.getPoint().asCartesian;
+
     return { x: pos.x * settings.TILESIZE, y: pos.y * settings.TILESIZE };
+
   }
 
   getContainer(): Container {
+
     return this.container;
+
   }
 
 }

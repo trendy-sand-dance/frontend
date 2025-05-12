@@ -10,7 +10,7 @@ import PongTable from './pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
 import { initializeLocalPlayer } from './connectionmanager.js';
-import { Side, CameraMode } from './interfaces.js';
+import { CameraMode } from './interfaces.js';
 //import Ball from './ball.js';
 // import InfoBox from './infobox.js';
 
@@ -73,28 +73,49 @@ async function setup() {
   console.log("Pixi app initialized:", pixiApp);
 }
 
-function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
-  const side = pongTable.getPlayerSide(player);
+function indicateIfJoinable(player: Player, pongTable: PongTable) {
+
+  const side = pongTable.getPlayerSide(player) as 'left' | 'right' | null;
+
   if (side === null) {
+
+    if (!pongTable.isSideReady('left'))
+      pongTable.resetIndicator('left');
+    if (!pongTable.isSideReady('right'))
+      pongTable.resetIndicator('right');
     return;
   }
 
+  pongTable.joinIndicator(side);
 
-  const stringSide: string = side === Side.Left ? 'left' : 'right';
-  const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 0, ready: false, score: 0, side: stringSide };
+}
 
-  if (!pongTable.isSideReady(side)) {
-    cm.sendToServer({ type: "join_pong", pongPlayer: newPlayer });
+function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
+
+  const side = pongTable.getPlayerSide(player) as 'left' | 'right';
+
+  if (side === null) {
+    return;
   }
   else {
-    const existingPlayer: PongPlayer | null = pongTable.getPongPlayer(side);
-    if (existingPlayer && existingPlayer.id !== player.id) {
-      alert("There's already another player at the table!");
+
+    const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
+
+    if (!pongTable.isSideReady(side)) {
+      cm.sendToServer({ type: "join_pong", pongPlayer: newPlayer });
     }
-    else if (existingPlayer) {
-      cm.sendToServer({ type: "leave_pong", pongPlayer: existingPlayer });
+    else {
+      const existingPlayer: PongPlayer | null = pongTable.getPongPlayer(side);
+      if (existingPlayer && existingPlayer.id !== player.id) {
+        alert("There's already another player at the table!");
+      }
+      else if (existingPlayer) {
+        cm.sendToServer({ type: "leave_pong", pongPlayer: existingPlayer });
+      }
     }
+
   }
+
 }
 
 function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) {
@@ -106,7 +127,7 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
     gameMap.container.y = -p.asIsometric.y + pixiApp.screen.height / 2;
   }
   else
-    mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+  mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
 
 }
 
@@ -131,14 +152,17 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
   gameMap.container.addChild(pongTable.getContainer());
   playerManager.initPongTable(pongTable);
 
-  //Game Loop
   let driver: number = 0;
+
+  //Game Loop
   pixiApp.ticker.add((time: Ticker) => {
+
     const player = playerManager.getLocalPlayer();
 
     if (player) {
 
       handleCamera(player, cameraMode, gameMap);
+      indicateIfJoinable(player, pongTable);
 
       // Switch camera mode
       if (input.keyWasPressed['KeyC']) {
@@ -146,31 +170,33 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
       }
 
       // Pong join table
-      if (input.keyWasPressed['KeyE'])
+      if (input.keyWasPressed['KeyE']) {
         joinOrLeavePongTable(player, pongTable);
+      }
 
       // Pong move paddle
-      if (!pongTable.isPlayerReady(player.id))
+      if (!pongTable.isPlayerReady(player.id)) {
         input.movePlayer(player, time.deltaTime);
+      }
       else {
-        const side = pongTable.getPlayerSide(player);
+
+        const side = pongTable.getPlayerSide(player) as 'left' | 'right';
 
         if (side !== null) {
-          const sideString: string = side === Side.Left ? 'left' : 'right';
+
           if (input.keyIsPressed['ArrowUp']) {
             cm.sendToServer({
               type: "paddle_move",
-              side: sideString,
+              side: side,
               direction: "up",
             });
           }
           if (input.keyIsPressed['ArrowDown']) {
             cm.sendToServer({
               type: "paddle_move",
-              side: sideString,
+              side: side,
               direction: "down",
             });
-            // pongTable.updatePaddle(side, input.keyIsPressed, time.deltaTime);
           }
 
           if (pongTable.collidesWithPaddle(side)) {
@@ -188,15 +214,15 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
         pixiApp.stage.x += Math.sin(driver);
       }
 
-      // PongTable business
-
       //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
+
         cm.sendToServer({
           type: "player_move",
           id: player.getId(),
           position: player.getPosition(),
         });
+
       }
 
       prevPos = player.getPosition();

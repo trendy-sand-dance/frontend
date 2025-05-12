@@ -1,4 +1,6 @@
 // import * as settings from './settings.js';
+import Paddle from './paddle.js';
+import InfoBox from './infobox.js';
 
 declare global {
 
@@ -11,6 +13,21 @@ declare global {
 
   type KeyPressState = {
     [key: string]: boolean;
+  }
+
+  interface PongPlayers {
+    left: PongPlayer | null,
+    right: PongPlayer | null,
+  }
+
+  interface Paddles {
+    left: Paddle,
+    right: Paddle,
+  }
+
+  interface Indicators {
+    left: InfoBox,
+    right: InfoBox,
   }
 
   interface PongPlayer {
@@ -63,11 +80,6 @@ declare global {
     y: number,
   }
 
-}
-
-export enum Side {
-  Left,
-  Right,
 }
 
 export enum CameraMode {
