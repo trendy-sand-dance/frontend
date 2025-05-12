@@ -71,7 +71,6 @@ export default class PongTable {
     else {
       this.countdownTimer.container.renderable = true;
       this.countdownTimer.setText(`Starting in: ${seconds}`, settings.CGA_WHITE);
-      this.countdownTimer.setColor(settings.CGA_BLACK);
     }
 
   }
@@ -103,16 +102,30 @@ export default class PongTable {
 
   setPlayerReady(player: Player, side: 'left' | 'right') {
 
+
     if (!this.players[side]) {
       this.players[side] = { id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side };
-      this.indicators[side].displayPongState(PongState.PlayerReady, player.getUsername(), 0);
+      this.indicators[side].setPongPlayer(this.players[side]);
+      this.indicators[side].setState(PongState.PlayerReady);
+      console.log("SETTING PLAYER READY WHO'S ALREADY THERRE!");
     }
 
   }
 
-  setIndicator(side: 'left' | 'right', state: PongState, username: string | null, score: number | null) {
+  setIndicator(side: 'left' | 'right' | null, state: PongState) {
+    if (side === null) {
+      console.log("setINdicator side === null!!");
+      return;
+    }
 
-    this.indicators[side].displayPongState(state, username, score);
+    this.indicators[side].setState(state);
+
+  }
+
+  displayPongState() {
+
+    this.indicators['left'].display();
+    this.indicators['right'].display();
 
   }
 
@@ -120,8 +133,8 @@ export default class PongTable {
 
 
     if (!this.inProgress) {
-      this.indicators['left'].displayPongState(PongState.InProgress, this.players['left']!.username, 0);
-      this.indicators['right'].displayPongState(PongState.InProgress, this.players['right']!.username, 0);
+      this.indicators['left'].setState(PongState.InProgress);
+      this.indicators['right'].setState(PongState.InProgress);
     }
 
     this.inProgress = true;
@@ -138,7 +151,7 @@ export default class PongTable {
 
     if (this.players[side]) {
       this.players[side].score = score;
-      this.indicators[side].displayPongState(PongState.InProgress, this.players[side]!.username, this.players[side].score);
+      this.indicators[side].setPongPlayer(this.players[side]);
     }
 
   }
@@ -147,7 +160,7 @@ export default class PongTable {
 
     if (this.players[side]) {
       this.players[side] = null;
-      this.indicators[side].displayPongState(PongState.Waiting, null, null);
+      this.indicators[side].setState(PongState.Waiting);
     }
 
   }

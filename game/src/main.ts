@@ -73,24 +73,6 @@ async function setup() {
   console.log("Pixi app initialized:", pixiApp);
 }
 
-function indicateIfJoinable(player: Player, pongTable: PongTable) {
-
-  const side = pongTable.getPlayerSide(player) as 'left' | 'right' | null;
-
-  if (side === null) {
-
-    if (!pongTable.isSideReady('left'))
-      pongTable.setIndicator('left', PongState.Waiting, null, null);
-    if (!pongTable.isSideReady('right'))
-      pongTable.setIndicator('right', PongState.Waiting, null, null);
-    return;
-  }
-
-  if (!pongTable.isSideReady(side))
-    pongTable.setIndicator(side, PongState.PlayerNearby, null, null);
-
-}
-
 function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
 
   const side = pongTable.getPlayerSide(player) as 'left' | 'right';
@@ -119,7 +101,36 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
 
 }
 
-function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) {
+function handlePong(pongTable: PongTable, player: Player) {
+
+  if (!pongTable.isPlayerReady(player.id)) {
+
+    if (pongTable.isPlayerAtLeft(player.getPosition()) && !pongTable.isSideReady('left')) {
+      pongTable.setIndicator('left', PongState.PlayerNearby);
+    }
+    else if (!pongTable.isSideReady('left')) {
+      pongTable.setIndicator('left', PongState.Waiting);
+    }
+
+    if (pongTable.isPlayerAtRight(player.getPosition()) && !pongTable.isSideReady('right')) {
+      pongTable.setIndicator('right', PongState.PlayerNearby);
+    }
+    else if (!pongTable.isSideReady('right')) {
+      pongTable.setIndicator('right', PongState.Waiting);
+    }
+
+  }
+
+  // Pong join table
+  if (input.keyWasPressed['KeyE']) {
+    joinOrLeavePongTable(player, pongTable);
+  }
+
+  pongTable.displayPongState();
+
+}
+
+function handleCamera(player: Player, gameMap: GameMap) {
 
   if (cameraMode === CameraMode.Locked) {
     let p = player.getPoint();
@@ -127,8 +138,15 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
     gameMap.container.x = -p.asIsometric.x + pixiApp.screen.width / 2;
     gameMap.container.y = -p.asIsometric.y + pixiApp.screen.height / 2;
   }
-  else
-  mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+  else {
+    mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
+  }
+
+  // Switch camera mode
+  if (input.keyWasPressed['KeyC']) {
+    cameraMode = input.switchCameraMode(cameraMode);
+  }
+
 
 }
 
@@ -162,18 +180,8 @@ function handleCamera(player: Player, cameraMode: CameraMode, gameMap: GameMap) 
 
     if (player) {
 
-      handleCamera(player, cameraMode, gameMap);
-      indicateIfJoinable(player, pongTable);
-
-      // Switch camera mode
-      if (input.keyWasPressed['KeyC']) {
-        cameraMode = input.switchCameraMode(cameraMode);
-      }
-
-      // Pong join table
-      if (input.keyWasPressed['KeyE']) {
-        joinOrLeavePongTable(player, pongTable);
-      }
+      handleCamera(player, gameMap);
+      handlePong(pongTable, player);
 
       // Pong move paddle
       if (!pongTable.isPlayerReady(player.id)) {

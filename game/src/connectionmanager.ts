@@ -60,6 +60,7 @@ function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap,
       }
     }
   }
+
 }
 
 function isLocalPlayer(id: number): boolean {
@@ -93,6 +94,22 @@ export async function runConnectionManager(gameMap: GameMap) {
     // We initialize all other connected players
     if (data.type == "initialize_players") {
       initializePlayers(data.players, gameMap, texture);
+    }
+
+    if (data.type == "initialize_pong") {
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        const pongPlayer = data.left as PongPlayer || data.right as PongPlayer;
+        const player = playerManager.getPlayer(pongPlayer.id);
+        console.log("pongPlayer: ", pongPlayer);
+        console.log("player: ", player);
+        if (pongPlayer && player) {
+          const side = pongPlayer.side as 'left' | 'right';
+          pongTable.setPlayerReady(player, side);
+        }
+
+      }
+
     }
 
     // When a player disconnects, we remove it from the gameMap, playerManager

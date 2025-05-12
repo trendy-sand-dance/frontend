@@ -5,20 +5,46 @@ import { PongState } from './interfaces.js';
 export default class PongInfo {
 
   private box: InfoBox;
-  // private size: number;
-  // private position: Vector2;
-  // private state: PongState;
+  private state: PongState;
+  private score: number;
+  private username: string;
 
   constructor(size: number, x: number, y: number) {
     this.box = new InfoBox("", size, x, y);
-    // this.size = size;
-    // this.position = { x, y };
-    // this.state = PongState.Waiting;
+    this.score = 0;
+    this.username = "";
+    this.state = PongState.Waiting;
   }
 
-  displayPongState(state: PongState, username: string | null, score: number | null) {
+  setPongPlayer(pongPlayer: PongPlayer) {
 
-    switch (state) {
+    if (pongPlayer) {
+      this.score = pongPlayer.score;
+      this.username = pongPlayer.username;
+    }
+
+  }
+
+  setScore(score: number) {
+
+    this.score = score;
+
+  }
+
+  setState(state: PongState) {
+
+    if (state === PongState.Waiting) {
+      this.score = 0;
+      this.username = "";
+    }
+
+    this.state = state;
+
+  }
+
+  display() {
+
+    switch (this.state) {
 
       case PongState.Waiting:
         this.box.setText("Waiting for player", settings.CGA_PINK);
@@ -27,17 +53,13 @@ export default class PongInfo {
         this.box.setText("Press 'E'", settings.CGA_CYAN);
         break;
       case PongState.PlayerReady:
-        if (username) {
-          this.box.setText(`${username} is ready!`, settings.CGA_CYAN);
-        }
+        this.box.setText(`${this.username} is ready!`, settings.CGA_CYAN);
         break;
       case PongState.InProgress:
-        if (username !== null && score !== null)
-          this.box.setText(`${username} Score: ${score}`, settings.CGA_PINK);
+        this.box.setText(`${this.username} Score: ${this.score}`, settings.CGA_PINK);
         break;
       default:
         break;
-
     }
 
   }
