@@ -10,7 +10,7 @@ import PongTable from './pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
 import { initializeLocalPlayer } from './connectionmanager.js';
-import { CameraMode } from './interfaces.js';
+import { PongState, CameraMode } from './interfaces.js';
 //import Ball from './ball.js';
 // import InfoBox from './infobox.js';
 
@@ -80,13 +80,14 @@ function indicateIfJoinable(player: Player, pongTable: PongTable) {
   if (side === null) {
 
     if (!pongTable.isSideReady('left'))
-      pongTable.resetIndicator('left');
+      pongTable.setIndicator('left', PongState.Waiting, null, null);
     if (!pongTable.isSideReady('right'))
-      pongTable.resetIndicator('right');
+      pongTable.setIndicator('right', PongState.Waiting, null, null);
     return;
   }
 
-  pongTable.joinIndicator(side);
+  if (!pongTable.isSideReady(side))
+    pongTable.setIndicator(side, PongState.PlayerNearby, null, null);
 
 }
 

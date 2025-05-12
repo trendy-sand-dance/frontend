@@ -1,6 +1,7 @@
 // import * as settings from './settings.js';
 import Paddle from './paddle.js';
-import InfoBox from './infobox.js';
+// import InfoBox from './infobox.js';
+import Indicator from './indicator.js';
 
 declare global {
 
@@ -25,9 +26,14 @@ declare global {
     right: Paddle,
   }
 
+  // interface Indicators {
+  //   left: InfoBox,
+  //   right: InfoBox,
+  // }
+
   interface Indicators {
-    left: InfoBox,
-    right: InfoBox,
+    left: Indicator,
+    right: Indicator,
   }
 
   interface PongPlayer {
@@ -86,5 +92,13 @@ export enum CameraMode {
   Locked,
   Free,
 }
+
+export enum PongState {
+  Waiting,
+  PlayerNearby,
+  PlayerReady,
+  InProgress,
+}
+
 
 

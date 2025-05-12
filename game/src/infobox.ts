@@ -43,6 +43,7 @@ export default class InfoBox {
   setText(text: string, color: string) {
     this.text.style.fill = color;
     this.text.text = text;
+    this.setColor(settings.CGA_BLACK);
   }
 
   getContainer(): Container {

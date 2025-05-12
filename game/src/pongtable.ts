@@ -3,9 +3,11 @@ import Ball from './ball.js';
 import Point from './point.js';
 import Paddle from './paddle.js';
 import InfoBox from './infobox.js';
+import Indicator from './indicator.js';
 import Player from './player.js';
 // import Player from './player.js';
 import * as settings from './settings.js';
+import { PongState } from './interfaces.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
   const slicedRows = array.slice(fromY, toY);
@@ -25,7 +27,9 @@ export default class PongTable {
   private ball: Ball;
   private paddles: Paddles = { left: new Paddle({ x: 0, y: 0 }, 0.5, 0.05), right: new Paddle({ x: 4, y: 0 }, 0.5, 0.05) };
   private players: PongPlayers = { left: null, right: null };
-  private indicators: Indicators = { left: new InfoBox(`Waiting for player...`, 12, 0, 0), right: new InfoBox(`Waiting for player...`, 12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
+  // private indicators: Indicators = { left: new InfoBox(`Waiting for player...`, 12, 0, 0), right: new InfoBox(`Waiting for player...`, 12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
+  private indicators: Indicators = { left: new Indicator(12, 0, 0), right: new Indicator(12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
+
   private countdownTimer: InfoBox = new InfoBox('3', 24, settings.TILESIZE * 2, 0);
 
   private inProgress: boolean = false;
@@ -101,23 +105,14 @@ export default class PongTable {
 
     if (!this.players[side]) {
       this.players[side] = { id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side };
-      this.indicators[side].setText(`${player.getUsername()} is ready!`, settings.CGA_CYAN);
-      this.indicators[side].setColor(settings.CGA_BLACK);
+      this.indicators[side].displayPongState(PongState.PlayerReady, player.getUsername(), 0);
     }
 
   }
 
-  joinIndicator(side: 'left' | 'right') {
+  setIndicator(side: 'left' | 'right', state: PongState, username: string | null, score: number | null) {
 
-    this.indicators[side].setText(`Press 'E' to ready up`, settings.CGA_CYAN);
-    this.indicators[side].setColor(settings.CGA_BLACK);
-
-  }
-
-  resetIndicator(side: 'left' | 'right') {
-
-    this.indicators[side].setText('Waiting for player...', settings.CGA_PINK);
-    this.indicators[side].setColor(settings.CGA_BLACK);
+    this.indicators[side].displayPongState(state, username, score);
 
   }
 
@@ -125,13 +120,8 @@ export default class PongTable {
 
 
     if (!this.inProgress) {
-
-      this.indicators['left'].setText(`${this.players['left']?.username} Score: 0`, settings.CGA_PINK);
-      this.indicators['left'].setColor(settings.CGA_BLACK);
-
-      this.indicators['right'].setText(`${this.players['right']?.username} Score: 0`, settings.CGA_PINK);
-      this.indicators['right'].setColor(settings.CGA_BLACK);
-
+      this.indicators['left'].displayPongState(PongState.InProgress, this.players['left']!.username, 0);
+      this.indicators['right'].displayPongState(PongState.InProgress, this.players['right']!.username, 0);
     }
 
     this.inProgress = true;
@@ -148,8 +138,7 @@ export default class PongTable {
 
     if (this.players[side]) {
       this.players[side].score = score;
-      this.indicators[side].setText(`${this.players[side]?.username} Score: ${this.players[side].score}`, settings.CGA_PINK);
-      this.indicators[side].setColor(settings.CGA_BLACK);
+      this.indicators[side].displayPongState(PongState.InProgress, this.players[side]!.username, this.players[side].score);
     }
 
   }
@@ -158,8 +147,7 @@ export default class PongTable {
 
     if (this.players[side]) {
       this.players[side] = null;
-      this.indicators[side].setText("Waiting for left-side player...", settings.CGA_PINK);
-      this.indicators[side].setColor(settings.CGA_BLACK);
+      this.indicators[side].displayPongState(PongState.Waiting, null, null);
     }
 
   }
