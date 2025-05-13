@@ -1,7 +1,9 @@
 import { Graphics, Text } from "pixi.js";
 import GameMap from './gamemap.js';
 // import * as settings from './settings.js';
+// import { CameraMode } from './interfaces.js';
 
+import { pixiApp, localPlayerPos } from './main.js';
 
 export class MouseData {
 
@@ -46,6 +48,7 @@ export function moveMapWithMouse(mousePos: Vector2, map: GameMap, focused: boole
     let fraction = (mousePos.x - (window.innerWidth - bufferHorizontal)) / bufferHorizontal;
     dir.x -= fraction * moveIntensity;
   }
+
   // Left-hand side
   if (mousePos.x <= bufferHorizontal) {
     let fraction = (bufferHorizontal - mousePos.x) / bufferHorizontal;
@@ -66,11 +69,11 @@ export function moveMapWithMouse(mousePos: Vector2, map: GameMap, focused: boole
   map.moveMap(dir);
 }
 
-export function setupMapZoom(mousePos: Vector2, map: GameMap) {
+export function setupMapZoom() {
 
   window.addEventListener('wheel', (event) => {
     let zoomIntensity = 0.05;
-    let minZoom = 0.75;
+    let minZoom = 0.5;
     let maxZoom = 2;
     let scrollDir = event.deltaY / Math.abs(event.deltaY);
 
@@ -79,24 +82,25 @@ export function setupMapZoom(mousePos: Vector2, map: GameMap) {
       Down = 1,
     }
 
-    let container = map.getContainer();
+    let container = pixiApp.stage;
+    let wOffset = localPlayerPos.asCartesian.x + pixiApp.screen.width / 2;
+    let hOffset = localPlayerPos.asCartesian.y + pixiApp.screen.height / 2;
 
     if (scrollDir == Dir.Up && container.scale.x < maxZoom) {
       const scaleFactor = 1 - (container.scale.x / (container.scale.x + zoomIntensity));
       container.scale.x += zoomIntensity;
       container.scale.y += zoomIntensity;
-
-      container.x -= (mousePos.x - container.x) * scaleFactor;
-      container.y -= (mousePos.y - container.y) * scaleFactor;
+      container.x -= (wOffset - container.x) * scaleFactor;
+      container.y -= (hOffset - container.y) * scaleFactor;
     }
     else if (scrollDir == Dir.Down && container.scale.x > minZoom) {
       const scaleFactor = 1 - (container.scale.x / (container.scale.x + zoomIntensity));
       container.scale.x -= zoomIntensity;
       container.scale.y -= zoomIntensity;
 
-      container.x += (mousePos.x - container.x) * scaleFactor;
-      container.y += (mousePos.y - container.y) * scaleFactor;
+      container.x += (wOffset - container.x) * scaleFactor;
+      container.y += (hOffset - container.y) * scaleFactor;
     }
-  })
+  });
 
 }

@@ -67,14 +67,18 @@
 	</div>
 
       <script> 
-      const uploadField = document.getElementById("myFile");
-
-      uploadField.onchange = function() {
-        if(this.files[0].size > 3145728) {
-          alert("File is too big!");
-          this.value = "";
-        }
-      };
+            (function() { // Wrapping this in a function avoided a weird error where avatarUplaodField was being declared double... Hmm?
+              const avatarUploadField = document.getElementById("myFile");
+            
+              if (avatarUploadField) {
+                avatarUploadField.onchange = function() {
+                  if (this.files[0].size > 3145728) {
+                    alert("File is too big!");
+                    this.value = "";
+                  }
+                };
+              }
+            })();
       </script>
 
 
