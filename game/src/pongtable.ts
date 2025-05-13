@@ -27,7 +27,6 @@ export default class PongTable {
   private ball: Ball;
   private paddles: Paddles = { left: new Paddle({ x: 0, y: 0 }, 0.5, 0.05), right: new Paddle({ x: 4, y: 0 }, 0.5, 0.05) };
   private players: PongPlayers = { left: null, right: null };
-  // private indicators: Indicators = { left: new InfoBox(`Waiting for player...`, 12, 0, 0), right: new InfoBox(`Waiting for player...`, 12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
   private indicators: Indicators = { left: new Indicator(12, 0, 0), right: new Indicator(12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
 
   private countdownTimer: InfoBox = new InfoBox('3', 24, settings.TILESIZE * 2, 0);
@@ -102,19 +101,17 @@ export default class PongTable {
 
   setPlayerReady(player: Player, side: 'left' | 'right') {
 
-
     if (!this.players[side]) {
       this.players[side] = { id: player.getId(), username: player.getUsername(), paddleY: 32, ready: true, score: 0, side: side };
       this.indicators[side].setPongPlayer(this.players[side]);
       this.indicators[side].setState(PongState.PlayerReady);
-      console.log("SETTING PLAYER READY WHO'S ALREADY THERRE!");
     }
 
   }
 
   setIndicator(side: 'left' | 'right' | null, state: PongState) {
+
     if (side === null) {
-      console.log("setINdicator side === null!!");
       return;
     }
 
@@ -141,6 +138,44 @@ export default class PongTable {
 
   }
 
+  stopGame() {
+
+    if (this.inProgress) {
+      this.indicators['left'].setState(PongState.Waiting);
+      this.indicators['right'].setState(PongState.Waiting);
+    }
+
+    this.players['left'] = null;
+    this.players['right'] = null;
+
+    this.inProgress = false;
+
+  }
+
+  finishGame(winnerId : number) {
+
+    this.countdownTimer.container.renderable = true;
+
+    if (this.players['left'] && this.players['right']) {
+
+      const min = Math.min(this.players['left'].score, this.players['right'].score);
+      const max = Math.max(this.players['left'].score, this.players['right'].score);
+
+      if (this.players['left'].id === winnerId) {
+        this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
+      }
+      else {
+        this.countdownTimer.setText(`${this.players['right'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
+      }
+
+      setTimeout(() => {
+        this.countdownTimer.container.renderable = false;
+      }, 2000)
+
+    }
+
+  }
+
   isInProgress() {
 
     return this.inProgress;
@@ -159,8 +194,12 @@ export default class PongTable {
   removePlayer(side: 'left' | 'right') {
 
     if (this.players[side]) {
-      this.players[side] = null;
-      this.indicators[side].setState(PongState.Waiting);
+      this.players['left'] = null;
+      this.players['right'] = null;
+      this.indicators['left'].setState(PongState.Waiting);
+      this.indicators['right'].setState(PongState.Waiting);
+      this.inProgress = false;
+      this.countdownTimer.container.renderable = false;
     }
 
   }
@@ -219,7 +258,7 @@ export default class PongTable {
     if (side === 'right')
       offset = settings.TILESIZE * 4;
 
-    if (ballPos.y > pBegin && ballPos.y < pEnd && isWithinRange(offset, ballPos.x, 2))
+    if (ballPos.y > pBegin && ballPos.y < pEnd && isWithinRange(offset, ballPos.x, 1.5))
       return true;
 
     return false;

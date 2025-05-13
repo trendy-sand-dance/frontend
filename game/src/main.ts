@@ -103,7 +103,11 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
 
 function handlePong(pongTable: PongTable, player: Player) {
 
-  if (!pongTable.isPlayerReady(player.id)) {
+  if (pongTable.isInProgress()) {
+    pongTable.setIndicator('left', PongState.InProgress);
+    pongTable.setIndicator('right', PongState.InProgress);
+  }
+  else if (!pongTable.isPlayerReady(player.id)) {
 
     if (pongTable.isPlayerAtLeft(player.getPosition()) && !pongTable.isSideReady('left')) {
       pongTable.setIndicator('left', PongState.PlayerNearby);
@@ -125,6 +129,7 @@ function handlePong(pongTable: PongTable, player: Player) {
   if (input.keyWasPressed['KeyE']) {
     joinOrLeavePongTable(player, pongTable);
   }
+
 
   pongTable.displayPongState();
 

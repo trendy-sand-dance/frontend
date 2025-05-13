@@ -180,6 +180,14 @@ export async function runConnectionManager(gameMap: GameMap) {
       }
     }
 
+    if (data.type == "player_disconnected_pong") {
+
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        pongTable.stopGame();
+      }
+    }
+
     if (data.type == "score_update") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
@@ -197,6 +205,15 @@ export async function runConnectionManager(gameMap: GameMap) {
         let ballPos: Vector2 = { x: data.ball.x, y: data.ball.y };
         pongTable.updateBall(ballPos);
       }
+    }
+
+    if (data.type == "finish_game") {
+
+      const pongTable = playerManager.pongTable;
+      if (pongTable) {
+        pongTable.finishGame(data.winnerId);
+      }
+
     }
 
   };
