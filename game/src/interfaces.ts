@@ -1,4 +1,7 @@
 // import * as settings from './settings.js';
+import Paddle from './paddle.js';
+// import InfoBox from './infobox.js';
+import Indicator from './indicator.js';
 
 declare global {
 
@@ -9,9 +12,37 @@ declare global {
     htmx: typeof import('htmx.org');
   }
 
-  interface Vector2 {
-    x: number;
-    y: number;
+  type KeyPressState = {
+    [key: string]: boolean;
+  }
+
+  interface PongPlayers {
+    left: PongPlayer | null,
+    right: PongPlayer | null,
+  }
+
+  interface Paddles {
+    left: Paddle,
+    right: Paddle,
+  }
+
+  // interface Indicators {
+  //   left: InfoBox,
+  //   right: InfoBox,
+  // }
+
+  interface Indicators {
+    left: Indicator,
+    right: Indicator,
+  }
+
+  interface PongPlayer {
+    id: number,
+    username: string,
+    paddleY: number,
+    ready: boolean,
+    score: number,
+    side: string,
   }
 
   interface Vector2 {
@@ -23,8 +54,11 @@ declare global {
     type: string,
     id?: number,
     username?: string,
+    side?: string,
     avatar?: string,
     position?: Vector2,
+    direction?: string,
+    pongPlayer?: PongPlayer,
   }
 
   interface UserData {
@@ -44,6 +78,27 @@ declare global {
     y: number,
   }
 
+  interface ServerPlayer { // Related to Player (on GameServer)
+    id: number,
+    username: string,
+    avatar: string,
+    x: number,
+    y: number,
+  }
+
 }
+
+export enum CameraMode {
+  Locked,
+  Free,
+}
+
+export enum PongState {
+  Waiting,
+  PlayerNearby,
+  PlayerReady,
+  InProgress,
+}
+
 
 

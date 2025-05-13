@@ -1,7 +1,8 @@
 import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
-import Point from './point.js';
+import PongTable from './pongtable.js';
+//import Point from './point.js';
 import('htmx.org');
 
 const playerInfoBox = document.getElementById("pixi-player-info");
@@ -11,6 +12,7 @@ class PlayerManager {
 
   public players = new Map<number, Player>;
   public localPlayer: Player | null = null;
+  public pongTable : PongTable | null = null;
 
   private constructor() {
 
@@ -31,13 +33,17 @@ class PlayerManager {
     return false;
   }
 
-  initLocalPlayer(id: number, position: Vector2, texture: Texture) {
-    this.localPlayer = new Player(id, new Point(position.x, position.y), texture);
+  initLocalPlayer(id: number, username: string, avatar : string, position: Vector2, texture: Texture) {
+    this.localPlayer = new Player(id, username, avatar, position, texture);
     return this.localPlayer;
   }
 
-  addPlayer(id: number, position: Vector2, texture: Texture) {
-    const player = new Player(id, new Point(position.x, position.y), texture);
+  initPongTable(table : PongTable) {
+    this.pongTable = table;
+  }
+
+  addPlayer(id: number, username: string, avatar : string, position: Vector2, texture: Texture) {
+    const player = new Player(id, username, avatar, position, texture);
     const playerSprite = player.getContext();
     const filter = new ColorMatrixFilter();
 
@@ -66,17 +72,12 @@ class PlayerManager {
         playerInfoBox.style.left = `${mouse.x + 10}px`;
 
         try {
-          console.log("OKKKK, FETCHINGGG");
-          const response = await fetch(`/game/playerinfo/${id}`);
-          const data = await response.json(); // Username, avatar(filename)
-
-          console.log("OKKKK, DONE: ", data);
           const infoUsername = document.getElementById("infoUsername");
           const infoAvatar = document.getElementById("infoAvatar");
           if (infoUsername)
-            infoUsername.textContent = `${data.username}`;
+            infoUsername.textContent = `${username}`;
           if (infoAvatar)
-            infoAvatar.outerHTML = `<img src="/images/avatars/${data.avatar}" class="w-12 h-12 rounded-full" />`;
+            infoAvatar.outerHTML = `<img src="/images/avatars/${avatar}" class="w-12 h-12 rounded-full" />`;
 
           // Set up friend request button
           const friendReqBtn = document.getElementById("friendRequestBtn");
