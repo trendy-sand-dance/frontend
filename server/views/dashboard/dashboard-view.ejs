@@ -33,7 +33,9 @@
 		</div>
 	
 		<!-- Sidebar -->
-		<aside id="sidebar" class="hidden absolute top-0 right-0 w-1/6 h-full flex-col bg-[#01FFFF] border-l border-cyan-400 z-10">
+		<aside 
+			id="sidebar"
+			class="hidden absolute top-0 right-0 w-1/6 h-full flex-col bg-[#01FFFF] border-l border-cyan-400 z-10 animate-slide-in">
 		<div id="sidebar-content" class="flex-1 overflow-y-auto p-4">
 			<!-- Dynamic sidebar content -->
 		</div>
@@ -57,13 +59,16 @@
 			Chat 💬💬💬
 		</button>
 	
-		<button type="button"
+		<button 
+			type="button"
 			hx-get="/viewPlayers/<%= user.username %>"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
+			onclick="toggleSidebar()"
 			class="p-2 justify-right">
 			Friendos 👬👫👭
 		</button>
+		
 	
 		</nav>
 	
@@ -71,5 +76,16 @@
 	  
 
 </body>
+
+<script>
+	// Simple toggle function that shows/hides the sidebar
+	function toggleSidebar() {
+	  const sidebar = document.getElementById('sidebar');
+	  if (sidebar) {
+		sidebar.classList.toggle('hidden');
+	  }
+	}
+</script>
+
 
 </html>

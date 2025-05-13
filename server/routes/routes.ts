@@ -6,8 +6,7 @@ import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAv
 import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
-import { getplaygroundView } from "../controllers/playground.controller.js";
-import sidebarController from "../controllers/playground.controller.js";
+// import sidebarController from "../controllers/playground.controller.js";
 
 export async function routes(fastify: FastifyInstance) {
 
@@ -56,14 +55,6 @@ export async function routes(fastify: FastifyInstance) {
 
 
 
-
-
-
-
-
-  //scooby doo!
-  fastify.get('/playground', getplaygroundView);
-  fastify.get('/toggle-sidebar', sidebarController);
 
 
 fastify.get('/placeholder', async (req, reply) => {
