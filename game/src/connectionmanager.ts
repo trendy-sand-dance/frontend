@@ -7,7 +7,7 @@ let localUser = window.__INITIAL_STATE__;
 const gameserverUrl = window.__GAMESERVER_URL__;
 
 // Init WebSocket
-let socket: WebSocket;
+export let socket: WebSocket;
 
 if (window.__GAMESERVER_URL__)
   socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);

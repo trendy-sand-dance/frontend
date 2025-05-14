@@ -11,6 +11,8 @@ import Point from './point.js';
 import Player from './player.js';
 import { initializeLocalPlayer } from './connectionmanager.js';
 import { PongState, CameraMode } from './interfaces.js';
+import TournamentSubscription from "./tournamentsubscription.js";
+import { socket } from './connectionmanager.js'
 //import Ball from './ball.js';
 // import InfoBox from './infobox.js';
 
@@ -175,6 +177,15 @@ function handleCamera(player: Player, gameMap: GameMap) {
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP);
   gameMap.container.addChild(pongTable.getContainer());
   playerManager.initPongTable(pongTable);
+
+
+  // Testing tournamentSubscription box
+  let p = playerManager.getLocalPlayer();
+  if (p) {
+    let tournamentBox = new TournamentSubscription(37, 10, socket, p, Texture.from('block_opaque_coloured'));
+    gameMap.container.addChild(tournamentBox.getContext());
+  }
+
 
   let driver: number = 0;
 
