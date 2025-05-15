@@ -18,10 +18,12 @@
 
   <script>
     window.__INITIAL_STATE__ = <%-user%>;
+    window.__USER_ID__ = <%-id%>;
     window.__GAMESERVER_URL__ = <%-gameserverURL%>;
-
     console.table(window.__INITIAL_STATE__);
     console.table(window.__GAMESERVER_URL__);
+		console.log("user : ", user)
+		console.log("id : ", id)
   </script>
 
 	<div class="relative w-screen h-screen overflow-hidden bg-black">
@@ -106,7 +108,7 @@
     <nav class="flex flex-start items-center w-screen bg-[#01FFFF]">
 
       <!-- Profile Button -->
-      <div id="dashboard-profile-button" hx-get="/dashboard/<%=user%>" hx-swap="innerHTML" hx-trigger="load"
+      <div id="dashboard-profile-button" hx-get="/dashboard/<%=id%>" hx-swap="innerHTML" hx-trigger="load"
         hx-target="this"></div>
 
       <!-- Chat button -->

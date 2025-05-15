@@ -12,6 +12,7 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
   try {
 		return reply.viewAsync("dashboard/dashboard-view.ejs", {
 			user: payload.name,
+			id: payload.id,
 			gameserverURL: LOCAL_GAMESERVER_URL
 		});
 	}
@@ -23,12 +24,14 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 
 export async function getDashboardUser(request: FastifyRequest, reply: FastifyReply) {
 
-  const { username } = request.params as { username: string };
+  const { userid } = request.params as { userid: number };
+
 
   try {
-    const response = await fetch(`${DATABASE_URL}/dashboard/${username}`);
-    const resData = await response.json() as { email: string, avatar: string };
-    return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
+    const response = await fetch(`${DATABASE_URL}/user/${userid}`);
+    const userData = await response.json() as { username: string, email: string, avatar: string };
+		console.log("userData", userData)
+    return reply.viewAsync("dashboard/profile-button.ejs", { username: userData.username, email: userData.email, img_avatar: userData.avatar });
   }
   catch (error) {
     request.log.error(error);
