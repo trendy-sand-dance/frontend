@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { User } from '../../types';
-import { USERMANAGEMENT_URL } from '../../config';
+import { USERMANAGEMENT_URL, DATABASE_URL} from '../../config';
 
 
 export async function getLoginView(request: FastifyRequest, reply: FastifyReply) {

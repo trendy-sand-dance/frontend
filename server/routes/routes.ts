@@ -19,9 +19,6 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/login-view', getLoginView);
   fastify.get('/register-view', getRegisterView);
   fastify.post('/register-user', registerUser);
-  fastify.get('/stats/:username', getStats);
-  fastify.post('/addWin/:username', updateWins);
-  fastify.post('/addLoss/:username', updateLosses);
 
   // Stats
   fastify.get('/stats/:username', getStats);
