@@ -23,14 +23,6 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/addWin/:username', updateWins);
   fastify.post('/addLoss/:username', updateLosses);
 
-  // Friends
-  fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
-//  fastify.post('/acceptReq/:senderId/:userId', acceptReq); // sender is person who sent request, this user is accepting their request
-//  fastify.delete('/rejectReq/:senderId/:userId', rejectReq); // sender is person who sent request, this user is rejecting their request
-//  fastify.post('/block/:friendId/:userId', block); // friend is person who user wants to block
-  fastify.get('/viewAllFriends/:username', viewAllFriends); 
-  fastify.get('/viewOnlyFriends/:username', viewOnlyFriends); 
- 
   // Stats
   fastify.get('/stats/:username', getStats);
   fastify.post('/addWin/:username', updateWins);
