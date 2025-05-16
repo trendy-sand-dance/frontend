@@ -1,56 +1,67 @@
-import { FederatedPointerEvent, Sprite, Texture } from 'pixi.js';
-import Player from './player';
+import { Sprite, Texture } from 'pixi.js';
 import Point from './point.js';
+import { mouse } from './input.js';
+// import('htmx.org');
+
+const tournamentInfoBox = document.getElementById("pixi-tournament-info");
+const subscribeBtn = document.getElementById("joinTournamentBtn");
+const unsubscribeBtn = document.getElementById("leaveTournamentBtn");
 
 export default class TournamentSubscription {
 
   private subscriptionBox : Sprite;
-  private players : PongPlayer[] = [];
   private server : WebSocket;
-  private player : Player;
+  private localPlayer : TournamentPlayer;
 
-  constructor(x: number, y: number, server : WebSocket, player : Player, texture : Texture) {
+  constructor(x: number, y: number, server : WebSocket, localPlayer : TournamentPlayer, texture : Texture) {
 
     this.subscriptionBox = new Sprite(texture);
     this.server = server;
-    this.player = player;
+    this.localPlayer = localPlayer;
 
     this.subscriptionBox.interactive = true;
-    this.subscriptionBox.on('pointerdown', async (event : FederatedPointerEvent) => {
+    this.subscriptionBox.on('pointerdown', async () => {
 
-      if (event.button === 0) {
-        this.subscribe();
-      }
-
-      if (event.button == 2) {
-        this.unsubscribe();
+      if (tournamentInfoBox) {
+        tournamentInfoBox.style.display = 'block';
+        tournamentInfoBox.style.top = `${mouse.y + 10}px`
+        tournamentInfoBox.style.left = `${mouse.x + 10}px`
       }
 
     });
 
     let p = new Point(x, y);
+    console.log(this.server.url);
 
     this.subscriptionBox.x = p.asIsometric.x;
     this.subscriptionBox.y = p.asIsometric.y + 32;
 
+    if (subscribeBtn) {
+      subscribeBtn.addEventListener("click", () => {
+          
+        this.subscribe();
 
+      }); 
+    }
+
+    if (unsubscribeBtn) {
+      unsubscribeBtn.addEventListener("click", () => {
+          
+        this.unsubscribe();
+
+      }); 
+    }
   }
 
   subscribe() {
 
-    alert("Subscribing...");
-    const localPongPlayer : PongPlayer = {id: this.player.id, username: this.player.getUsername(), paddleY: 0, ready: false, score: 0, side: ""};
-    this.server.send(JSON.stringify({type: "tournament_join", pongPlayer: localPongPlayer }))
-    if (this.players.length > 1) 
-      console.log("JO");
+    this.server.send(JSON.stringify({type: "tournament_join", tournamentPlayer: this.localPlayer}))
 
   }
 
   unsubscribe() {
 
-    alert("Unsubscribing...");
-    const localPongPlayer : PongPlayer = {id: this.player.id, username: this.player.getUsername(), paddleY: 0, ready: false, score: 0, side: ""};
-    this.server.send(JSON.stringify({type: "tournament_leave", pongPlayer: localPongPlayer }))
+    this.server.send(JSON.stringify({type: "tournament_leave", tournamentPlayer: this.localPlayer}))
 
   }
 

@@ -182,7 +182,7 @@ function handleCamera(player: Player, gameMap: GameMap) {
   // Testing tournamentSubscription box
   let p = playerManager.getLocalPlayer();
   if (p) {
-    let tournamentBox = new TournamentSubscription(37, 10, socket, p, Texture.from('block_opaque_coloured'));
+    let tournamentBox = new TournamentSubscription(37, 10, socket, {id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false}, Texture.from('block_opaque_coloured'));
     gameMap.container.addChild(tournamentBox.getContext());
   }
 

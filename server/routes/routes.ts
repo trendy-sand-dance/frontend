@@ -4,7 +4,7 @@ import { login, loginUser, logout, getLoginView } from '../controllers/account/l
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAvatar } from '../controllers/account/editUser.controller.js';
 import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
-import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
+import { getPixiGame, getPlayerInfo, getTournamentPlayers } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
 
@@ -48,6 +48,8 @@ export async function routes(fastify: FastifyInstance) {
   // Game
   fastify.get('/game-canvas', getPixiGame);
   fastify.get('/game/playerinfo/:id', getPlayerInfo);
+  fastify.get('/getTournamentPlayers', getTournamentPlayers);
+
 
   // Dashboard
   fastify.get('/dashboard', getDashboard);

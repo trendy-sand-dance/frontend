@@ -26,11 +26,6 @@ declare global {
     right: Paddle,
   }
 
-  // interface Indicators {
-  //   left: InfoBox,
-  //   right: InfoBox,
-  // }
-
   interface Indicators {
     left: Indicator,
     right: Indicator,
@@ -43,6 +38,15 @@ declare global {
     ready: boolean,
     score: number,
     side: string,
+  }
+
+  interface TournamentPlayer {
+    id: number,
+    username: string,
+    avatar: string,
+    wins: number,
+    losses: number,
+    local: boolean,
   }
 
   interface Vector2 {

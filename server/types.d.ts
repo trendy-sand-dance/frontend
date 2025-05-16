@@ -17,3 +17,16 @@ declare module "fastify" {
 		status: boolean;
 	}
 };
+
+declare global {
+
+  interface TournamentPlayer {
+    id: number,
+    username: string,
+    avatar: string,
+    wins: number,
+    losses: number,
+    local: boolean,
+  }
+
+}
