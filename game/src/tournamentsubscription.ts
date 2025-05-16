@@ -34,7 +34,7 @@ export default class TournamentSubscription {
     console.log(this.server.url);
 
     this.subscriptionBox.x = p.asIsometric.x;
-    this.subscriptionBox.y = p.asIsometric.y + 32;
+    this.subscriptionBox.y = p.asIsometric.y;
 
     if (subscribeBtn) {
       subscribeBtn.addEventListener("click", () => {

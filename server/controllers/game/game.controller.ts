@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { getBundledFile } from '../../utility/utility.js';
+import { DATABASE_URL } from '../../config.js';
 
 const DATABASE_URL: string = process.env.DATABASE_URL || "http://ok:3000";
 const GAMESERVER_URL: string = process.env.GAMESERVER_URL || "http://gameserver_container:3000";

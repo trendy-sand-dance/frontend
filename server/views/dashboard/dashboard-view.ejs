@@ -16,12 +16,15 @@
 
 <body class="bg-[#01FFFF]" hx-ext="events">
 
-	<script>
-		window.__INITIAL_STATE__ = <%- JSON.stringify(user) %>;
-		window.__GAMESERVER_URL__ = <%- JSON.stringify(gameserverUrl) %>;
-		console.table(window.__INITIAL_STATE__);
-		console.table(window.__GAMESERVER_URL__);
-	</script>
+  <script>
+    window.__INITIAL_STATE__ = <%-user%>;
+    window.__USER_ID__ = <%-id%>;
+    window.__GAMESERVER_URL__ = <%-gameserverURL%>;
+    console.table(window.__INITIAL_STATE__);
+    console.table(window.__GAMESERVER_URL__);
+		console.log("user : ", user)
+		console.log("id : ", id)
+  </script>
 
 	<div class="relative w-screen h-screen overflow-hidden bg-black">
 
@@ -45,7 +48,7 @@
 		<nav class="absolute bottom-0 left-0 right-0 bg-[#01FFFF] flex items-center p-4 space-x-4 border-t border-cyan-400 z-20">
 	
 		<div id="dashboard-profile-button"
-			hx-get="/dashboard/<%= user.username %>"
+			hx-get="/dashboard/<%= id %>"
 			hx-trigger="load"
 			hx-swap="innerHTML"
 			hx-target="this">
@@ -61,7 +64,7 @@
 	
 		<button 
 			type="button"
-			hx-get="/viewPlayers/<%= user.username %>"
+			hx-get="/viewPlayers/<%= user %>"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
 			onclick="toggleSidebar()"
