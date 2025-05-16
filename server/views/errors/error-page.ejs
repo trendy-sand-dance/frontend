@@ -12,14 +12,13 @@
 	<div class="border-2 border-pink-500 rounded-2xl shadow-2xl shadow-pink-500/25 p-12 max-w-md text-center">
 		<h1 class="text-3xl mb-4 text-pink-100 font-bold drop-shadow-lg"><%= title %></h1>
 		<p class="text-white mb-8 text-lg drop-shadow"><%= details %>.</p>
+		<a href="/">
 		<button 
 			class="px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 border border-pink-400"
-			hx-get="/login"
-			hx-target="body"
-			hx-swap="outerHTML"
-		>
+			>
 			login page
 		</button>
+			</a>
 	</div>
 </body>
 </html>

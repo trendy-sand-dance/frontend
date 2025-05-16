@@ -16,3 +16,7 @@ export const USERMANAGEMENT_URL: string = process.env.USERMANAGEMENT_URL || "htt
 export const GAMESERVER_URL: string = process.env.GAMESERVER_URL || "http://gameserver_container:3000";
 export const LOCAL_GAMESERVER_URL: string = process.env.LOCAL_GAMESERVER_URL || "localhost:8003";
 
+
+// oauth stuff
+export const GOOGLE_CLIENT_ID:			string = process.env.GOOGLE_CLIENT_ID 					|| "GOOGLE_CLIENT_ID NOT SET";
+export const GOOGLE_CLIENT_SECRET:	string = process.env.GOOGLE_CLIENT_SECRET 			|| "GOOGLE_CLIENT_SECRET NOT SET";	

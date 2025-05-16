@@ -1,6 +1,6 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 // import { User } from '../../types';
-import { USERMANAGEMENT_URL, DATABASE_URL } from '../../config';
+import { DATABASE_URL, USERMANAGEMENT_URL } from '../../config';
 
 
 export async function getLoginView(request: FastifyRequest, reply: FastifyReply) {
@@ -9,7 +9,6 @@ export async function getLoginView(request: FastifyRequest, reply: FastifyReply)
 
 
 export async function login(request: FastifyRequest, reply: FastifyReply) {
-
   try {
     const { username, password } = request.body as { username: string, password: string };
 
