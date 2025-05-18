@@ -3,7 +3,8 @@ import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
 // import Player from './player.js';
 
-let localUser = window.__INITIAL_STATE__;
+// let localUser = window.__INITIAL_STATE__;
+let localUser: UserData = { id: 420, username: "testUser", password: "", email: "", avatar: "", status: false, player: { id: 420, userId: 420, x: 0, y: 0 } };
 const gameserverUrl = window.__GAMESERVER_URL__;
 
 // Init WebSocket
