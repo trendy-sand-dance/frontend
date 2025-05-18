@@ -45,13 +45,15 @@ declare global {
   }
 
   interface User {
-    id: number,
-    username: string,
-    password: string,
-    email: string,
-    avatar: string,
-    status: boolean,
-    player: Player,
+    id?: number,
+    username?: string,
+    password?: string,
+    email?: string,
+    avatar?: string,
+    status?: boolean,
+    wins?: number,
+    losses?: number,
+    player?: Player,
   }
 
 }

@@ -21,6 +21,20 @@ export function sendToServer(data: ServerMessage) {
   }
 }
 
+async function getUserInfo(id: number) {
+  try {
+    console.log("using ", id, " to fetch userinfo");
+    const response = await fetch(`/game/userinfo/${id}`);
+    const { user } = await response.json() as { user: User };
+    // const { user } = await response.json();
+    console.log("We got the user!!! ", user);
+    return user;
+  }
+  catch (error) {
+    console.log("We don't got the user :(");
+  }
+}
+
 export function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
   let spawnPosition: Vector2;
 
@@ -72,6 +86,10 @@ export async function runConnectionManager(gameMap: GameMap) {
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
+  const test = await getUserInfo(window.__USER_ID__);
+  if (test) {
+    console.log("test: ", test);
+  }
   const texture = Texture.from('player_bunny');
   const player = initializeLocalPlayer(localUser.player, gameMap, texture);
   if (player) {

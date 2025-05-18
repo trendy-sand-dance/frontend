@@ -8,7 +8,7 @@ declare global {
   interface Window {
     __INITIAL_STATE__: UserData;
     __GAMESERVER_URL__: string;
-    __FOCUSED_USER__: UserData;
+    __USER_ID__: number;
     htmx: typeof import('htmx.org');
   }
 
@@ -88,6 +88,18 @@ declare global {
     avatar: string,
     x: number,
     y: number,
+  }
+
+  interface User {
+    id: number,
+    username: string,
+    password?: string,
+    email?: string,
+    avatar: string,
+    status: boolean,
+    wins: number,
+    losses: number,
+    player: PlayerData,
   }
 
 }

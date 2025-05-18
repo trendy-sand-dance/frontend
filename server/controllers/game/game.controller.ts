@@ -13,6 +13,19 @@ export async function getPixiGame(request: FastifyRequest, reply: FastifyReply) 
 
 }
 
+export const getUserInfo = async (request: FastifyRequest, reply: FastifyReply): Promise<any> => {
+
+  try {
+    const { id } = request.params as { id: number };
+    const response = await fetch(`${DATABASE_URL}/game/userinfo/${id}`);
+    const { user } = await response.json() as { user: User };
+    console.log("game.controller: sending user: ", user);
+    return reply.code(200).send({ user });
+  } catch (error) {
+    console.error(error);
+    return reply.code(500).send({ error: "Failed to load userinfo endpoint" });
+  }
+};
 
 export async function getPlayerInfo(request: FastifyRequest, reply: FastifyReply) {
   try {
