@@ -4,7 +4,7 @@ import GameMap from './gamemap.js';
 // import Player from './player.js';
 
 // let localUser = window.__INITIAL_STATE__;
-let localUser: UserData = { id: 420, username: "testUser", password: "", email: "", avatar: "", status: false, player: { id: 420, userId: 420, x: 0, y: 0 } };
+// let localUser: UserData = { id: 420, username: "testUser", password: "", email: "", avatar: "", status: false, player: { id: 420, userId: 420, x: 0, y: 0 } };
 const gameserverUrl = window.__GAMESERVER_URL__;
 
 // Init WebSocket
@@ -21,46 +21,34 @@ export function sendToServer(data: ServerMessage) {
   }
 }
 
-async function getUserInfo(id: number) {
+async function getUserInfo(id: number): Promise<User> {
   try {
-    console.log("using ", id, " to fetch userinfo");
     const response = await fetch(`/game/userinfo/${id}`);
     const { user } = await response.json() as { user: User };
-    // const { user } = await response.json();
-    console.log("We got the user!!! ", user);
     return user;
   }
   catch (error) {
     console.log("We don't got the user :(");
+    return { id: 420, username: "testUser", password: "", email: "", avatar: "", status: false, wins: 0, losses: 0, player: { id: 420, userId: 420, x: 0, y: 0 } };
+
   }
 }
 
-export function initializeLocalPlayer(localPlayerData: PlayerData, gameMap: GameMap, texture: Texture) {
-  let spawnPosition: Vector2;
+export function initializeLocalPlayer(localUser: User, gameMap: GameMap, texture: Texture) {
 
-  if (localPlayerData.x === 0 && localPlayerData.y === 0) {
-    spawnPosition = { x: 36, y: 20 }; // Inits player at entrance
-  } else {
-    spawnPosition = { x: localPlayerData.x, y: localPlayerData.y };
+  let pos: Vector2 = { x: localUser.player.x, y: localUser.player.y };
+
+  if (pos.x === 0 && pos.y === 0) {
+    pos = { x: 36, y: 20 };
   }
 
-  let username: string;
-  let avatar: string;
-  // Create test user when in DEV mode
-  if (!window.__INITIAL_STATE__) {
-    username = "testUser";
-    avatar = "test.png";
-  }
-  else {
-    username = localUser.username;
-    avatar = localUser.avatar;
-  }
-  const player = playerManager.initLocalPlayer(localPlayerData.id, username, avatar, spawnPosition, texture);
+  const player = playerManager.initLocalPlayer(localUser.id, localUser.username, localUser.avatar, pos, texture);
 
   if (player) {
     gameMap.addPlayer(player);
     return player;
   }
+
 }
 
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap, texture: Texture) {
@@ -69,6 +57,7 @@ function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap,
     console.log(`Player ${id} is at (${player.x}, ${player.y})`);
 
     if (!isLocalPlayer(id)) {
+      console.log("Adding player: ", id, player);
       const newPlayer = playerManager.addPlayer(id, player.username, player.avatar, { x: player.x, y: player.y }, texture);
       if (newPlayer) {
         gameMap.addPlayer(newPlayer);
@@ -79,19 +68,16 @@ function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap,
 }
 
 function isLocalPlayer(id: number): boolean {
-  return id === localUser.id;
+  return id == window.__USER_ID__;
 }
 
 export async function runConnectionManager(gameMap: GameMap) {
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
-  const test = await getUserInfo(window.__USER_ID__);
-  if (test) {
-    console.log("test: ", test);
-  }
+  const localUser: User = await getUserInfo(window.__USER_ID__);
   const texture = Texture.from('player_bunny');
-  const player = initializeLocalPlayer(localUser.player, gameMap, texture);
+  const player = initializeLocalPlayer(localUser, gameMap, texture);
   if (player) {
     sendToServer({ type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
   }

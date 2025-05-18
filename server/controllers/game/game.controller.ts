@@ -19,7 +19,6 @@ export const getUserInfo = async (request: FastifyRequest, reply: FastifyReply):
     const { id } = request.params as { id: number };
     const response = await fetch(`${DATABASE_URL}/game/userinfo/${id}`);
     const { user } = await response.json() as { user: User };
-    console.log("game.controller: sending user: ", user);
     return reply.code(200).send({ user });
   } catch (error) {
     console.error(error);

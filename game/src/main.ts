@@ -9,10 +9,10 @@ import * as cm from './connectionmanager.js';
 import PongTable from './pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
-import { initializeLocalPlayer } from './connectionmanager.js';
 import { PongState, CameraMode } from './interfaces.js';
 import TournamentSubscription from "./tournamentsubscription.js";
 import { socket } from './connectionmanager.js'
+// import { initializeLocalPlayer } from './connectionmanager.js';
 //import Ball from './ball.js';
 // import InfoBox from './infobox.js';
 
@@ -166,11 +166,15 @@ function handleCamera(player: Player, gameMap: GameMap) {
   let gameMap: GameMap = addGameMap(pixiApp);
 
   //Network business
-  if (window.__INITIAL_STATE__) {
-    cm.runConnectionManager(gameMap);
-  }
-  else { // We set up a test player for dev mode
-    initializeLocalPlayer({ id: -1, userId: -1, x: 0, y: 0 }, gameMap, Texture.from('player_bunny'));
+  if (window.__USER_ID__) {
+    await cm.runConnectionManager(gameMap);
+
+    // Testing tournamentSubscription box
+    let p = playerManager.getLocalPlayer();
+    if (p) {
+      let tournamentBox = new TournamentSubscription(37, 10, socket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
+      gameMap.container.addChild(tournamentBox.getContext());
+    }
   }
 
   // Testing Pong table
@@ -179,12 +183,6 @@ function handleCamera(player: Player, gameMap: GameMap) {
   playerManager.initPongTable(pongTable);
 
 
-  // Testing tournamentSubscription box
-  let p = playerManager.getLocalPlayer();
-  if (p) {
-    let tournamentBox = new TournamentSubscription(37, 10, socket, {id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false}, Texture.from('block_opaque_coloured'));
-    gameMap.container.addChild(tournamentBox.getContext());
-  }
 
 
   let driver: number = 0;
