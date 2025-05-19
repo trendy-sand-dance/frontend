@@ -54,11 +54,12 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function logout(request: FastifyRequest, reply: FastifyReply) {
-  const { username } = request.params as { username: string };
-
+  const payload: UserPayload = request.user;
+  const username = payload.name;
+  console.log("payload from logout: ", payload);
   reply.clearCookie('access_token')
   try {
-    const response = await fetch(`${DATABASE_URL}/logout/${username}`);
+    await fetch(`${DATABASE_URL}/logout/${username}`);
     return reply.sendFile("index.html");
   } catch (error) {
     request.log.error(error);

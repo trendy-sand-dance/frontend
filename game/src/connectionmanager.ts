@@ -1,19 +1,20 @@
 import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
-// import Player from './player.js';
 
-// let localUser = window.__INITIAL_STATE__;
-// let localUser: UserData = { id: 420, username: "testUser", password: "", email: "", avatar: "", status: false, player: { id: 420, userId: 420, x: 0, y: 0 } };
-const gameserverUrl = window.__GAMESERVER_URL__;
 
-// Init WebSocket
-export let socket: WebSocket;
+function initializeWebsocket(gameserverURL: string): WebSocket {
 
-if (window.__GAMESERVER_URL__)
-  socket = new WebSocket(`ws://${gameserverUrl}:8003/ws-gameserver`);
-else
-  socket = new WebSocket(`ws://localhost:8003/ws-gameserver`);
+  if (gameserverURL) {
+    console.log("Succesfully connected with the gameserver");
+    return new WebSocket(`ws://${gameserverURL}:8003/ws-gameserver`);
+  }
+  else {
+    console.warn("GameserverURL not defined... this may cause issues with the websocket connection");
+    return new WebSocket(`ws://localhost:8003/ws-gameserver`);
+  }
+
+}
 
 export function sendToServer(data: ServerMessage) {
   if (socket.readyState == WebSocket.OPEN) {
@@ -51,6 +52,8 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap, texture
 
 }
 
+export let socket: WebSocket = initializeWebsocket(window.__GAMESERVER_URL__);
+
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap, texture: Texture) {
   for (const [id, player] of players) {
 
@@ -85,8 +88,6 @@ export async function runConnectionManager(gameMap: GameMap) {
   socket.onmessage = (message) => {
     const data = JSON.parse(message.data);
     // console.warn(message.data);
-
-    // PLAYER POSITION SHENANIGANS
 
     // When a new player joins, we add it to the playerManager and gameMap
     if (data.type === "new_player" && !isLocalPlayer(data.id)) {
@@ -219,6 +220,11 @@ export async function runConnectionManager(gameMap: GameMap) {
         pongTable.finishGame(data.winnerId);
       }
 
+    }
+
+    // Tournament
+    if (data.type == "tournament_match_schedule") {
+      console.log("matches: ", data.matches);
     }
 
   };
