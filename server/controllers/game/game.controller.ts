@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { getBundledFile } from '../../utility/utility.js';
-import { GAMESERVER_URL, DATABASE_URL } from '../../config.js';
+import { GAMESERVER_URL, DATABASE_URL, LOCAL_GAMESERVER_URL } from '../../config.js';
 
 export async function getPixiGame(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -41,6 +41,7 @@ export async function getPlayerInfo(request: FastifyRequest, reply: FastifyReply
 
 export async function getTournamentPlayers(request: FastifyRequest, reply: FastifyReply) {
   try {
+    console.log(`trying to connect with ${GAMESERVER_URL}`);
     const response = await fetch(`${GAMESERVER_URL}/getTournamentPlayers`);
     const resData = await response.json() as { pongPlayers: TournamentPlayer[] };
 

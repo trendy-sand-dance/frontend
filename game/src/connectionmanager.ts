@@ -223,8 +223,8 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
     // Tournament
-    if (data.type == "tournament_match_schedule") {
-      console.log("matches: ", data.matches);
+    if (data.type == "announce_match") {
+      console.log(`${data.players.left.username} is playing against ${data.players.right.username}. Time left to ready up: ${data.seconds}`)
     }
 
   };
