@@ -7,7 +7,7 @@ import Indicator from './indicator.js';
 import Player from './player.js';
 // import Player from './player.js';
 import * as settings from './settings.js';
-import { PongState } from './interfaces.js';
+import { PongState, TournamentState } from './interfaces.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
   const slicedRows = array.slice(fromY, toY);
@@ -33,7 +33,14 @@ export default class PongTable {
 
   private inProgress: boolean = false;
 
-  constructor(position: Vector2, parentMap: number[][]) {
+  // State in case of tournament
+  private isTournament: boolean = false;
+  private state: TournamentState = TournamentState.Enrolling;
+  private expectedTournamentPlayers: PongPlayers = { left: null, right: null };
+
+
+  constructor(position: Vector2, parentMap: number[][], isTournament: boolean) {
+    this.isTournament = isTournament;
     this.worldPosition = position;
 
     // Construct a sub-array from the parent map (4x2)
@@ -60,6 +67,14 @@ export default class PongTable {
 
     this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
     this.container.zIndex = 10;
+    console.log(`Is tournament table: ${this.isTournament}`);
+  }
+
+  transitionTo(newState: TournamentState) {
+
+    console.log(`Transitioning from ${this.state} to ${newState}`);
+    this.state = newState;
+
   }
 
   setCountdownTimer(seconds: number) {
@@ -109,6 +124,31 @@ export default class PongTable {
 
   }
 
+  setExpectedTournamentPlayers(left: Player, right: Player): void {
+
+    this.expectedTournamentPlayers['left'] = { id: left.getId(), username: left.getUsername(), paddleY: 32, ready: false, score: 0, side: 'left' };
+    this.expectedTournamentPlayers['right'] = { id: right.getId(), username: right.getUsername(), paddleY: 32, ready: false, score: 0, side: 'right' };
+
+    this.indicators['left'].setPongPlayer(this.expectedTournamentPlayers['left']);
+    this.indicators['right'].setPongPlayer(this.expectedTournamentPlayers['right']);
+
+    if (!this.players['left'])
+      this.indicators['left'].setState(PongState.Announcing);
+    if (!this.players['right'])
+      this.indicators['right'].setState(PongState.Announcing);
+
+  }
+
+  isExpectedTournamentPlayer(player: Player, side: 'left' | 'right'): boolean {
+
+    if (this.expectedTournamentPlayers[side]) {
+      return player.getId() === this.expectedTournamentPlayers[side].id;
+    }
+
+    return false;
+
+  }
+
   setIndicator(side: 'left' | 'right' | null, state: PongState) {
 
     if (side === null) {
@@ -152,7 +192,7 @@ export default class PongTable {
 
   }
 
-  finishGame(winnerId : number) {
+  finishGame(winnerId: number) {
 
     this.countdownTimer.container.renderable = true;
 
@@ -173,6 +213,12 @@ export default class PongTable {
       }, 2000)
 
     }
+
+    this.players['left'] = null;
+    this.players['right'] = null;
+    this.expectedTournamentPlayers['left'] = null;
+    this.expectedTournamentPlayers['right'] = null;
+    this.inProgress = false;
 
   }
 

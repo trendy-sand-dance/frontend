@@ -63,6 +63,7 @@ declare global {
     position?: Vector2,
     direction?: string,
     pongPlayer?: PongPlayer,
+    tournament?: boolean,
   }
 
   interface UserData {
@@ -114,7 +115,16 @@ export enum PongState {
   PlayerNearby,
   PlayerReady,
   InProgress,
+  Enrolling,
+  Announcing,
 }
 
+export enum TournamentState {
+  Enrolling = "Enrolling",
+  Scheduling = "Scheduling",
+  Announcing = "Announcing",
+  Playing = "Playing",
+  Concluding = "Concluding",
+}
 
 

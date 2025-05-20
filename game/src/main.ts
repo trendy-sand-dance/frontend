@@ -103,6 +103,38 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
 
 }
 
+
+function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) {
+
+  const side = tournamentTable.getPlayerSide(player) as 'left' | 'right';
+
+  if (side === null) {
+    return;
+  }
+  else {
+    if (tournamentTable.isExpectedTournamentPlayer(player, side)) {
+
+      const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
+
+      if (!tournamentTable.isSideReady(side)) {
+        cm.sendToServer({ type: "join_pong_tournament", pongPlayer: newPlayer });
+      }
+      else {
+        const existingPlayer: PongPlayer | null = tournamentTable.getPongPlayer(side);
+        if (existingPlayer && existingPlayer.id !== player.id) {
+          alert("There's already another player at the table!");
+        }
+        else if (existingPlayer) {
+          cm.sendToServer({ type: "leave_pong_tournament", pongPlayer: existingPlayer });
+        }
+      }
+
+    }
+
+  }
+
+}
+
 function handlePong(pongTable: PongTable, player: Player) {
 
   if (pongTable.isInProgress()) {
@@ -137,6 +169,41 @@ function handlePong(pongTable: PongTable, player: Player) {
 
 }
 
+
+function handleTournament(tournamentTable: PongTable, player: Player) {
+
+  if (tournamentTable.isInProgress()) {
+    tournamentTable.setIndicator('left', PongState.InProgress);
+    tournamentTable.setIndicator('right', PongState.InProgress);
+  }
+  else if (!tournamentTable.isPlayerReady(player.id)) {
+
+    if (tournamentTable.isPlayerAtLeft(player.getPosition()) && !tournamentTable.isSideReady('left')) {
+      tournamentTable.setIndicator('left', PongState.PlayerNearby);
+    }
+    else if (!tournamentTable.isSideReady('left')) {
+      tournamentTable.setIndicator('left', PongState.Announcing);
+    }
+
+    if (tournamentTable.isPlayerAtRight(player.getPosition()) && !tournamentTable.isSideReady('right')) {
+      tournamentTable.setIndicator('right', PongState.PlayerNearby);
+    }
+    else if (!tournamentTable.isSideReady('right')) {
+      tournamentTable.setIndicator('right', PongState.Announcing);
+    }
+
+  }
+
+  // tournament join table
+  if (input.keyWasPressed['KeyE']) {
+    joinOrLeaveTournamentTable(tournamentTable, player);
+  }
+
+  tournamentTable.displayPongState();
+
+
+}
+
 function handleCamera(player: Player, gameMap: GameMap) {
 
   if (cameraMode === CameraMode.Locked) {
@@ -154,6 +221,14 @@ function handleCamera(player: Player, gameMap: GameMap) {
     cameraMode = input.switchCameraMode(cameraMode);
   }
 
+
+}
+
+function isAtTable(id: number, table: PongTable) {
+
+  if (table.getPongPlayer('left') && table.getPongPlayer('right'))
+    return table.getPongPlayer('left')!.id === id || table.getPongPlayer('right')!.id === id
+  return false;
 
 }
 
@@ -178,9 +253,14 @@ function handleCamera(player: Player, gameMap: GameMap) {
   }
 
   // Testing Pong table
-  let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP);
+  let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
   gameMap.container.addChild(pongTable.getContainer());
   playerManager.initPongTable(pongTable);
+
+  // Testing tournament table
+  let tournamentTable = new PongTable({ x: 27, y: 2 }, settings.TILEMAP, true);
+  gameMap.container.addChild(tournamentTable.getContainer());
+  playerManager.initTournamentTable(tournamentTable);
 
 
 
@@ -196,13 +276,16 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
       handleCamera(player, gameMap);
       handlePong(pongTable, player);
+      handleTournament(tournamentTable, player);
+
 
       // Pong move paddle
-      if (!pongTable.isPlayerReady(player.id)) {
+      if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
         input.movePlayer(player, time.deltaTime);
       }
       else {
 
+        const isTournament = isAtTable(player.id, tournamentTable);
         const side = pongTable.getPlayerSide(player) as 'left' | 'right';
 
         if (side !== null) {
@@ -212,6 +295,7 @@ function handleCamera(player: Player, gameMap: GameMap) {
               type: "paddle_move",
               side: side,
               direction: "up",
+              tournament: isTournament,
             });
           }
           if (input.keyIsPressed['ArrowDown']) {
@@ -219,6 +303,7 @@ function handleCamera(player: Player, gameMap: GameMap) {
               type: "paddle_move",
               side: side,
               direction: "down",
+              tournament: isTournament,
             });
           }
 

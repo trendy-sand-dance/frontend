@@ -102,12 +102,13 @@ export async function runConnectionManager(gameMap: GameMap) {
       initializePlayers(data.players, gameMap, texture);
     }
 
+    // We initialize all pong players that are currently playing or are waiting for another player
     if (data.type == "initialize_pong") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
         const pongPlayer = data.left as PongPlayer || data.right as PongPlayer;
-        const player = playerManager.getPlayer(pongPlayer.id);
         console.log("pongPlayer: ", pongPlayer);
+        const player = playerManager.getPlayer(pongPlayer.id);
         console.log("player: ", player);
         if (pongPlayer && player) {
           const side = pongPlayer.side as 'left' | 'right';
@@ -224,7 +225,85 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     // Tournament
     if (data.type == "announce_match") {
-      console.log(`${data.players.left.username} is playing against ${data.players.right.username}. Time left to ready up: ${data.seconds}`)
+      console.log(`(left) ${data.players.left.username} is playing against (right) ${data.players.right.username}. Time left to ready up: ${data.seconds}`)
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        const pl = playerManager.getPlayer(data.players.left.id);
+        const pr = playerManager.getPlayer(data.players.right.id);
+        if (pl && pr) {
+          tournamentTable.setExpectedTournamentPlayers(pl, pr);
+        }
+      }
+
+    }
+
+    if (data.type == "confirm_pong_player_tournament" && isLocalPlayer(data.pongPlayer.id)) {
+      const player = playerManager.getLocalPlayer();
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable && player) {
+        console.log(data.pongPlayer.side)
+        tournamentTable.setPlayerReady(player, data.pongPlayer.side);
+      }
+    }
+
+    if (data.type == "player_joined_pong_tournament" && !isLocalPlayer(data.pongPlayer.id)) {
+      const player = playerManager.getPlayer(data.pongPlayer.id);
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable && player) {
+        console.log(data.pongPlayer.side)
+        tournamentTable.setPlayerReady(player, data.pongPlayer.side);
+      }
+    }
+
+    if (data.type == "leave_pong_tournament") {
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        tournamentTable.removePlayer(data.pongPlayer.side);
+      }
+    }
+
+    if (data.type == "countdown_pong_tournament") {
+      console.log("seconds: ", data.timer);
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        tournamentTable.setCountdownTimer(Number(data.timer));
+      }
+    }
+
+    if (data.type == "ball_move_tournament") {
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        let ballPos: Vector2 = { x: data.ball.x, y: data.ball.y };
+        tournamentTable.updateBall(ballPos);
+      }
+    }
+
+    if (data.type == "pong_update_tournament") {
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        tournamentTable.updatePaddle('left', data.pongState.paddles.left);
+        tournamentTable.updatePaddle('right', data.pongState.paddles.right);
+      }
+    }
+
+    if (data.type == "score_update_tournament") {
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        console.log("Data: ", data);
+        if (data.side == 'left')
+          tournamentTable.updateScore('right', data.score);
+        if (data.side == 'right')
+          tournamentTable.updateScore('left', data.score);
+      }
+    }
+
+    if (data.type == "finish_game_tournament") {
+
+      const tournamentTable = playerManager.tournamentTable;
+      if (tournamentTable) {
+        tournamentTable.finishGame(data.winnerId);
+      }
+
     }
 
   };
