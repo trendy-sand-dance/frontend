@@ -5,6 +5,7 @@ import Paddle from './paddle.js';
 import InfoBox from './infobox.js';
 import Indicator from './indicator.js';
 import Player from './player.js';
+import * as cm from './connectionmanager.ts'
 // import Player from './player.js';
 import * as settings from './settings.js';
 import { PongState, TournamentState } from './interfaces.js';
@@ -250,6 +251,30 @@ export default class PongTable {
 
   }
 
+  sendPaddleUpdate(keyIsPressed : KeyPressState, side: 'left' | 'right') {
+
+    if (side !== null && keyIsPressed['ArrowUp']) {
+      console.log("We are sending up");
+      cm.sendToServer({
+        type: "paddle_move",
+        side: side,
+        direction: "up",
+        tournament: this.isTournament,
+      });
+    }
+
+    if (side !== null && keyIsPressed['ArrowDown']) {
+      console.log("We are sending down");
+      cm.sendToServer({
+        type: "paddle_move",
+        side: side,
+        direction: "down",
+        tournament: this.isTournament,
+      });
+    }
+
+  }
+
   isSideReady(side: 'left' | 'right') {
 
     if (this.players[side])
@@ -320,7 +345,10 @@ export default class PongTable {
   updatePaddle(side: 'left' | 'right' | null, paddleY: number) {
 
     if (side !== null) {
+
       this.paddles[side].update(paddleY);
+
+      console.log("updatePaddleY client: ", this.paddles[side].getPaddleHeight());
     }
 
   }

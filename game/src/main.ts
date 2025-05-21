@@ -278,42 +278,37 @@ function isAtTable(id: number, table: PongTable) {
       handlePong(pongTable, player);
       handleTournament(tournamentTable, player);
 
-
       // Pong move paddle
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
+
         input.movePlayer(player, time.deltaTime);
+
       }
       else {
 
-        const isTournament = isAtTable(player.id, tournamentTable);
-        const side = pongTable.getPlayerSide(player) as 'left' | 'right';
+        if (isAtTable(player.id, tournamentTable)) {
 
-        if (side !== null) {
+          const side = tournamentTable.getPlayerSide(player) as 'left' | 'right';
+          tournamentTable.sendPaddleUpdate(input.keyIsPressed, side);
+          // if (tournamentTable.collidesWithPaddle(side)) {
+          //   screenShake = true;
+          //   setTimeout(() => {
+          //     screenShake = false;
+          //   }, 200)
+          // }
 
-          if (input.keyIsPressed['ArrowUp']) {
-            cm.sendToServer({
-              type: "paddle_move",
-              side: side,
-              direction: "up",
-              tournament: isTournament,
-            });
-          }
-          if (input.keyIsPressed['ArrowDown']) {
-            cm.sendToServer({
-              type: "paddle_move",
-              side: side,
-              direction: "down",
-              tournament: isTournament,
-            });
-          }
+        }
+        else {
 
-          if (pongTable.collidesWithPaddle(side)) {
-            screenShake = true;
-            setTimeout(() => {
-              screenShake = false;
-            }, 250)
-          }
-
+          const side = pongTable.getPlayerSide(player) as 'left' | 'right';
+          pongTable.sendPaddleUpdate(input.keyIsPressed, side);
+          // if (pongTable.collidesWithPaddle(side)) {
+          //   screenShake = true;
+          //   setTimeout(() => {
+          //     screenShake = false;
+          //   }, 200)
+          // }
+          //
         }
 
       }

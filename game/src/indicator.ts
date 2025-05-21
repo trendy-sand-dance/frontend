@@ -68,7 +68,10 @@ export default class PongInfo {
         this.box.setText(`Waiting for tournament to fill up...`, settings.CGA_PINK);
         break;
       case PongState.Announcing:
-        this.box.setText(`${this.username}, please ready up!`, settings.CGA_PINK);
+        if (this.username === "")
+          this.box.setText(`Waiting for tournament to fill up...`, settings.CGA_PINK);
+        else
+          this.box.setText(`${this.username}, please ready up!`, settings.CGA_PINK);
         break;
       default:
         break;
