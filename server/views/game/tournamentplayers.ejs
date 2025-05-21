@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<% if (!pongPlayers || pongPlayers.length === 0) { %>
+  <p class="flex">Players <%= pongPlayers.length %> / 4 </p>
+<% } else { %>
+<div> 
+  <p class="flex">Players <%= pongPlayers.length %> / 4 </p>
+  <ul>
+    <% pongPlayers.forEach(function(player) { %>
+    <li class="flex flex-row p-4"><p><%= player.username %> | Wins: <%= player.wins %> | Losses: <%= player.losses %> </p></li>
+    <% }) %>
+  </ul>
+  <% } %>
+</div>
+
+<!-- Match schedule -->
+<div> 
+
+</div>

@@ -4,7 +4,7 @@ import { login, logout, getLoginView } from '../controllers/account/login.contro
 import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAvatar } from '../controllers/account/editUser.controller.js';
 import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
-import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
+import { getPixiGame, getPlayerInfo, getUserInfo, getTournamentPlayers } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
 
@@ -32,7 +32,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.delete('/delete/:username', deleteUser);
   fastify.post('/editAvatar/:username', editAvatar);
   fastify.post('/deleteAvatar/:username', deleteAvatar);
-  
+
   // Friends
   fastify.post("/sendReq/:receiverId/:userId", sendFriendReq);
   fastify.post('/acceptReq/:senderId/:userId', acceptFriendReq); // sender is person who sent request, this user is accepting their request
@@ -40,37 +40,40 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/block/:friendId/:userId', blockFriend); // friend is person who user wants to block
   fastify.get('/viewPlayers/:username', viewPlayers);
   fastify.delete("/deleteFriend/:senderId/:userId", deleteAssociation);
- 
+
   fastify.post('/login', login);
-	fastify.get('/logout', {
-		preHandler: [fastify.authenticate],
-	}, logout);
+  fastify.get('/logout', {
+    preHandler: [fastify.authenticate],
+  }, logout);
 
 
   // Game
   fastify.get('/game-canvas', getPixiGame);
   fastify.get('/game/playerinfo/:id', getPlayerInfo);
+  fastify.get('/game/userinfo/:id', getUserInfo);
+  fastify.get('/getTournamentPlayers', getTournamentPlayers);
+
 
   // Dashboard
-	fastify.get('/dashboard', { 
-		preHandler: [fastify.authenticate],
-	}, getDashboard);
+  fastify.get('/dashboard', {
+    preHandler: [fastify.authenticate],
+  }, getDashboard);
   fastify.get('/dashboard/:userid', getDashboardUser);
 
 
 
 
 
-fastify.get('/placeholder', async (req, reply) => {
-	return reply.send("functionality SOON");
+  fastify.get('/placeholder', async (req, reply) => {
+    return reply.send("functionality SOON");
   });
 
 
   fastify.get('/sidebar/chat', async (req, reply) => {
-	return reply.view('/partials/sidebar-chat.ejs');
+    return reply.view('/partials/sidebar-chat.ejs');
   });
-  
+
   fastify.get('/sidebar/players', async (req, reply) => {
-	return reply.view('/partials/sidebar-players.ejs');
+    return reply.view('/partials/sidebar-players.ejs');
   });
 };

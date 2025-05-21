@@ -17,12 +17,16 @@
 <body class="bg-[#01FFFF]" hx-ext="events">
 
   <script>
-    window.__INITIAL_STATE__ = <%-user%>;
-    window.__USER_ID__ = <%-id%>;
-    window.__GAMESERVER_URL__ = <%-gameserverURL%>;
+    const username = "<%=user%>"
+    const id = "<%=id%>";
+    const gameserverURL = "<%=gameserverURL%>";
+
+    window.__INITIAL_STATE__ = "<%=user%>";
+    window.__USER_ID__ = "<%=id%>";
+    window.__GAMESERVER_URL__ = "<%=gameserverURL%>";
     console.table(window.__INITIAL_STATE__);
     console.table(window.__GAMESERVER_URL__);
-		console.log("user : ", user)
+		console.log("username : ", username)
 		console.log("id : ", id)
   </script>
 

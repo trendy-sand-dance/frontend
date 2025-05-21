@@ -42,6 +42,12 @@ export default class PongInfo {
 
   }
 
+  getState(): PongState {
+
+    return this.state;
+
+  }
+
   display() {
 
     switch (this.state) {
@@ -57,6 +63,15 @@ export default class PongInfo {
         break;
       case PongState.InProgress:
         this.box.setText(`${this.username} Score: ${this.score}`, settings.CGA_PINK);
+        break;
+      case PongState.Enrolling:
+        this.box.setText(`Waiting for tournament to fill up...`, settings.CGA_PINK);
+        break;
+      case PongState.Announcing:
+        if (this.username === "")
+          this.box.setText(`Waiting for tournament to fill up...`, settings.CGA_PINK);
+        else
+          this.box.setText(`${this.username}, please ready up!`, settings.CGA_PINK);
         break;
       default:
         break;

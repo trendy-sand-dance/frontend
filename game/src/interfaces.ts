@@ -8,7 +8,7 @@ declare global {
   interface Window {
     __INITIAL_STATE__: UserData;
     __GAMESERVER_URL__: string;
-    __FOCUSED_USER__: UserData;
+    __USER_ID__: number;
     htmx: typeof import('htmx.org');
   }
 
@@ -26,11 +26,6 @@ declare global {
     right: Paddle,
   }
 
-  // interface Indicators {
-  //   left: InfoBox,
-  //   right: InfoBox,
-  // }
-
   interface Indicators {
     left: Indicator,
     right: Indicator,
@@ -43,6 +38,15 @@ declare global {
     ready: boolean,
     score: number,
     side: string,
+  }
+
+  interface TournamentPlayer {
+    id: number,
+    username: string,
+    avatar: string,
+    wins: number,
+    losses: number,
+    local: boolean,
   }
 
   interface Vector2 {
@@ -59,6 +63,7 @@ declare global {
     position?: Vector2,
     direction?: string,
     pongPlayer?: PongPlayer,
+    tournament?: boolean,
   }
 
   interface UserData {
@@ -86,6 +91,18 @@ declare global {
     y: number,
   }
 
+  interface User {
+    id: number,
+    username: string,
+    password?: string,
+    email?: string,
+    avatar: string,
+    status: boolean,
+    wins: number,
+    losses: number,
+    player: PlayerData,
+  }
+
 }
 
 export enum CameraMode {
@@ -98,7 +115,16 @@ export enum PongState {
   PlayerNearby,
   PlayerReady,
   InProgress,
+  Enrolling,
+  Announcing,
 }
 
+export enum TournamentState {
+  Enrolling = "Enrolling",
+  Scheduling = "Scheduling",
+  Announcing = "Announcing",
+  Playing = "Playing",
+  Concluding = "Concluding",
+}
 
 

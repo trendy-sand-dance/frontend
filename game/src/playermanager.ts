@@ -12,7 +12,8 @@ class PlayerManager {
 
   public players = new Map<number, Player>;
   public localPlayer: Player | null = null;
-  public pongTable : PongTable | null = null;
+  public pongTable: PongTable | null = null;
+  public tournamentTable: PongTable | null = null;
 
   private constructor() {
 
@@ -33,16 +34,20 @@ class PlayerManager {
     return false;
   }
 
-  initLocalPlayer(id: number, username: string, avatar : string, position: Vector2, texture: Texture) {
+  initLocalPlayer(id: number, username: string, avatar: string, position: Vector2, texture: Texture) {
     this.localPlayer = new Player(id, username, avatar, position, texture);
     return this.localPlayer;
   }
 
-  initPongTable(table : PongTable) {
+  initPongTable(table: PongTable) {
     this.pongTable = table;
   }
 
-  addPlayer(id: number, username: string, avatar : string, position: Vector2, texture: Texture) {
+  initTournamentTable(table: PongTable) {
+    this.tournamentTable = table;
+  }
+
+  addPlayer(id: number, username: string, avatar: string, position: Vector2, texture: Texture) {
     const player = new Player(id, username, avatar, position, texture);
     const playerSprite = player.getContext();
     const filter = new ColorMatrixFilter();
@@ -81,8 +86,7 @@ class PlayerManager {
 
           // Set up friend request button
           const friendReqBtn = document.getElementById("friendRequestBtn");
-          if (friendReqBtn)
-          {
+          if (friendReqBtn) {
             friendReqBtn.setAttribute("hx-post", `sendReq/${id}/${window.__INITIAL_STATE__.id}`);
             friendReqBtn.setAttribute("hx-target", "#friendRequestBtn");
             friendReqBtn.setAttribute("hx-swap", "outerHTML");
@@ -109,7 +113,11 @@ class PlayerManager {
   }
 
   getPlayer(id: number) {
+
+    if (this.localPlayer && id === this.localPlayer.id)
+      return this.localPlayer;
     return this.players.get(id);
+
   }
 
   getPlayers() {

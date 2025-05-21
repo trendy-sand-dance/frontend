@@ -4,6 +4,7 @@
   </script>
 </div>
 
+<!-- Pixi Player info card on click -->
 <div id="pixi-player-info" class="w-64 h-64 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
 
   <div class="flex justify-end">
@@ -29,15 +30,51 @@
 
   </div>
 
+</div>
+
+
+<!-- Pixi Tournament info on click -->
+<div id="pixi-tournament-info" class="w-128 h-128 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
+
+  <div class="flex justify-end">
+    <div id="closeBtnTournamentInfo" class="cursor-pointer">X</div>
+  </div>
+
+  <div class="flex flex-col justify-between h-full"> 
+
+    <div class="flex flex-row justify-center">
+      <h2 class="font-extrabold content-center">Pong Tournament</h2>
+    </div>
+
+    <!-- Subscribed players go here -->
+    <div id="infoCardTournament" class="flex flex-row justify-center" hx-get="/getTournamentPlayers" hx-swap="innerHTML" hx-trigger="load, customEvent from:body">
+    </div>
+
+    <div class="flex justify-center">
+      <button  id="joinTournamentBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2 hover:bg-[#FF66FF]" onclick="htmx.trigger('#infoCardTournament', 'customEvent')">Subscribe</button>
+      <button  id="leaveTournamentBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2 hover:bg-[#FF66FF]" onclick="htmx.trigger('#infoCardTournament', 'customEvent')">Unsubscribe</button>
+    </div>
+
+  </div>
 
 </div>
 
 <script> 
+
+// Player card
 const playerInfoBox = document.getElementById("pixi-player-info");
 const closeBtn = document.getElementById("closeBtnPlayerInfo");
 
 closeBtn.addEventListener("click", () => { 
   playerInfoBox.style.display = "none";
+});
+
+// Tournament info
+const tournamentInfoBox = document.getElementById("pixi-tournament-info");
+const closeBtnTournament = document.getElementById("closeBtnTournamentInfo");
+
+closeBtnTournament.addEventListener("click", () => { 
+  tournamentInfoBox.style.display = "none";
 });
 
 </script>

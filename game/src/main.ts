@@ -9,8 +9,10 @@ import * as cm from './connectionmanager.js';
 import PongTable from './pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
-import { initializeLocalPlayer } from './connectionmanager.js';
 import { PongState, CameraMode } from './interfaces.js';
+import TournamentSubscription from "./tournamentsubscription.js";
+import { socket } from './connectionmanager.js'
+// import { initializeLocalPlayer } from './connectionmanager.js';
 //import Ball from './ball.js';
 // import InfoBox from './infobox.js';
 
@@ -101,6 +103,38 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
 
 }
 
+
+function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) {
+
+  const side = tournamentTable.getPlayerSide(player) as 'left' | 'right';
+
+  if (side === null) {
+    return;
+  }
+  else {
+    if (tournamentTable.isExpectedTournamentPlayer(player, side)) {
+
+      const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
+
+      if (!tournamentTable.isSideReady(side)) {
+        cm.sendToServer({ type: "join_pong_tournament", pongPlayer: newPlayer });
+      }
+      else {
+        const existingPlayer: PongPlayer | null = tournamentTable.getPongPlayer(side);
+        if (existingPlayer && existingPlayer.id !== player.id) {
+          alert("There's already another player at the table!");
+        }
+        else if (existingPlayer) {
+          cm.sendToServer({ type: "leave_pong_tournament", pongPlayer: existingPlayer });
+        }
+      }
+
+    }
+
+  }
+
+}
+
 function handlePong(pongTable: PongTable, player: Player) {
 
   if (pongTable.isInProgress()) {
@@ -135,6 +169,41 @@ function handlePong(pongTable: PongTable, player: Player) {
 
 }
 
+
+function handleTournament(tournamentTable: PongTable, player: Player) {
+
+  if (tournamentTable.isInProgress()) {
+    tournamentTable.setIndicator('left', PongState.InProgress);
+    tournamentTable.setIndicator('right', PongState.InProgress);
+  }
+  else if (!tournamentTable.isPlayerReady(player.id)) {
+
+    if (tournamentTable.isPlayerAtLeft(player.getPosition()) && !tournamentTable.isSideReady('left')) {
+      tournamentTable.setIndicator('left', PongState.PlayerNearby);
+    }
+    else if (!tournamentTable.isSideReady('left')) {
+      tournamentTable.setIndicator('left', PongState.Announcing);
+    }
+
+    if (tournamentTable.isPlayerAtRight(player.getPosition()) && !tournamentTable.isSideReady('right')) {
+      tournamentTable.setIndicator('right', PongState.PlayerNearby);
+    }
+    else if (!tournamentTable.isSideReady('right')) {
+      tournamentTable.setIndicator('right', PongState.Announcing);
+    }
+
+  }
+
+  // tournament join table
+  if (input.keyWasPressed['KeyE']) {
+    joinOrLeaveTournamentTable(tournamentTable, player);
+  }
+
+  tournamentTable.displayPongState();
+
+
+}
+
 function handleCamera(player: Player, gameMap: GameMap) {
 
   if (cameraMode === CameraMode.Locked) {
@@ -155,6 +224,14 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
 }
 
+function isAtTable(id: number, table: PongTable) {
+
+  if (table.getPongPlayer('left') && table.getPongPlayer('right'))
+    return table.getPongPlayer('left')!.id === id || table.getPongPlayer('right')!.id === id
+  return false;
+
+}
+
 (async () => {
 
   await setup();
@@ -164,17 +241,29 @@ function handleCamera(player: Player, gameMap: GameMap) {
   let gameMap: GameMap = addGameMap(pixiApp);
 
   //Network business
-  if (window.__INITIAL_STATE__) {
-    cm.runConnectionManager(gameMap);
-  }
-  else { // We set up a test player for dev mode
-    initializeLocalPlayer({ id: -1, userId: -1, x: 0, y: 0 }, gameMap, Texture.from('player_bunny'));
+  if (window.__USER_ID__) {
+    await cm.runConnectionManager(gameMap);
+
+    // Testing tournamentSubscription box
+    let p = playerManager.getLocalPlayer();
+    if (p) {
+      let tournamentBox = new TournamentSubscription(37, 10, socket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
+      gameMap.container.addChild(tournamentBox.getContext());
+    }
   }
 
   // Testing Pong table
-  let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP);
+  let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
   gameMap.container.addChild(pongTable.getContainer());
   playerManager.initPongTable(pongTable);
+
+  // Testing tournament table
+  let tournamentTable = new PongTable({ x: 27, y: 2 }, settings.TILEMAP, true);
+  gameMap.container.addChild(tournamentTable.getContainer());
+  playerManager.initTournamentTable(tournamentTable);
+
+
+
 
   let driver: number = 0;
 
@@ -187,39 +276,39 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
       handleCamera(player, gameMap);
       handlePong(pongTable, player);
+      handleTournament(tournamentTable, player);
 
       // Pong move paddle
-      if (!pongTable.isPlayerReady(player.id)) {
+      if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
+
         input.movePlayer(player, time.deltaTime);
+
       }
       else {
 
-        const side = pongTable.getPlayerSide(player) as 'left' | 'right';
+        if (isAtTable(player.id, tournamentTable)) {
 
-        if (side !== null) {
+          const side = tournamentTable.getPlayerSide(player) as 'left' | 'right';
+          tournamentTable.sendPaddleUpdate(input.keyIsPressed, side);
+          // if (tournamentTable.collidesWithPaddle(side)) {
+          //   screenShake = true;
+          //   setTimeout(() => {
+          //     screenShake = false;
+          //   }, 200)
+          // }
 
-          if (input.keyIsPressed['ArrowUp']) {
-            cm.sendToServer({
-              type: "paddle_move",
-              side: side,
-              direction: "up",
-            });
-          }
-          if (input.keyIsPressed['ArrowDown']) {
-            cm.sendToServer({
-              type: "paddle_move",
-              side: side,
-              direction: "down",
-            });
-          }
+        }
+        else {
 
-          if (pongTable.collidesWithPaddle(side)) {
-            screenShake = true;
-            setTimeout(() => {
-              screenShake = false;
-            }, 250)
-          }
-
+          const side = pongTable.getPlayerSide(player) as 'left' | 'right';
+          pongTable.sendPaddleUpdate(input.keyIsPressed, side);
+          // if (pongTable.collidesWithPaddle(side)) {
+          //   screenShake = true;
+          //   setTimeout(() => {
+          //     screenShake = false;
+          //   }, 200)
+          // }
+          //
         }
 
       }
