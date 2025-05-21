@@ -144,6 +144,7 @@ export async function runConnectionManager(gameMap: GameMap) {
       if (pongTable && player) {
         console.log(data.pongPlayer.side)
         pongTable.setPlayerReady(player, data.pongPlayer.side);
+        pongTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
     }
 
@@ -153,6 +154,7 @@ export async function runConnectionManager(gameMap: GameMap) {
       if (pongTable && player) {
         console.log(data.pongPlayer.side)
         pongTable.setPlayerReady(player, data.pongPlayer.side);
+        pongTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
     }
 
@@ -243,6 +245,7 @@ export async function runConnectionManager(gameMap: GameMap) {
       if (tournamentTable && player) {
         console.log(data.pongPlayer.side)
         tournamentTable.setPlayerReady(player, data.pongPlayer.side);
+        tournamentTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
     }
 
@@ -252,6 +255,7 @@ export async function runConnectionManager(gameMap: GameMap) {
       if (tournamentTable && player) {
         console.log(data.pongPlayer.side)
         tournamentTable.setPlayerReady(player, data.pongPlayer.side);
+        tournamentTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
     }
 
