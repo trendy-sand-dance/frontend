@@ -5,7 +5,7 @@
 </div>
 
 <!-- Pixi Player info card on click -->
-<div id="pixi-player-info" class="w-64 h-64 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
+<div id="pixi-player-info" class="w-128 h-128 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
 
   <div class="flex justify-end">
     <div id="closeBtnPlayerInfo" class="cursor-pointer">X</div>
@@ -17,15 +17,14 @@
       <img id="infoAvatar">
       <h2 class="font-extrabold content-center" id="infoUsername"></h2>
     </div>
-    <div class="flex flex-col">
-      <p>Wins: 0 (unimplemented)</p>
-      <p>Losses: 0 (unimplemented)</p>
-      <p>Status: (unimplemented)</p>
-      <p>Friends: (unimplemented)</p>
+    <div class="flex flex-col" id="infoStats">
+      <p id="winsAndLosses">Wins: (error) | Losses: (error)</p>
+      <p id="status">Status: (error)</p>
+      <p id="friends"></p>
     </div>
 
-    <div class="flex justify-center">
-      <button  id="friendRequestBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2">Send friend request</button>
+    <div class="flex justify-center" id ="friendRequest">
+      <!-- <button  id="friendRequestBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2">Send friend request</button> -->
     </div>
 
   </div>
