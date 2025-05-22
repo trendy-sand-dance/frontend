@@ -75,6 +75,16 @@
 			class="p-2 justify-right">
 			Friendos 👬👫👭
 		</button>
+
+		<button 
+			type="button"
+			hx-get="/viewMatchHistory/<%= id %>"
+			hx-target="#sidebar-content"
+			hx-swap="innerHTML"
+			onclick="toggleSidebar()"
+			class="p-2 justify-right">
+			match history 🎮📜
+		</button>
 		
 	
 		</nav>
@@ -85,7 +95,8 @@
 </body>
 
 <script>
-	// Simple toggle function that shows/hides the sidebar
+	// add enum as arg so that sidebar only toggles if u press the same nav button
+	//if html has static memory thatd be ideal
 	function toggleSidebar() {
 	  const sidebar = document.getElementById('sidebar');
 	  if (sidebar) {
