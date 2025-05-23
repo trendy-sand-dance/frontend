@@ -138,6 +138,9 @@ export default class PongTable {
     if (!this.players['right'])
       this.indicators['right'].setState(PongState.Announcing);
 
+    console.log("Expected player left: ", this.expectedTournamentPlayers['left']);
+    console.log("Expected player right: ", this.expectedTournamentPlayers['right']);
+
   }
 
   isExpectedTournamentPlayer(player: Player, side: 'left' | 'right'): boolean {
@@ -230,6 +233,9 @@ export default class PongTable {
   }
 
   updateScore(side: 'left' | 'right', score: number) {
+
+    console.log("Updating score on side: ", side);
+    console.log("This concerns player: ", this.players[side]);
 
     if (this.players[side]) {
       this.players[side].score = score;
