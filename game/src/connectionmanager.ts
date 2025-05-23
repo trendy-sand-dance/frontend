@@ -217,7 +217,7 @@ export async function runConnectionManager(gameMap: GameMap) {
 
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        pongTable.finishGame(data.winnerId);
+        pongTable.finishGame(data.winnerId, false);
       }
 
     }
@@ -299,7 +299,7 @@ export async function runConnectionManager(gameMap: GameMap) {
 
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable) {
-        tournamentTable.finishGame(data.winnerId);
+        tournamentTable.finishGame(data.winnerId, data.finals);
       }
 
     }

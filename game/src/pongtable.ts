@@ -138,9 +138,6 @@ export default class PongTable {
     if (!this.players['right'])
       this.indicators['right'].setState(PongState.Announcing);
 
-    console.log("Expected player left: ", this.expectedTournamentPlayers['left']);
-    console.log("Expected player right: ", this.expectedTournamentPlayers['right']);
-
   }
 
   isExpectedTournamentPlayer(player: Player, side: 'left' | 'right'): boolean {
@@ -196,7 +193,7 @@ export default class PongTable {
 
   }
 
-  finishGame(winnerId: number) {
+  finishGame(winnerId: number, finals: boolean) {
 
     this.countdownTimer.container.renderable = true;
 
@@ -206,10 +203,16 @@ export default class PongTable {
       const max = Math.max(this.players['left'].score, this.players['right'].score);
 
       if (this.players['left'].id === winnerId) {
-        this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
+        if (finals)
+          this.countdownTimer.setText(`${this.players['left'].username} has won the tournament!`, settings.CGA_WHITE);
+        else
+          this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
       }
       else {
-        this.countdownTimer.setText(`${this.players['right'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
+        if (finals)
+          this.countdownTimer.setText(`${this.players['right'].username} has won the tournament!`, settings.CGA_WHITE);
+        else
+          this.countdownTimer.setText(`${this.players['right'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
       }
 
       setTimeout(() => {
@@ -257,7 +260,7 @@ export default class PongTable {
 
   }
 
-  sendPaddleUpdate(keyIsPressed : KeyPressState, side: 'left' | 'right') {
+  sendPaddleUpdate(keyIsPressed: KeyPressState, side: 'left' | 'right') {
 
     if (side !== null && keyIsPressed['ArrowUp']) {
       console.log("We are sending up");
