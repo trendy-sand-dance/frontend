@@ -13,6 +13,8 @@ import pluginMultipart from '@fastify/multipart';
 import pluginJwt, { FastifyJWT } from '@fastify/jwt'
 import pluginCookie from '@fastify/cookie'
 
+import { registerGoogleOAuth2Provider } from './providers/oauth2';
+
 
 import { FastifyStaticOptions } from '@fastify/static';
 import './setUpFetch';
@@ -41,15 +43,28 @@ fastify.register(pluginMultipart), {
 fastify.register(pluginFormbody);
 
 
-fastify.register(pluginCORS), {
-  origin: true, // Specify domains for production
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+// fastify.register(pluginCORS), {
+//   origin: true, // Specify domains for production
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true
+// };
+
+// Cors Policies Options
+const pluginCORSOptions = {
+    // Allow all origins
+    // VERY IMPORTANT: In response, the server returns an Access-Control-Allow-Origin header with Access-Control-Allow-Origin: *
+    // which means that the resource can be accessed by any origin. (VERY DANGER!)
+    // You can read more about in:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    origin: "*"
 };
+
+fastify.register(pluginCORS, pluginCORSOptions);
+
+registerGoogleOAuth2Provider(fastify);
 
 fastify.register(pluginStatic, {
   root: path.join(path.dirname(__dirname), 'public'),
-  // prefix: "/public"
 } as FastifyStaticOptions)
 
 fastify.register(pluginView, {
@@ -82,6 +97,7 @@ fastify.decorate(
 	async (request: FastifyRequest, reply: FastifyReply) => {
 		const token = request.cookies.access_token
 		if (!token) {
+			// TODO: Return error page
 			return reply.status(401).send({ message: 'Authentication required' })
 		}
 		// here decoded will be a different type by default but we want it to be of user-payload type

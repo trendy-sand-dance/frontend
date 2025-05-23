@@ -1,0 +1,1 @@
+https://dev.to/fozooni/google-oauth2-with-fastify-typescript-from-scratch-1a57

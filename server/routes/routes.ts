@@ -6,7 +6,6 @@ import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlaye
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
-// import sidebarController from "../controllers/playground.controller.js";
 
 export async function routes(fastify: FastifyInstance) {
 
@@ -40,6 +39,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/block/:friendId/:userId', blockFriend); // friend is person who user wants to block
   fastify.get('/viewPlayers/:username', viewPlayers);
   fastify.delete("/deleteFriend/:senderId/:userId", deleteAssociation);
+	// TODO: Add preHandler to other endpoints aswell
  
   fastify.post('/login', login);
 	fastify.get('/logout', {
@@ -58,6 +58,17 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/dashboard/:userid', getDashboardUser);
 
 
+
+	// OAuth
+	fastify.get('/google/callback',async function (request: FastifyRequest, reply: FastifyReply) {
+
+		// Get the access token from the Google service and save it into the token value
+		const { token } = await fastify.GoogleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
+
+		// Redirect to our frontend side
+		// You can get the access token from the URI Query and save it as a cookie in the client browser
+		reply.redirect("http://localhost:8000/?access_token);
+	});
 
 
 

@@ -18,7 +18,7 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 	}
   catch (error) {
     request.log.error(error);
-    return reply.viewAsync("errors/error-500.ejs");
+		return reply.viewAsync("errors/error-500.ejs");
   }
 }
 
