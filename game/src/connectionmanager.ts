@@ -201,10 +201,7 @@ export async function runConnectionManager(gameMap: GameMap) {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
         console.log("Data: ", data);
-        if (data.side == 'left')
-          pongTable.updateScore('right', data.score);
-        if (data.side == 'right')
-          pongTable.updateScore('left', data.score);
+        pongTable.updateScore(data.side, data.score);
       }
     }
 
@@ -220,7 +217,7 @@ export async function runConnectionManager(gameMap: GameMap) {
 
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        pongTable.finishGame(data.winnerId);
+        pongTable.finishGame(data.winnerId, false);
       }
 
     }
@@ -294,10 +291,7 @@ export async function runConnectionManager(gameMap: GameMap) {
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable) {
         console.log("Data: ", data);
-        if (data.side == 'left')
-          tournamentTable.updateScore('right', data.score);
-        if (data.side == 'right')
-          tournamentTable.updateScore('left', data.score);
+        tournamentTable.updateScore(data.side, data.score);
       }
     }
 
@@ -305,7 +299,7 @@ export async function runConnectionManager(gameMap: GameMap) {
 
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable) {
-        tournamentTable.finishGame(data.winnerId);
+        tournamentTable.finishGame(data.winnerId, data.finals);
       }
 
     }

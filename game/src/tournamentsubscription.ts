@@ -1,7 +1,7 @@
 import { Sprite, Texture } from 'pixi.js';
 import Point from './point.js';
 import { mouse } from './input.js';
-// import('htmx.org');
+import('htmx.org');
 
 const tournamentInfoBox = document.getElementById("pixi-tournament-info");
 const subscribeBtn = document.getElementById("joinTournamentBtn");
@@ -9,11 +9,11 @@ const unsubscribeBtn = document.getElementById("leaveTournamentBtn");
 
 export default class TournamentSubscription {
 
-  private subscriptionBox : Sprite;
-  private server : WebSocket;
-  private localPlayer : TournamentPlayer;
+  private subscriptionBox: Sprite;
+  private server: WebSocket;
+  private localPlayer: TournamentPlayer;
 
-  constructor(x: number, y: number, server : WebSocket, localPlayer : TournamentPlayer, texture : Texture) {
+  constructor(x: number, y: number, server: WebSocket, localPlayer: TournamentPlayer, texture: Texture) {
 
     this.subscriptionBox = new Sprite(texture);
     this.server = server;
@@ -26,6 +26,9 @@ export default class TournamentSubscription {
         tournamentInfoBox.style.display = 'block';
         tournamentInfoBox.style.top = `${mouse.y + 10}px`
         tournamentInfoBox.style.left = `${mouse.x + 10}px`
+        const temp = document.getElementById("infoCardTournament");
+        if (temp)
+          window.htmx.trigger(temp, 'customEvent', null)
       }
 
     });
@@ -38,30 +41,30 @@ export default class TournamentSubscription {
 
     if (subscribeBtn) {
       subscribeBtn.addEventListener("click", () => {
-          
+
         this.subscribe();
 
-      }); 
+      });
     }
 
     if (unsubscribeBtn) {
       unsubscribeBtn.addEventListener("click", () => {
-          
+
         this.unsubscribe();
 
-      }); 
+      });
     }
   }
 
   subscribe() {
 
-    this.server.send(JSON.stringify({type: "tournament_join", tournamentPlayer: this.localPlayer}))
+    this.server.send(JSON.stringify({ type: "tournament_join", tournamentPlayer: this.localPlayer }))
 
   }
 
   unsubscribe() {
 
-    this.server.send(JSON.stringify({type: "tournament_leave", tournamentPlayer: this.localPlayer}))
+    this.server.send(JSON.stringify({ type: "tournament_leave", tournamentPlayer: this.localPlayer }))
 
   }
 
