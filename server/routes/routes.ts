@@ -64,7 +64,7 @@ export async function routes(fastify: FastifyInstance) {
 
 
 
-  fastify.get('/viewMatchHistory/', viewMatchHistory);
+  fastify.get('/viewMatchHistory/:userid', viewMatchHistory);
 
 
   fastify.get('/placeholder', async (req, reply) => {
@@ -75,6 +75,7 @@ export async function routes(fastify: FastifyInstance) {
 
   //can we delete these?
   fastify.get('/sidebar/chat', async (req, reply) => {
+	console.log("triggering chat");
     return reply.view('/partials/sidebar-chat.ejs');
   });
 

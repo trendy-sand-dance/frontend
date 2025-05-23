@@ -1,19 +1,28 @@
 <h2 class="text-xl font-bold mb-4">Match History</h2>
 
+<!-- <%- JSON.stringify(matches) %> -->
+
 <div class="space-y-3">
-  <% matches.forEach(match => { 
-    const won = match.winner === match.opponent;
-    const resultColor = won ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300';
-    const resultText = won ? 'Victory' : 'Defeat';
-  %>
-    <div class="rounded-xl p-4 shadow-md border border-cyan-500 <%= resultColor %>">
-      <div class="flex justify-between items-center">
-        <div class="font-semibold text-lg"><%= resultText %></div>
-        <div class="text-sm opacity-75">
-          <%= new Date(match.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) %>
-        </div>
-      </div>
-      <div class="text-sm mt-1">vs <span class="font-mono"><%= match.opponent %></span></div>
-    </div>
-  <% }) %>
+	<% if (matches.length > 0) 
+	{ 
+	%> <% matches.forEach(match => { 
+			const won = match.winner === match.opponent;
+			const resultColor = won ? 'bg-green-900 text-green-300' : 'bg-red-900 text-purple-900';
+			const resultText = won ? 'Victory' : 'Defeat';
+		%>
+			<div class="rounded-xl p-4 shadow-md border border-cyan-500 <%= resultColor %>">
+			<div class="flex justify-between items-center">
+				<div class="font-semibold text-lg"><%= resultText %></div>
+				<div class="text-sm opacity-75">
+				<%= new Date(match.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) %>
+				</div>
+			</div>
+			<div class="text-sm mt-1">vs <span class="font-mono"><%= match.opponent %></span></div>
+			</div>
+		<% }) %>
+	<% }
+	else { %>
+		<p class="text-gray-500 italic">No Matches yet, go play some games! .</p>
+	  <% } %>
+	</section>
 </div>

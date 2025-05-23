@@ -57,3 +57,13 @@ declare global {
   }
 
 }
+
+interface MatchHistory 
+{
+	winner: int,
+	loser: int,
+	winner: string,
+	winner: string,
+	date: string,
+	opponent: string,
+}

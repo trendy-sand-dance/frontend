@@ -26,8 +26,8 @@
     window.__GAMESERVER_URL__ = "<%=gameserverURL%>";
     console.table(window.__INITIAL_STATE__);
     console.table(window.__GAMESERVER_URL__);
-		console.log("username : ", username)
-		console.log("id : ", id)
+	console.log("username : ", username)
+	console.log("id : ", id)
   </script>
 
 	<div class="relative w-screen h-screen overflow-hidden bg-black">
@@ -62,7 +62,8 @@
 			hx-get="/sidebar/chat"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
-			class="p-2">
+			onclick="toggleSidebar(1)"
+			class="p-2 justify-right">
 			Chat 💬💬💬
 		</button>
 	
@@ -71,7 +72,7 @@
 			hx-get="/viewPlayers/<%= user %>"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
-			onclick="toggleSidebar()"
+			onclick="toggleSidebar(2)"
 			class="p-2 justify-right">
 			Friendos 👬👫👭
 		</button>
@@ -81,7 +82,7 @@
 			hx-get="/viewMatchHistory/<%= id %>"
 			hx-target="#sidebar-content"
 			hx-swap="innerHTML"
-			onclick="toggleSidebar()"
+			onclick="toggleSidebar(3)"
 			class="p-2 justify-right">
 			match history 🎮📜
 		</button>
@@ -94,16 +95,33 @@
 
 </body>
 
+
+
 <script>
-	// add enum as arg so that sidebar only toggles if u press the same nav button
-	//if html has static memory thatd be ideal
-	function toggleSidebar() {
-	  const sidebar = document.getElementById('sidebar');
-	  if (sidebar) {
-		sidebar.classList.toggle('hidden');
-	  }
+	let prevcontent = 0;
+	function toggleSidebar(newcontent)
+	{
+		const sidebar = document.getElementById('sidebar');
+		if (!sidebar) return;
+		
+		if (sidebar.classList.contains('hidden'))
+			sidebar.classList.remove('hidden');
+		else if (prevcontent === newcontent)
+			sidebar.classList.add('hidden');
+		prevcontent = newcontent;
 	}
 </script>
+<!-- <script>
+	function toggleSidebar(newcontent)
+	{
+		
+		const sidebar = document.getElementById('sidebar');
+		if (sidebar && prevcontent == newcontent)
+		{
+			sidebar.classList.toggle('hidden');
+		}
+	}
+</script> -->
 
 
 </html>

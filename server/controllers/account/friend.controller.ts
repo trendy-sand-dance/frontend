@@ -166,7 +166,7 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
 			userId: number,
 		  };
 		
-		
+		console.log("sending friend list view :)");
 		return reply.viewAsync("partials/sidebar-players.ejs", { 
 			requests: raw.requests,
 			friends: raw.friends,
