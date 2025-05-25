@@ -9,6 +9,7 @@ import * as cm from './connectionmanager.ts'
 // import Player from './player.js';
 import * as settings from './settings.js';
 import { PongState, TournamentState } from './interfaces.js';
+import { gameSocket } from './connectionmanager.ts';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
   const slicedRows = array.slice(fromY, toY);
@@ -68,7 +69,6 @@ export default class PongTable {
 
     this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
     this.container.zIndex = 10;
-    console.log(`Is tournament table: ${this.isTournament}`);
   }
 
   transitionTo(newState: TournamentState) {
@@ -264,7 +264,7 @@ export default class PongTable {
 
     if (side !== null && keyIsPressed['ArrowUp']) {
       console.log("We are sending up");
-      cm.sendToServer({
+      cm.sendToServer(gameSocket, {
         type: "paddle_move",
         side: side,
         direction: "up",
@@ -274,7 +274,7 @@ export default class PongTable {
 
     if (side !== null && keyIsPressed['ArrowDown']) {
       console.log("We are sending down");
-      cm.sendToServer({
+      cm.sendToServer(gameSocket, {
         type: "paddle_move",
         side: side,
         direction: "down",

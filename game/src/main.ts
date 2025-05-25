@@ -11,10 +11,11 @@ import Point from './point.js';
 import Player from './player.js';
 import { PongState, CameraMode } from './interfaces.js';
 import TournamentSubscription from "./tournamentsubscription.js";
-import { socket } from './connectionmanager.js'
-// import { initializeLocalPlayer } from './connectionmanager.js';
-//import Ball from './ball.js';
-// import InfoBox from './infobox.js';
+import { gameSocket } from './connectionmanager.js'
+import { messageHandler } from './chat/messagehandler.js';
+import { localUser } from "./connectionmanager.js";
+import { RoomType } from './interfaces.js';
+import { MessageType } from './interfaces.js';
 
 // Globals
 const pixiApp: Application = new Application();
@@ -87,7 +88,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
     const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
     if (!pongTable.isSideReady(side)) {
-      cm.sendToServer({ type: "join_pong", pongPlayer: newPlayer });
+      cm.sendToServer(gameSocket, { type: "join_pong", pongPlayer: newPlayer });
     }
     else {
       const existingPlayer: PongPlayer | null = pongTable.getPongPlayer(side);
@@ -95,7 +96,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
         alert("There's already another player at the table!");
       }
       else if (existingPlayer) {
-        cm.sendToServer({ type: "leave_pong", pongPlayer: existingPlayer });
+        cm.sendToServer(gameSocket, { type: "leave_pong", pongPlayer: existingPlayer });
       }
     }
 
@@ -117,7 +118,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
       const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
       if (!tournamentTable.isSideReady(side)) {
-        cm.sendToServer({ type: "join_pong_tournament", pongPlayer: newPlayer });
+        cm.sendToServer(gameSocket, { type: "join_pong_tournament", pongPlayer: newPlayer });
       }
       else {
         const existingPlayer: PongPlayer | null = tournamentTable.getPongPlayer(side);
@@ -125,7 +126,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
           alert("There's already another player at the table!");
         }
         else if (existingPlayer) {
-          cm.sendToServer({ type: "leave_pong_tournament", pongPlayer: existingPlayer });
+          cm.sendToServer(gameSocket, { type: "leave_pong_tournament", pongPlayer: existingPlayer });
         }
       }
 
@@ -243,11 +244,15 @@ function isAtTable(id: number, table: PongTable) {
   //Network business
   if (window.__USER_ID__) {
     await cm.runConnectionManager(gameMap);
+    messageHandler.initialize();
+    const msg: ConnectMessage = { type: MessageType.Connect, user: localUser, room: RoomType.Hall };
+    messageHandler.send(msg);
+
 
     // Testing tournamentSubscription box
     let p = playerManager.getLocalPlayer();
     if (p) {
-      let tournamentBox = new TournamentSubscription(37, 10, socket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
+      let tournamentBox = new TournamentSubscription(37, 10, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
       gameMap.container.addChild(tournamentBox.getContext());
     }
   }
@@ -320,7 +325,7 @@ function isAtTable(id: number, table: PongTable) {
       //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
 
-        cm.sendToServer({
+        cm.sendToServer(gameSocket, {
           type: "player_move",
           id: player.getId(),
           position: player.getPosition(),
