@@ -43,9 +43,22 @@
 		<aside 
 			id="sidebar"
 			class="hidden absolute top-0 right-0 w-1/6 h-full flex-col bg-[#01FFFF] border-l border-cyan-400 z-10 animate-slide-in">
-		<div id="sidebar-content" class="flex-1 overflow-y-auto p-4">
-			<!-- Dynamic sidebar content -->
+		<div id="sidebar-content" class="flex flex-col overflow-y-auto p-4 h-full justify-between">
+			    <!-- Dynamic sidebar content -->
+          <div id="chat-messages" class="p-4 text-black animate-slide-in"></div>
+          
+          <!-- Chat Text box -->
+          <div class="flex justify-center flex-col h-1/6 p-4">
+            <div class="border border-cyan-600 rounded-md p-2">
+              <input id="text-input-chat" type="text" placeholder="Type here..." class="bg-[#01FFFF] w-full outline-none">
+              <div class="flex flex-row justify-between">
+                <button type="">:)</button>
+                <button id="send-button-chat" type="">=></button>
+              </div>
+            </div>
+          </div>
 		</div>
+
 		</aside>
 	
 		<!-- Bottom Navbar -->
@@ -60,7 +73,7 @@
 	
 		<button type="button"
 			hx-get="/sidebar/chat"
-			hx-target="#sidebar-content"
+			hx-target="#chat-messages"
 			hx-swap="innerHTML"
 			class="p-2">
 			Chat 💬💬💬

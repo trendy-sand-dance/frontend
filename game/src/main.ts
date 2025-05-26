@@ -5,17 +5,16 @@ import GameMap from './gamemap.js';
 import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
-import * as cm from './connectionmanager.js';
+import * as gameCM from './connectionmanager.js';
+import * as chatCM from './chat/chatconnectionmanager.js';
 import PongTable from './pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
 import { PongState, CameraMode } from './interfaces.js';
 import TournamentSubscription from "./tournamentsubscription.js";
 import { gameSocket } from './connectionmanager.js'
-import { messageHandler } from './chat/messagehandler.js';
-import { localUser } from "./connectionmanager.js";
-import { RoomType } from './interfaces.js';
-import { MessageType } from './interfaces.js';
+// import { RoomType } from './interfaces.js';
+// import { MessageType } from './interfaces.js';
 
 // Globals
 const pixiApp: Application = new Application();
@@ -88,7 +87,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
     const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
     if (!pongTable.isSideReady(side)) {
-      cm.sendToServer(gameSocket, { type: "join_pong", pongPlayer: newPlayer });
+      gameCM.sendToServer(gameSocket, { type: "join_pong", pongPlayer: newPlayer });
     }
     else {
       const existingPlayer: PongPlayer | null = pongTable.getPongPlayer(side);
@@ -96,7 +95,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
         alert("There's already another player at the table!");
       }
       else if (existingPlayer) {
-        cm.sendToServer(gameSocket, { type: "leave_pong", pongPlayer: existingPlayer });
+        gameCM.sendToServer(gameSocket, { type: "leave_pong", pongPlayer: existingPlayer });
       }
     }
 
@@ -118,7 +117,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
       const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
       if (!tournamentTable.isSideReady(side)) {
-        cm.sendToServer(gameSocket, { type: "join_pong_tournament", pongPlayer: newPlayer });
+        gameCM.sendToServer(gameSocket, { type: "join_pong_tournament", pongPlayer: newPlayer });
       }
       else {
         const existingPlayer: PongPlayer | null = tournamentTable.getPongPlayer(side);
@@ -126,7 +125,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
           alert("There's already another player at the table!");
         }
         else if (existingPlayer) {
-          cm.sendToServer(gameSocket, { type: "leave_pong_tournament", pongPlayer: existingPlayer });
+          gameCM.sendToServer(gameSocket, { type: "leave_pong_tournament", pongPlayer: existingPlayer });
         }
       }
 
@@ -243,11 +242,8 @@ function isAtTable(id: number, table: PongTable) {
 
   //Network business
   if (window.__USER_ID__) {
-    await cm.runConnectionManager(gameMap);
-    messageHandler.initialize();
-    const msg: ConnectMessage = { type: MessageType.Connect, user: localUser, room: RoomType.Hall };
-    messageHandler.send(msg);
-
+    await gameCM.runConnectionManager(gameMap);
+    chatCM.runChatConnectionManager();
 
     // Testing tournamentSubscription box
     let p = playerManager.getLocalPlayer();
@@ -325,7 +321,7 @@ function isAtTable(id: number, table: PongTable) {
       //Broadcast new position
       if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
 
-        cm.sendToServer(gameSocket, {
+        gameCM.sendToServer(gameSocket, {
           type: "player_move",
           id: player.getId(),
           position: player.getPosition(),

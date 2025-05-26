@@ -1,57 +1,32 @@
-import { initializeWebsocket } from "../connectionmanager";
+// Message Handler
+type MessageHandler = (data: ChatServerMessage, server: WebSocket) => void;
 
-class MessageHandler {
-  static #instance: MessageHandler;
-  private _socket: WebSocket;
+export const messageHandlers: Record<string, MessageHandler> = {
 
-  private constructor() {
-    this._socket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
-  }
-
-  public static get instance(): MessageHandler {
-    if (!MessageHandler.#instance) {
-      MessageHandler.#instance = new MessageHandler();
-    }
-
-    return MessageHandler.#instance;
-  }
-
-  public get socket(): WebSocket {
-
-    return this._socket;
-
-  }
-
-  public initialize(): void {
-
-    this._socket.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      console.log("On message: ", data);
-    };
-
-    // We notify the server when a player suddenly quits the browser
-    window.addEventListener("beforeunload", () => {
-      console.log("Beforeunload: ");
-    });
-
-    this._socket.onerror = (message) => {
-      console.log("Websocket error: ", message);
-    };
-
-  }
-
-  public send(message: ChatServerMessage): void {
-
-    if (this._socket.readyState == WebSocket.OPEN) {
-      this._socket.send(JSON.stringify(message));
+  "connect": (data: ChatServerMessage, server: WebSocket) => {
+    const msg: ConnectMessage = data as ConnectMessage;
+    if (msg) {
+      console.log("Sucessfully created a session on the chat server", msg);
     }
     else {
-      console.error("Error sending ChatServerMessage to chat server");
+      console.log("Couldn't create a session on the chat server :(");
     }
+    server.send("Yep");
+  },
+  "confirm": (data: ChatServerMessage, server: WebSocket) => {
+    console.log(data.type);
+    console.log(server.url);
+    console.log(`Succesfully connected to the chat server ${server.url}`);
+  },
+  // "disconnect": (data: ChatServerMessage, server: WebSocket) => {
+  //   const msg: DisconnectMessage = data as DisconnectMessage;
+  // },
+  "room_chat": (data: ChatServerMessage, server: WebSocket) => {
+    console.log(`RoomChat message from ${server.url}`);
+    const msg: RoomMessage = data as RoomMessage;
+    console.log(msg);
+  },
 
-  }
+};
 
-}
-
-export let messageHandler = MessageHandler.instance;
 
