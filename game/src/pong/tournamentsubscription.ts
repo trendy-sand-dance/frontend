@@ -1,6 +1,6 @@
 import { Sprite, Texture } from 'pixi.js';
-import Point from './point.js';
-import { mouse } from './input.js';
+import Point from '../point.js';
+import { mouse } from '../input.js';
 import('htmx.org');
 
 const tournamentInfoBox = document.getElementById("pixi-tournament-info");

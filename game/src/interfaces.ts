@@ -1,7 +1,5 @@
-// import * as settings from './settings.js';
-import Paddle from './paddle.js';
-// import InfoBox from './infobox.js';
-import Indicator from './indicator.js';
+import Paddle from './pong/paddle.js';
+import Indicator from './ui/indicator.js';
 
 declare global {
 

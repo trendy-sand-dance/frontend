@@ -7,12 +7,14 @@ import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
 import * as gameCM from './connectionmanager.js';
 import * as chatCM from './chat/chatconnectionmanager.js';
-import PongTable from './pongtable.js';
+import PongTable from './pong/pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
 import { PongState, CameraMode } from './interfaces.js';
-import TournamentSubscription from "./tournamentsubscription.js";
+import TournamentSubscription from "./pong/tournamentsubscription.js";
 import { gameSocket } from './connectionmanager.js'
+// import ChatBubble from './chat/chatbubble.js';
+// import TextBox from './ui/textbox.js';
 // import { RoomType } from './interfaces.js';
 // import { MessageType } from './interfaces.js';
 
@@ -243,7 +245,7 @@ function isAtTable(id: number, table: PongTable) {
   //Network business
   if (window.__USER_ID__) {
     await gameCM.runConnectionManager(gameMap);
-    chatCM.runChatConnectionManager();
+    chatCM.runChatConnectionManager(gameMap);
 
     // Testing tournamentSubscription box
     let p = playerManager.getLocalPlayer();
@@ -264,8 +266,6 @@ function isAtTable(id: number, table: PongTable) {
   playerManager.initTournamentTable(tournamentTable);
 
 
-
-
   let driver: number = 0;
 
   //Game Loop
@@ -278,6 +278,19 @@ function isAtTable(id: number, table: PongTable) {
       handleCamera(player, gameMap);
       handlePong(pongTable, player);
       handleTournament(tournamentTable, player);
+
+      const bubbles = chatCM.chat.getChatBubbles();
+      for (const b of bubbles) {
+
+        if (!b.dead()) {
+          b.float(time);
+        } 
+        else {
+          chatCM.chat.destroyBubble(b);
+        }
+
+      }
+
 
       // Pong move paddle
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {

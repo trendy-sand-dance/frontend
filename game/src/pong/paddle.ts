@@ -1,5 +1,5 @@
 import { Graphics } from 'pixi.js';
-import Point from './point.js';
+import Point from '../point.js';
 
 export default class Paddle {
   public position: Point;

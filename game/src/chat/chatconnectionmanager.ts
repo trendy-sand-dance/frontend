@@ -5,15 +5,17 @@ import { RoomType } from "../interfaces";
 import { localUser } from '../connectionmanager';
 import Chat from './chat';
 import { playerManager } from "../playermanager";
+import GameMap from '../gamemap';
 
-export function runChatConnectionManager() {
+export const chat = new Chat("text-input-chat", "send-button-chat");
+
+export function runChatConnectionManager(gameMap : GameMap) {
 
   const chatSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
 
-  const chat = new Chat("text-input-chat", "send-button-chat");
   if (chat) {
     console.log("Initialized Chat object");
-    chat.bind(chatSocket, playerManager);
+    chat.bind(chatSocket, playerManager, gameMap.container);
   }
 
   chatSocket.onopen = (message : Event) => {

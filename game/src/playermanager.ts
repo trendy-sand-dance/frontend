@@ -1,7 +1,7 @@
 import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
-import PongTable from './pongtable.js';
+import PongTable from './pong/pongtable.js';
 // import { RoomType } from './interfaces.js';
 //import Point from './point.js';
 import('htmx.org');

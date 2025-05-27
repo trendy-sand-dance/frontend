@@ -1,11 +1,14 @@
+import { Container} from 'pixi.js';
 import PlayerManager from "../playermanager.js";
+import ChatBubble from '../chat/chatbubble.js';
 import { MessageType, RoomType } from "../interfaces";
 
 export default class Chat {
 
   private textInput : HTMLInputElement;
   private sendButton : HTMLButtonElement;
-  private messages : string[] = [];
+  // private messages : string[] = [];
+  private chatBubbles : ChatBubble[] = [];
   private socket : WebSocket | null = null;
 
   public constructor(inputElementId : string, sendButtonElementId : string) {
@@ -32,31 +35,63 @@ export default class Chat {
 
   }
 
-  public bind(chatServer : WebSocket, playerManager : PlayerManager) : void {
+  public bind(chatServer : WebSocket, playerManager : PlayerManager, mapContainer : Container) : void {
 
     this.socket = chatServer;
 
     this.sendButton.addEventListener("click", () => {
 
       const chatMessage = this.getTextInput();
+
       if (chatMessage) {
-        this.textInput.value = "";
-        this.messages.push(chatMessage);
 
+        const player = playerManager.getLocalPlayer();
 
-        while (this.messages.length != 0) {
-          const message = this.messages.pop();
-          const player = playerManager.getLocalPlayer();
-          if (player && this.socket && message) {
-            // TODO: Write function to determine which room the player is and whether it's a PM or a RM
-            const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: message, timestamp: new Date().toLocaleString(), room: RoomType.Hall};
-            this.socket.send(JSON.stringify(roomMessage));
-          }
+        if (player && this.socket) {
+          // TODO: Write function to determine which room the player is and whether it's a PM or a RM
+          const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: RoomType.Hall};
+          this.socket.send(JSON.stringify(roomMessage));
+          const b = new ChatBubble(player, chatMessage, 20);
+          this.chatBubbles.push(b);
+          mapContainer.addChild(b.getContainer());
+          console.log("We pushing");
         }
 
       }
 
+      this.textInput.value = "";
+
     });
+
+  }
+
+  public getChatBubbles() : ChatBubble[] {
+
+    return this.chatBubbles;
+
+  }
+
+  public destroyBubble(bubble : ChatBubble) : void {
+
+    const index = this.chatBubbles.indexOf(bubble);
+    if (index !== -1) {
+
+      bubble.destroy();
+      this.chatBubbles.splice(index, 1);
+
+    }
+
+  }
+
+  public availableChatBubbles() : boolean {
+
+    return this.chatBubbles.length > 0;
+
+  }
+
+  public popChatBubble() : ChatBubble | undefined {
+
+    return this.chatBubbles.pop();
 
   }
 

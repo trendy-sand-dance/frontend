@@ -1,7 +1,6 @@
 import { Graphics } from "pixi.js";
-import Point from './point.js';
-// import * as settings from './settings.js';
-//
+import Point from '../point.js';
+
 const velocityMultiplier = 1.2;
 
 export default class Ball {
