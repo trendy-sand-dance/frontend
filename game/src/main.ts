@@ -5,16 +5,18 @@ import GameMap from './gamemap.js';
 import * as settings from './settings.js';
 import * as mouse from './mouse-interaction.js';
 import * as input from './input.js';
-import * as cm from './connectionmanager.js';
-import PongTable from './pongtable.js';
+import * as gameCM from './connectionmanager.js';
+import * as chatCM from './chat/chatconnectionmanager.js';
+import PongTable from './pong/pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
 import { PongState, CameraMode } from './interfaces.js';
-import TournamentSubscription from "./tournamentsubscription.js";
-import { socket } from './connectionmanager.js'
-// import { initializeLocalPlayer } from './connectionmanager.js';
-//import Ball from './ball.js';
-// import InfoBox from './infobox.js';
+import TournamentSubscription from "./pong/tournamentsubscription.js";
+import { gameSocket } from './connectionmanager.js'
+// import ChatBubble from './chat/chatbubble.js';
+// import TextBox from './ui/textbox.js';
+// import { RoomType } from './interfaces.js';
+// import { MessageType } from './interfaces.js';
 
 // Globals
 const pixiApp: Application = new Application();
@@ -87,7 +89,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
     const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
     if (!pongTable.isSideReady(side)) {
-      cm.sendToServer({ type: "join_pong", pongPlayer: newPlayer });
+      gameCM.sendToServer(gameSocket, { type: "join_pong", pongPlayer: newPlayer });
     }
     else {
       const existingPlayer: PongPlayer | null = pongTable.getPongPlayer(side);
@@ -95,7 +97,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
         alert("There's already another player at the table!");
       }
       else if (existingPlayer) {
-        cm.sendToServer({ type: "leave_pong", pongPlayer: existingPlayer });
+        gameCM.sendToServer(gameSocket, { type: "leave_pong", pongPlayer: existingPlayer });
       }
     }
 
@@ -117,7 +119,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
       const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
       if (!tournamentTable.isSideReady(side)) {
-        cm.sendToServer({ type: "join_pong_tournament", pongPlayer: newPlayer });
+        gameCM.sendToServer(gameSocket, { type: "join_pong_tournament", pongPlayer: newPlayer });
       }
       else {
         const existingPlayer: PongPlayer | null = tournamentTable.getPongPlayer(side);
@@ -125,7 +127,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
           alert("There's already another player at the table!");
         }
         else if (existingPlayer) {
-          cm.sendToServer({ type: "leave_pong_tournament", pongPlayer: existingPlayer });
+          gameCM.sendToServer(gameSocket, { type: "leave_pong_tournament", pongPlayer: existingPlayer });
         }
       }
 
@@ -135,7 +137,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
 
 }
 
-function handlePong(pongTable: PongTable, player: Player) {
+function handlePongUI(pongTable: PongTable, player: Player) {
 
   if (pongTable.isInProgress()) {
     pongTable.setIndicator('left', PongState.InProgress);
@@ -170,7 +172,7 @@ function handlePong(pongTable: PongTable, player: Player) {
 }
 
 
-function handleTournament(tournamentTable: PongTable, player: Player) {
+function handleTournamentUI(tournamentTable: PongTable, player: Player) {
 
   if (tournamentTable.isInProgress()) {
     tournamentTable.setIndicator('left', PongState.InProgress);
@@ -224,6 +226,55 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
 }
 
+function handleChatBubbles(time : Ticker) : void {
+
+  const bubbles = chatCM.chat.getChatBubbles();
+  for (const b of bubbles) {
+
+    if (!b.dead()) {
+      b.float(time);
+    } 
+    else {
+      chatCM.chat.destroyBubble(b);
+    }
+
+  }
+
+}
+
+
+function handleScreenshake(table : PongTable, side : 'left' | 'right', driver : number) : void {
+
+  if (table.collidesWithPaddle(side) && !screenShake) {
+
+    screenShake = true;
+    setTimeout(() => {
+      screenShake = false;
+    }, 200)
+
+  }
+
+  if (screenShake) {
+    pixiApp.stage.x += Math.sin(driver);
+  }
+
+}
+
+function broadcastPositionUpdates(player : Player) {
+
+  //Broadcast new position
+  if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
+
+    gameCM.sendToServer(gameSocket, {
+      type: "player_move",
+      id: player.getId(),
+      position: player.getPosition(),
+    });
+
+  }
+
+}
+
 function isAtTable(id: number, table: PongTable) {
 
   if (table.getPongPlayer('left') && table.getPongPlayer('right'))
@@ -232,22 +283,26 @@ function isAtTable(id: number, table: PongTable) {
 
 }
 
+
+export let gameMap: GameMap;
+
 (async () => {
 
   await setup();
   await preload();
 
   // Initialize map and add to pixi.stage
-  let gameMap: GameMap = addGameMap(pixiApp);
+  gameMap = addGameMap(pixiApp);
 
   //Network business
   if (window.__USER_ID__) {
-    await cm.runConnectionManager(gameMap);
+    await gameCM.runConnectionManager(gameMap);
+    chatCM.runChatConnectionManager(gameMap);
 
     // Testing tournamentSubscription box
     let p = playerManager.getLocalPlayer();
     if (p) {
-      let tournamentBox = new TournamentSubscription(37, 10, socket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
+      let tournamentBox = new TournamentSubscription(37, 10, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
       gameMap.container.addChild(tournamentBox.getContext());
     }
   }
@@ -263,71 +318,44 @@ function isAtTable(id: number, table: PongTable) {
   playerManager.initTournamentTable(tournamentTable);
 
 
-
-
   let driver: number = 0;
+  const player = playerManager.getLocalPlayer();
 
   //Game Loop
   pixiApp.ticker.add((time: Ticker) => {
 
-    const player = playerManager.getLocalPlayer();
-
     if (player) {
 
       handleCamera(player, gameMap);
-      handlePong(pongTable, player);
-      handleTournament(tournamentTable, player);
+      handlePongUI(pongTable, player);
+      handleTournamentUI(tournamentTable, player);
+      handleChatBubbles(time);
 
-      // Pong move paddle
+      // Move around
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
 
         input.movePlayer(player, time.deltaTime);
+        broadcastPositionUpdates(player);
 
       }
-      else {
+      else { // We're in a 1v1 or Tournament game
 
         if (isAtTable(player.id, tournamentTable)) {
 
           const side = tournamentTable.getPlayerSide(player) as 'left' | 'right';
           tournamentTable.sendPaddleUpdate(input.keyIsPressed, side);
-          // if (tournamentTable.collidesWithPaddle(side)) {
-          //   screenShake = true;
-          //   setTimeout(() => {
-          //     screenShake = false;
-          //   }, 200)
-          // }
+          handleScreenshake(tournamentTable, side, driver);
 
         }
         else {
 
           const side = pongTable.getPlayerSide(player) as 'left' | 'right';
           pongTable.sendPaddleUpdate(input.keyIsPressed, side);
-          // if (pongTable.collidesWithPaddle(side)) {
-          //   screenShake = true;
-          //   setTimeout(() => {
-          //     screenShake = false;
-          //   }, 200)
-          // }
-          //
+          handleScreenshake(pongTable, side, driver);
+
         }
 
       }
-
-      if (screenShake) {
-        pixiApp.stage.x += Math.sin(driver);
-      }
-
-      //Broadcast new position
-      if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
-
-        cm.sendToServer({
-          type: "player_move",
-          id: player.getId(),
-          position: player.getPosition(),
-        });
-
-      }
-
       prevPos = player.getPosition();
     }
 

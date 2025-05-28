@@ -3,23 +3,25 @@ import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
 
 
-function initializeWebsocket(gameserverURL: string): WebSocket {
+export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
 
-  if (gameserverURL) {
-    console.log("Succesfully connected with the gameserver");
-    return new WebSocket(`ws://${gameserverURL}:8003/ws-gameserver`);
+  if (serverAddress) {
+    console.log("Succesfully connected with the server");
+    return new WebSocket(`ws://${serverAddress}:${port}/${endpoint}`); // 8003/ws-gameserver
   }
   else {
-    console.warn("GameserverURL not defined... this may cause issues with the websocket connection");
-    return new WebSocket(`ws://localhost:8003/ws-gameserver`);
+    console.warn("Server address not defined... this may cause issues with the websocket connection");
+    return new WebSocket("");
   }
 
 }
 
-export function sendToServer(data: ServerMessage) {
+export function sendToServer(socket: WebSocket, data: GameServerMessage) {
+
   if (socket.readyState == WebSocket.OPEN) {
     socket.send(JSON.stringify(data));
   }
+
 }
 
 async function getUserInfo(id: number): Promise<User> {
@@ -52,7 +54,7 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap, texture
 
 }
 
-export let socket: WebSocket = initializeWebsocket(window.__GAMESERVER_URL__);
+export let gameSocket: WebSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
 
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap, texture: Texture) {
   for (const [id, player] of players) {
@@ -74,18 +76,20 @@ function isLocalPlayer(id: number): boolean {
   return id == window.__USER_ID__;
 }
 
+export let localUser: User;
+
 export async function runConnectionManager(gameMap: GameMap) {
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
-  const localUser: User = await getUserInfo(window.__USER_ID__);
+  localUser = await getUserInfo(window.__USER_ID__);
   const texture = Texture.from('player_bunny');
   const player = initializeLocalPlayer(localUser, gameMap, texture);
   if (player) {
-    sendToServer({ type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
+    sendToServer(gameSocket, { type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
   }
 
-  socket.onmessage = (message) => {
+  gameSocket.onmessage = (message) => {
     const data = JSON.parse(message.data);
     // console.warn(message.data);
 
@@ -308,20 +312,19 @@ export async function runConnectionManager(gameMap: GameMap) {
 
   // We notify the server when a player suddenly quits the browser
   window.addEventListener("beforeunload", () => {
-    if (socket.readyState == WebSocket.OPEN) {
+    if (gameSocket.readyState == WebSocket.OPEN) {
       const player = playerManager.getLocalPlayer();
       let pos: Vector2 = { x: 0, y: 0 };
       if (player) {
         pos = player.position.asCartesian;
-        socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: pos }));
-        sendToServer({ type: "disconnection", id: localUser.id, position: pos });
+        sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
       } else {
-        socket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: { x: -4.2, y: -4.2 } }));
+        gameSocket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: { x: -4.2, y: -4.2 } }));
       }
     }
   });
 
-  socket.onerror = (message) => {
+  gameSocket.onerror = (message) => {
     console.log("Websocket error: ", message);
   };
 

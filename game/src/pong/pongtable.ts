@@ -1,14 +1,14 @@
 import { Container } from 'pixi.js';
 import Ball from './ball.js';
-import Point from './point.js';
+import Point from '../point.js';
 import Paddle from './paddle.js';
-import InfoBox from './infobox.js';
-import Indicator from './indicator.js';
-import Player from './player.js';
-import * as cm from './connectionmanager.ts'
-// import Player from './player.js';
-import * as settings from './settings.js';
-import { PongState, TournamentState } from './interfaces.js';
+import Indicator from '../ui/indicator.js';
+import Player from '../player.js';
+import * as cm from '../connectionmanager.ts'
+import * as settings from '../settings.js';
+import { PongState, TournamentState } from '../interfaces.js';
+import { gameSocket } from '../connectionmanager.ts';
+import TextBox from '../ui/textbox.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
   const slicedRows = array.slice(fromY, toY);
@@ -30,7 +30,7 @@ export default class PongTable {
   private players: PongPlayers = { left: null, right: null };
   private indicators: Indicators = { left: new Indicator(12, 0, 0), right: new Indicator(12, settings.TILESIZE * 4, settings.TILESIZE * 2) };
 
-  private countdownTimer: InfoBox = new InfoBox('3', 24, settings.TILESIZE * 2, 0);
+  private countdownTimer: TextBox = new TextBox('3', 24, settings.TILESIZE * 2, 0);
 
   private inProgress: boolean = false;
 
@@ -68,7 +68,6 @@ export default class PongTable {
 
     this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
     this.container.zIndex = 10;
-    console.log(`Is tournament table: ${this.isTournament}`);
   }
 
   transitionTo(newState: TournamentState) {
@@ -85,7 +84,9 @@ export default class PongTable {
     }
     else {
       this.countdownTimer.container.renderable = true;
-      this.countdownTimer.setText(`Starting in: ${seconds}`, settings.CGA_WHITE);
+      this.countdownTimer.setText(`Starting in: ${seconds}`);
+      this.countdownTimer.setTextColor(settings.CGA_WHITE);
+      this.countdownTimer.update();
     }
 
   }
@@ -190,6 +191,7 @@ export default class PongTable {
     this.players['right'] = null;
 
     this.inProgress = false;
+    this.countdownTimer.container.renderable = false;
 
   }
 
@@ -203,16 +205,18 @@ export default class PongTable {
       const max = Math.max(this.players['left'].score, this.players['right'].score);
 
       if (this.players['left'].id === winnerId) {
+        this.countdownTimer.setTextColor(settings.CGA_WHITE);
         if (finals)
-          this.countdownTimer.setText(`${this.players['left'].username} has won the tournament!`, settings.CGA_WHITE);
-        else
-          this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
+          this.countdownTimer.setText(`${this.players['left'].username} has won the tournament!`);
+        else 
+          this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`);
       }
       else {
+        this.countdownTimer.setTextColor(settings.CGA_WHITE);
         if (finals)
-          this.countdownTimer.setText(`${this.players['right'].username} has won the tournament!`, settings.CGA_WHITE);
+          this.countdownTimer.setText(`${this.players['right'].username} has won the tournament!`);
         else
-          this.countdownTimer.setText(`${this.players['right'].username} has won with ${max} - ${min}!`, settings.CGA_WHITE);
+          this.countdownTimer.setText(`${this.players['right'].username} has won with ${max} - ${min}!`);
       }
 
       setTimeout(() => {
@@ -264,7 +268,7 @@ export default class PongTable {
 
     if (side !== null && keyIsPressed['ArrowUp']) {
       console.log("We are sending up");
-      cm.sendToServer({
+      cm.sendToServer(gameSocket, {
         type: "paddle_move",
         side: side,
         direction: "up",
@@ -274,7 +278,7 @@ export default class PongTable {
 
     if (side !== null && keyIsPressed['ArrowDown']) {
       console.log("We are sending down");
-      cm.sendToServer({
+      cm.sendToServer(gameSocket, {
         type: "paddle_move",
         side: side,
         direction: "down",

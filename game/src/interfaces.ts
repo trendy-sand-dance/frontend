@@ -1,7 +1,5 @@
-// import * as settings from './settings.js';
-import Paddle from './paddle.js';
-// import InfoBox from './infobox.js';
-import Indicator from './indicator.js';
+import Paddle from './pong/paddle.js';
+import Indicator from './ui/indicator.js';
 
 declare global {
 
@@ -54,7 +52,7 @@ declare global {
     y: number;
   }
 
-  interface ServerMessage {
+  interface GameServerMessage {
     type: string,
     id?: number,
     username?: string,
@@ -103,6 +101,64 @@ declare global {
     player: PlayerData,
   }
 
+
+  // Chat
+
+  type ChatServerMessage = ConnectMessage | DisconnectMessage | TransitionMessage | RoomMessage | ChatMessage;
+
+  type ConnectMessage = {
+    type: string,
+    user: User,
+    room: RoomType,
+  }
+
+  type DisconnectMessage = {
+    type: string,
+    id: number,
+  }
+
+  type TransitionMessage = {
+    type: string,
+    id: number,
+    from: RoomType,
+    to: RoomType,
+  }
+
+  type RoomMessage = {
+    type: string,
+    id: number,
+    message: string,
+    timestamp: string,
+    room: RoomType,
+  }
+
+  type ChatMessage = {
+    type: string,
+    fromId: number,
+    toId: number,
+    message: string,
+    timestamp: string,
+  }
+
+}
+
+// type ChatServerMessage = ConnectMessage | DisconnectMessage | TransitionMessage | RoomMessage | ChatMessage;
+
+export enum MessageType {
+  Connect = "connect",
+  Disconnect = "disconnect",
+  Transition = "transition",
+  RoomChat = "room_chat",
+  PersonalChat = "personal_chat",
+}
+
+export enum RoomType {
+  Cluster = "cluster",
+  Server = "server",
+  Game = "game",
+  Bocal = "bocal",
+  Hall = "hall",
+  Count = 5,
 }
 
 export enum CameraMode {

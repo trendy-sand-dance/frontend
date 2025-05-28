@@ -1,13 +1,14 @@
 import Player from './player.js';
 import { mouse } from './input.js';
 import { Texture, ColorMatrixFilter } from "pixi.js";
-import PongTable from './pongtable.js';
+import PongTable from './pong/pongtable.js';
+// import { RoomType } from './interfaces.js';
 //import Point from './point.js';
 import('htmx.org');
 
 const playerInfoBox = document.getElementById("pixi-player-info");
 
-class PlayerManager {
+export default class PlayerManager {
   static #instance: PlayerManager;
 
   public players = new Map<number, Player>;
@@ -167,7 +168,9 @@ class PlayerManager {
   }
 
   getPlayers() {
+
     return this.players;
+
   }
 
   updatePlayer(id: number, newPosition: Vector2) {
