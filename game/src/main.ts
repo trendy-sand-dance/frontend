@@ -137,7 +137,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
 
 }
 
-function handlePong(pongTable: PongTable, player: Player) {
+function handlePongUI(pongTable: PongTable, player: Player) {
 
   if (pongTable.isInProgress()) {
     pongTable.setIndicator('left', PongState.InProgress);
@@ -172,7 +172,7 @@ function handlePong(pongTable: PongTable, player: Player) {
 }
 
 
-function handleTournament(tournamentTable: PongTable, player: Player) {
+function handleTournamentUI(tournamentTable: PongTable, player: Player) {
 
   if (tournamentTable.isInProgress()) {
     tournamentTable.setIndicator('left', PongState.InProgress);
@@ -226,6 +226,55 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
 }
 
+function handleChatBubbles(time : Ticker) : void {
+
+  const bubbles = chatCM.chat.getChatBubbles();
+  for (const b of bubbles) {
+
+    if (!b.dead()) {
+      b.float(time);
+    } 
+    else {
+      chatCM.chat.destroyBubble(b);
+    }
+
+  }
+
+}
+
+
+function handleScreenshake(table : PongTable, side : 'left' | 'right', driver : number) : void {
+
+  if (table.collidesWithPaddle(side) && !screenShake) {
+
+    screenShake = true;
+    setTimeout(() => {
+      screenShake = false;
+    }, 200)
+
+  }
+
+  if (screenShake) {
+    pixiApp.stage.x += Math.sin(driver);
+  }
+
+}
+
+function broadcastPositionUpdates(player : Player) {
+
+  //Broadcast new position
+  if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
+
+    gameCM.sendToServer(gameSocket, {
+      type: "player_move",
+      id: player.getId(),
+      position: player.getPosition(),
+    });
+
+  }
+
+}
+
 function isAtTable(id: number, table: PongTable) {
 
   if (table.getPongPlayer('left') && table.getPongPlayer('right'))
@@ -234,13 +283,16 @@ function isAtTable(id: number, table: PongTable) {
 
 }
 
+
+export let gameMap: GameMap;
+
 (async () => {
 
   await setup();
   await preload();
 
   // Initialize map and add to pixi.stage
-  let gameMap: GameMap = addGameMap(pixiApp);
+  gameMap = addGameMap(pixiApp);
 
   //Network business
   if (window.__USER_ID__) {
@@ -267,81 +319,43 @@ function isAtTable(id: number, table: PongTable) {
 
 
   let driver: number = 0;
+  const player = playerManager.getLocalPlayer();
 
   //Game Loop
   pixiApp.ticker.add((time: Ticker) => {
 
-    const player = playerManager.getLocalPlayer();
-
     if (player) {
 
       handleCamera(player, gameMap);
-      handlePong(pongTable, player);
-      handleTournament(tournamentTable, player);
+      handlePongUI(pongTable, player);
+      handleTournamentUI(tournamentTable, player);
+      handleChatBubbles(time);
 
-      const bubbles = chatCM.chat.getChatBubbles();
-      for (const b of bubbles) {
-
-        if (!b.dead()) {
-          b.float(time);
-        } 
-        else {
-          chatCM.chat.destroyBubble(b);
-        }
-
-      }
-
-
-      // Pong move paddle
+      // Move around
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
 
         input.movePlayer(player, time.deltaTime);
+        broadcastPositionUpdates(player);
 
       }
-      else {
+      else { // We're in a 1v1 or Tournament game
 
         if (isAtTable(player.id, tournamentTable)) {
 
           const side = tournamentTable.getPlayerSide(player) as 'left' | 'right';
           tournamentTable.sendPaddleUpdate(input.keyIsPressed, side);
-          // if (tournamentTable.collidesWithPaddle(side)) {
-          //   screenShake = true;
-          //   setTimeout(() => {
-          //     screenShake = false;
-          //   }, 200)
-          // }
+          handleScreenshake(tournamentTable, side, driver);
 
         }
         else {
 
           const side = pongTable.getPlayerSide(player) as 'left' | 'right';
           pongTable.sendPaddleUpdate(input.keyIsPressed, side);
-          // if (pongTable.collidesWithPaddle(side)) {
-          //   screenShake = true;
-          //   setTimeout(() => {
-          //     screenShake = false;
-          //   }, 200)
-          // }
-          //
+          handleScreenshake(pongTable, side, driver);
+
         }
 
       }
-
-      if (screenShake) {
-        pixiApp.stage.x += Math.sin(driver);
-      }
-
-      //Broadcast new position
-      if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
-
-        gameCM.sendToServer(gameSocket, {
-          type: "player_move",
-          id: player.getId(),
-          position: player.getPosition(),
-        });
-
-      }
-
       prevPos = player.getPosition();
     }
 

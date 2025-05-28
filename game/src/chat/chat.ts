@@ -7,9 +7,11 @@ export default class Chat {
 
   private textInput : HTMLInputElement;
   private sendButton : HTMLButtonElement;
+  private chatDisplay : HTMLElement;
   // private messages : string[] = [];
   private chatBubbles : ChatBubble[] = [];
   private socket : WebSocket | null = null;
+  private bubbleSize : number = 20;
 
   public constructor(inputElementId : string, sendButtonElementId : string) {
 
@@ -21,7 +23,10 @@ export default class Chat {
     if (this.sendButton === null) {
       console.error("Couldn't get sendButton for Chat");
     }
-
+    this.chatDisplay = document.getElementById("chat-message-display") as HTMLElement;
+    if (this.chatDisplay === null) {
+      console.error("Couldn't get chatDisplay for Chat");
+    }
 
   }
 
@@ -35,11 +40,7 @@ export default class Chat {
 
   }
 
-  public bind(chatServer : WebSocket, playerManager : PlayerManager, mapContainer : Container) : void {
-
-    this.socket = chatServer;
-
-    this.sendButton.addEventListener("click", () => {
+  private handleTextInput(playerManager : PlayerManager, mapContainer : Container) : void {
 
       const chatMessage = this.getTextInput();
 
@@ -51,7 +52,7 @@ export default class Chat {
           // TODO: Write function to determine which room the player is and whether it's a PM or a RM
           const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: RoomType.Hall};
           this.socket.send(JSON.stringify(roomMessage));
-          const b = new ChatBubble(player, chatMessage, 20);
+          const b = new ChatBubble(player, chatMessage, this.bubbleSize);
           this.chatBubbles.push(b);
           mapContainer.addChild(b.getContainer());
           console.log("We pushing");
@@ -61,7 +62,32 @@ export default class Chat {
 
       this.textInput.value = "";
 
+  }
+
+  public bind(chatServer : WebSocket, playerManager : PlayerManager, mapContainer : Container) : void {
+
+    this.socket = chatServer;
+
+    this.sendButton.addEventListener("click", () => {
+        this.handleTextInput(playerManager, mapContainer);
     });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === 'Enter') {
+        this.handleTextInput(playerManager, mapContainer);
+      }
+    });
+
+  }
+
+  public createChatBubble(message : RoomMessage, playerManager : PlayerManager, mapContainer : Container) {
+  
+    const player = playerManager.getPlayer(message.id);
+    if (player) {
+      const b = new ChatBubble(player, message.message, this.bubbleSize);
+      this.chatBubbles.push(b);
+      mapContainer.addChild(b.getContainer());
+    }
 
   }
 

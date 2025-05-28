@@ -86,6 +86,7 @@ export default class PongTable {
       this.countdownTimer.container.renderable = true;
       this.countdownTimer.setText(`Starting in: ${seconds}`);
       this.countdownTimer.setTextColor(settings.CGA_WHITE);
+      this.countdownTimer.update();
     }
 
   }
@@ -190,6 +191,7 @@ export default class PongTable {
     this.players['right'] = null;
 
     this.inProgress = false;
+    this.countdownTimer.container.renderable = false;
 
   }
 

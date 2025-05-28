@@ -1,3 +1,7 @@
+import { chat } from './chatconnectionmanager';
+import { playerManager } from '../playermanager';
+import { gameMap } from '../main';
+
 // Message Handler
 type MessageHandler = (data: ChatServerMessage, server: WebSocket) => void;
 
@@ -24,6 +28,7 @@ export const messageHandlers: Record<string, MessageHandler> = {
   "room_chat": (data: ChatServerMessage, server: WebSocket) => {
     console.log(`RoomChat message from ${server.url}`);
     const msg: RoomMessage = data as RoomMessage;
+    chat.createChatBubble(msg, playerManager, gameMap.container);
     console.log(msg);
   },
 
