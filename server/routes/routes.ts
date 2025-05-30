@@ -6,6 +6,7 @@ import { areFriends, sendFriendReq, acceptFriendReq, rejectFriendReq, blockFrien
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { getPixiGame, getPlayerInfo, getUserInfo, getTournamentPlayers } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
+import {viewMatchHistory} from '../controllers/account/matchHistory.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
 
 export async function routes(fastify: FastifyInstance) {
@@ -64,13 +65,18 @@ export async function routes(fastify: FastifyInstance) {
 
 
 
+  fastify.get('/viewMatchHistory/:userid', viewMatchHistory);
+
 
   fastify.get('/placeholder', async (req, reply) => {
     return reply.send("functionality SOON");
   });
 
 
+
+  //can we delete these?
   fastify.get('/sidebar/chat', async (req, reply) => {
+	console.log("triggering chat");
     return reply.view('/partials/sidebar-chat.ejs');
   });
 

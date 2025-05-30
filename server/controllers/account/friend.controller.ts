@@ -137,39 +137,39 @@ export async function viewPlayers(request: FastifyRequest, reply: FastifyReply):
       throw { code: res.status, message: responseBody.error };
     }
 
-    const raw = await res.json() as
-      {
-        requests: {
-          request: { avatar: string, username: string, id: number },
-        }[],
-        friends: {
-          friend: { avatar: string, username: string, id: number, status: number, wins: number, losses: number },
-        }[],
-        pending: {
-          pends: { avatar: string, username: string, id: number },
-        }[],
-        blocked: {
-          blocks: { avatar: string, username: string, id: number },
-        }[],
-        userId: number,
-      };
-
-
-    return reply.viewAsync("partials/sidebar-players.ejs", {
-      requests: raw.requests,
-      friends: raw.friends,
-      pending: raw.pending,
-      blocked: raw.blocked,
-      userId: raw.userId,
-      username: username,
-    });
-
-  }
-  catch (error) {
-    request.log.error(error);
-    const err = error as { code: number, message: string };
-    return reply.code(err.code).send({ message: err.message });
-  }
+		const raw = await res.json() as 
+		{
+			requests: { 
+				request: { avatar: string, username: string, id: number},
+			}[],
+			friends: {
+				friend: { avatar: string, username: string, id: number, status: number, wins: number, losses: number },
+			}[],
+			pending: {
+				pends: { avatar: string, username: string, id: number },
+			}[],
+			blocked: {
+				blocks: { avatar: string, username: string, id: number },
+			}[],
+			userId: number,
+		  };
+		
+		return reply.viewAsync("partials/sidebar-players.ejs", { 
+			requests: raw.requests,
+			friends: raw.friends,
+			pending: raw.pending,
+			blocked: raw.blocked,
+			userId: raw.userId,
+			username: username,
+			 });
+	
+	}
+	catch (error)
+	{
+		request.log.error(error);
+		const err = error as { code: number, message: string };
+		return reply.code(err.code).send({ message: err.message});
+	}
 };
 
 

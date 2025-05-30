@@ -1,0 +1,21 @@
+<h2 class="text-xl font-bold mb-4">Match History</h2>
+
+
+<div class="space-y-4">
+  <% matches.forEach(match => {
+    const won = match.won.username === match.opponent;
+    const glow = won ? 'shadow-[0_0_15px_#22c55e]' : 'shadow-[0_0_15px_#ef4444]';
+    const borderColor = won ? 'border-green-400' : 'border-red-500';
+    const bgColor = won ? '!bg-green-950' : 'bg-red-950';
+    const textColor = won ? 'text-green-300' : 'text-red-300';
+    const result = won ? 'Victory' : 'Defeat';
+  %>
+    <div class="rounded-xl p-4 border-2 <%= borderColor %> <%= bgColor %> <%= textColor %> font-mono transition-all hover:<%= glow %>">
+      <div class="text-lg font-bold"><%= result %></div>
+      <div class="text-sm">vs <%= match.opponent %></div>
+      <div class="text-xs opacity-80">
+        <%= new Date(match.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
+      </div>
+    </div>
+  <% }) %>
+</div>
