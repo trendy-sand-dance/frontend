@@ -1,35 +1,32 @@
 <h2 class="text-xl font-bold mb-4">Match History</h2>
 
 
-<div class="space-y-3">
-	<% if (matches.length > 0) 
-	{ 
-	%> <% matches.forEach(match => { 
-			const won = match.won.username === match.opponent;
-		%>
-		<div class="
-		  rounded-xl p-4 border-2 transition-all
-		  <% if (won) { %>
-			border-green-400 bg-green-950 text-green-200 hover:shadow-[0_0_15px_#22c55e]
-		  <% } else { %>
-			border-pink-500 bg-pink-950 text-pink-300 hover:shadow-[0_0_15px_#ec4899]
-		  <% } %>
-		">
-		  <div class="text-lg font-bold tracking-wide">
-			<%= won ? "Victory" : "Defeat" %>
-		  </div>
-		  <div class="text-sm opacity-90">
-			vs <%= match.opponent %>
-		  </div>
-		  <div class="text-xs opacity-70">
-			<%= new Date(match.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
-		  </div>
-		</div>
-		<% }) %>
-	<% }
-	else { %>
-		<p class="text-gray-500 italic">No Matches yet, go play some games! .</p>
-		<% } %>
-	</section>
+<div class="space-y-4">
+  <% matches.forEach(match => {
+    const won = match.winner === match.opponent;
+    const glow = won ? 'shadow-[0_0_15px_#22c55e]' : 'shadow-[0_0_15px_#ef4444]';
+    const borderColor = won ? 'border-green-400' : 'border-red-500';
+    const bgColor = won ? '!bg-green-950' : 'bg-red-950';
+    const textColor = won ? 'text-green-300' : 'text-red-300';
+    const result = won ? 'Victory' : 'Defeat';
+  %>
+    <div class="rounded-xl p-4 border-2 <%= borderColor %> <%= bgColor %> <%= textColor %> font-mono transition-all hover:<%= glow %>">
+      <div class="text-lg font-bold"><%= result %></div>
+      <div class="text-sm">vs <%= match.opponent %></div>
+      <div class="text-xs opacity-80">
+        <%= new Date(match.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
+      </div>
+    </div>
+  <% }) %>
 </div>
 
+<div class="bg-green-500 p-4 rounded-xl">
+  test card
+</div>
+
+<div class="text-red-500">This should be red text</div>
+
+
+<div style="background-color: limegreen;">If you see this, it's not a Tailwind problem.</div>
+
+<div class="bg-green-500 !bg-green-500 text-white p-4">Hello from EJS</div>
