@@ -1,28 +1,35 @@
 <h2 class="text-xl font-bold mb-4">Match History</h2>
 
-<!-- <%- JSON.stringify(matches) %> -->
 
 <div class="space-y-3">
 	<% if (matches.length > 0) 
 	{ 
 	%> <% matches.forEach(match => { 
-			const won = match.winner === match.opponent;
-			const resultColor = won ? 'bg-green-900 text-green-300' : 'bg-red-900 text-purple-900';
-			const resultText = won ? 'Victory' : 'Defeat';
+			const won = match.won.username === match.opponent;
 		%>
-			<div class="rounded-xl p-4 shadow-md border border-cyan-500 <%= resultColor %>">
-			<div class="flex justify-between items-center">
-				<div class="font-semibold text-lg"><%= resultText %></div>
-				<div class="text-sm opacity-75">
-				<%= new Date(match.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) %>
-				</div>
-			</div>
-			<div class="text-sm mt-1">vs <span class="font-mono"><%= match.opponent %></span></div>
-			</div>
+		<div class="
+		  rounded-xl p-4 border-2 transition-all
+		  <% if (won) { %>
+			border-green-400 bg-green-950 text-green-200 hover:shadow-[0_0_15px_#22c55e]
+		  <% } else { %>
+			border-pink-500 bg-pink-950 text-pink-300 hover:shadow-[0_0_15px_#ec4899]
+		  <% } %>
+		">
+		  <div class="text-lg font-bold tracking-wide">
+			<%= won ? "Victory" : "Defeat" %>
+		  </div>
+		  <div class="text-sm opacity-90">
+			vs <%= match.opponent %>
+		  </div>
+		  <div class="text-xs opacity-70">
+			<%= new Date(match.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
+		  </div>
+		</div>
 		<% }) %>
 	<% }
 	else { %>
 		<p class="text-gray-500 italic">No Matches yet, go play some games! .</p>
-	  <% } %>
+		<% } %>
 	</section>
 </div>
+
