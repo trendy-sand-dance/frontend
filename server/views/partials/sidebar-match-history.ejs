@@ -3,7 +3,7 @@
 
 <div class="space-y-4">
   <% matches.forEach(match => {
-    const won = match.winner === match.opponent;
+    const won = match.won.username === match.opponent;
     const glow = won ? 'shadow-[0_0_15px_#22c55e]' : 'shadow-[0_0_15px_#ef4444]';
     const borderColor = won ? 'border-green-400' : 'border-red-500';
     const bgColor = won ? '!bg-green-950' : 'bg-red-950';
@@ -19,14 +19,3 @@
     </div>
   <% }) %>
 </div>
-
-<div class="bg-green-500 p-4 rounded-xl">
-  test card
-</div>
-
-<div class="text-red-500">This should be red text</div>
-
-
-<div style="background-color: limegreen;">If you see this, it's not a Tailwind problem.</div>
-
-<div class="bg-green-500 !bg-green-500 text-white p-4">Hello from EJS</div>
