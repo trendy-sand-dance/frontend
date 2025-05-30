@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { registerUser, getRegisterView } from '../controllers/account/register.controller.js';
 import { login, logout, getLoginView } from '../controllers/account/login.controller.js';
 import { editUsername, editPassword, editEmail, deleteUser, editAvatar, deleteAvatar } from '../controllers/account/editUser.controller.js';
-import { sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
+import { areFriends, sendFriendReq, acceptFriendReq, rejectFriendReq, blockFriend, viewPlayers, deleteAssociation } from '../controllers/account/friend.controller.js';
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { getPixiGame, getPlayerInfo, getUserInfo, getTournamentPlayers } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
@@ -41,6 +41,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.post('/block/:friendId/:userId', blockFriend); // friend is person who user wants to block
   fastify.get('/viewPlayers/:username', viewPlayers);
   fastify.delete("/deleteFriend/:senderId/:userId", deleteAssociation);
+  fastify.get('/areFriends/:userId1/:userId2', areFriends);
 
   fastify.post('/login', login);
   fastify.get('/logout', {

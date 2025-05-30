@@ -1,0 +1,37 @@
+import { chat } from './chatconnectionmanager';
+import { playerManager } from '../playermanager';
+import { gameMap } from '../main';
+
+// Message Handler
+type MessageHandler = (data: ChatServerMessage, server: WebSocket) => void;
+
+export const messageHandlers: Record<string, MessageHandler> = {
+
+  "connect": (data: ChatServerMessage, server: WebSocket) => {
+    const msg: ConnectMessage = data as ConnectMessage;
+    if (msg) {
+      console.log("Sucessfully created a session on the chat server", msg);
+    }
+    else {
+      console.log("Couldn't create a session on the chat server :(");
+    }
+    server.send("Yep");
+  },
+  "confirm": (data: ChatServerMessage, server: WebSocket) => {
+    console.log(data.type);
+    console.log(server.url);
+    console.log(`Succesfully connected to the chat server ${server.url}`);
+  },
+  // "disconnect": (data: ChatServerMessage, server: WebSocket) => {
+  //   const msg: DisconnectMessage = data as DisconnectMessage;
+  // },
+  "room_chat": (data: ChatServerMessage, server: WebSocket) => {
+    console.log(`RoomChat message from ${server.url}`);
+    const msg: RoomMessage = data as RoomMessage;
+    chat.createChatBubble(msg, playerManager, gameMap.container);
+    console.log(msg);
+  },
+
+};
+
+
