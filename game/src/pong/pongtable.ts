@@ -93,10 +93,10 @@ export default class PongTable {
 
   isPlayerAtLeft(position: Vector2): boolean {
 
-    let playerPos = { x: Math.round(position.x), y: Math.round(position.y) };
+    let playerPos = { x: Math.ceil(position.x), y: Math.ceil(position.y) };
 
-    if (playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y)
-      || playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+    if (playerPos.x === Math.ceil(this.worldPosition.x - 1) && playerPos.y === Math.ceil(this.worldPosition.y)
+      || playerPos.x === Math.ceil(this.worldPosition.x - 1) && playerPos.y === Math.ceil(this.worldPosition.y + 1)) {
       return true;
     }
 
@@ -105,10 +105,10 @@ export default class PongTable {
 
   isPlayerAtRight(position: Vector2): boolean {
 
-    let playerPos = { x: Math.round(position.x), y: Math.round(position.y) };
+    let playerPos = { x: Math.ceil(position.x), y: Math.ceil(position.y) };
 
-    if (playerPos.x === Math.round(this.worldPosition.x + 3) && playerPos.y === Math.round(this.worldPosition.y)
-      || playerPos.x === Math.round(this.worldPosition.x + 3) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+    if (playerPos.x === Math.ceil(this.worldPosition.x + 4) && playerPos.y === Math.ceil(this.worldPosition.y)
+      || playerPos.x === Math.ceil(this.worldPosition.x + 4) && playerPos.y === Math.ceil(this.worldPosition.y + 1)) {
       return true;
     }
 
@@ -208,7 +208,7 @@ export default class PongTable {
         this.countdownTimer.setTextColor(settings.CGA_WHITE);
         if (finals)
           this.countdownTimer.setText(`${this.players['left'].username} has won the tournament!`);
-        else 
+        else
           this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`);
       }
       else {

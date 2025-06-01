@@ -73,8 +73,8 @@ export function setupMapZoom() {
 
   window.addEventListener('wheel', (event) => {
     let zoomIntensity = 0.05;
-    let minZoom = 0.5;
-    let maxZoom = 2;
+    let minZoom = 0.25;
+    let maxZoom = 3;
     let scrollDir = event.deltaY / Math.abs(event.deltaY);
 
     enum Dir {

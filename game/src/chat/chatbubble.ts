@@ -4,17 +4,17 @@ import { Ticker } from "pixi.js";
 
 export default class ChatBubble extends TextBox {
 
-  private lifetimeExceeded : boolean = false;
+  private lifetimeExceeded: boolean = false;
 
-  public constructor(player : Player, text : string, size : number) {
-    super(`${player.getUsername()}: ${text}`, size, player.getIsometricPosition().x, player.getIsometricPosition().y - 25);
+  public constructor(player: Player, text: string, size: number) {
+    super(`${player.getUsername()}: ${text}`, size, player.getIsometricPosition().x, player.getIsometricPosition().y - player.getContext().height);
     this.setTextColor('#000000');
     this.setBackgroundColor('#ffffff');
     this.setStrokeColor('#000000');
     this.update();
   }
 
-  public float(time : Ticker) {
+  public float(time: Ticker) {
     this.container.y -= time.deltaTime * 0.25;
     this.container.alpha -= time.deltaTime * 0.001;
     if (this.container.alpha <= 0) {
@@ -22,11 +22,11 @@ export default class ChatBubble extends TextBox {
     }
   }
 
-  public dead() : boolean {
+  public dead(): boolean {
 
     return this.lifetimeExceeded;
 
   }
-  
+
 
 }

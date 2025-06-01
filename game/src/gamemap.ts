@@ -92,13 +92,12 @@ export default class GameMap {
   drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
     context.poly([point.x, point.y, point.x + w, point.y + h / 2, point.x, point.y + h, point.x - w, point.y + h / 2, point.x, point.y]);
     if (outline) {
-      context.fill(settings.CGA_BLACK);
-      context.stroke({ color: settings.CGA_CYAN });
+      context.fill(settings.CGA_PINK_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
     }
     else {
-      // context.fill(settings.CGA_PINK);
-      // context.fill(settings.CGA_BLACK);
-      context.stroke({ color: settings.CGA_PINK });
+      context.fill(settings.CGA_CYAN_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
     }
   }
 
@@ -139,7 +138,7 @@ export default class GameMap {
           const p4 = new Point(col + 1, row + 1);
           p1.asIsometric.y -= currentHeightOffset;
           p4.asIsometric.y -= currentHeightOffset;
-          this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_PINK);
+          this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_BLACK);
         }
         // East Face
         {

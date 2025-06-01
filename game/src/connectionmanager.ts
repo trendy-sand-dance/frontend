@@ -83,7 +83,9 @@ export async function runConnectionManager(gameMap: GameMap) {
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
   localUser = await getUserInfo(window.__USER_ID__);
-  const texture = Texture.from('player_bunny');
+  // const texture = Texture.from('player_human');
+  const texture = Texture.from('player_hooman');
+  // const texture = Texture.from('player_bunny');
   const player = initializeLocalPlayer(localUser, gameMap, texture);
   if (player) {
     sendToServer(gameSocket, { type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });

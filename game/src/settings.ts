@@ -4,15 +4,17 @@ export const HEIGHT = 1050;
 
 // Colors
 export const BGCOLOR = '#ffffff';
-export const CGA_CYAN = '#01FFFF';
+export const CGA_CYAN = '#00FBFB';
 export const CGA_PINK = '#FF55FE';
+export const CGA_PINK_DARK = '#6b1156';
 export const CGA_BLACK = '#000000';
+export const CGA_CYAN_DARK = '#023C3C';
 export const CGA_WHITE = '#ffffff';
 
 // Tile settings
 export const TILESIZE = 32;
 export const PLAYERSIZE = 5;
-export const PLAYERSPEED = 0.1;
+export const PLAYERSPEED = 0.05;
 export const TILEMAP = [
 
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],

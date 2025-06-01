@@ -1,4 +1,4 @@
-import { Application, Assets, Ticker, Texture } from "pixi.js";
+import { Application, Assets, Ticker, Texture, Filter, GlProgram } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { addGameMap } from './gamemap.js';
 import GameMap from './gamemap.js';
@@ -13,6 +13,7 @@ import Player from './player.js';
 import { PongState, CameraMode } from './interfaces.js';
 import TournamentSubscription from "./pong/tournamentsubscription.js";
 import { gameSocket } from './connectionmanager.js'
+import { fragmentShader, vertexShader } from "./shaders/shaders.js";
 // import ChatBubble from './chat/chatbubble.js';
 // import TextBox from './ui/textbox.js';
 // import { RoomType } from './interfaces.js';
@@ -32,6 +33,9 @@ async function preload() {
 
     // Player Assets
     { alias: 'player_bunny', src: '/assets/bunny.png' },
+    { alias: 'player_human', src: '/assets/human.png' },
+    { alias: 'player_spritesheet', src: '/assets/player_spritesheet.json' },
+
 
     // Map Assets
     { alias: 'block_empty_black', src: '/assets/block_empty_black.png' },
@@ -226,14 +230,14 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
 }
 
-function handleChatBubbles(time : Ticker) : void {
+function handleChatBubbles(time: Ticker): void {
 
   const bubbles = chatCM.chat.getChatBubbles();
   for (const b of bubbles) {
 
     if (!b.dead()) {
       b.float(time);
-    } 
+    }
     else {
       chatCM.chat.destroyBubble(b);
     }
@@ -243,7 +247,7 @@ function handleChatBubbles(time : Ticker) : void {
 }
 
 
-function handleScreenshake(table : PongTable, side : 'left' | 'right', driver : number) : void {
+function handleScreenshake(table: PongTable, side: 'left' | 'right', driver: number): void {
 
   if (table.collidesWithPaddle(side) && !screenShake) {
 
@@ -260,7 +264,7 @@ function handleScreenshake(table : PongTable, side : 'left' | 'right', driver : 
 
 }
 
-function broadcastPositionUpdates(player : Player) {
+function broadcastPositionUpdates(player: Player) {
 
   //Broadcast new position
   if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
@@ -290,6 +294,20 @@ export let gameMap: GameMap;
 
   await setup();
   await preload();
+
+  const customFilter = new Filter({
+    glProgram: new GlProgram({
+      fragment: fragmentShader,
+      vertex: vertexShader,
+    }),
+    resources: {
+      // uNoise: blueNoise,
+      timeUniforms: {
+        uTime: { value: 0.0, type: 'f32' },
+      },
+    },
+  });
+  pixiApp.stage.filters = [customFilter];
 
   // Initialize map and add to pixi.stage
   gameMap = addGameMap(pixiApp);
@@ -324,12 +342,14 @@ export let gameMap: GameMap;
   //Game Loop
   pixiApp.ticker.add((time: Ticker) => {
 
+    customFilter.resources.timeUniforms.uniforms.uTime += 0.04 * time.deltaTime;
     if (player) {
 
       handleCamera(player, gameMap);
       handlePongUI(pongTable, player);
       handleTournamentUI(tournamentTable, player);
       handleChatBubbles(time);
+      input.handleAnimation(input.keyIsPressed, player);
 
       // Move around
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
