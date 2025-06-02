@@ -1,4 +1,4 @@
-import { Application, Assets, Ticker, Texture, Filter, GlProgram } from "pixi.js";
+import { extensions, Application, Assets, CullerPlugin, Culler, Ticker, Texture, Filter, GlProgram } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { addGameMap } from './gamemap.js';
 import GameMap from './gamemap.js';
@@ -14,10 +14,6 @@ import { PongState, CameraMode } from './interfaces.js';
 import TournamentSubscription from "./pong/tournamentsubscription.js";
 import { gameSocket } from './connectionmanager.js'
 import { fragmentShader, vertexShader } from "./shaders/shaders.js";
-// import ChatBubble from './chat/chatbubble.js';
-// import TextBox from './ui/textbox.js';
-// import { RoomType } from './interfaces.js';
-// import { MessageType } from './interfaces.js';
 
 // Globals
 const pixiApp: Application = new Application();
@@ -37,7 +33,11 @@ async function preload() {
     // Props
     { alias: 'floppy_paddle', src: '/assets/floppy_paddle.png' },
     { alias: 'pong_net', src: '/assets/pong_net.png' },
+    { alias: 'cardboard_blackhole', src: '/assets/cardboard_blackhole.png' },
+    { alias: 'tv_tournament', src: '/assets/tv_tournament.png' },
 
+    // Overlay
+    { alias: 'overlay', src: '/assets/overlay.png' },
 
     // Map Assets
     { alias: 'block_empty_black', src: '/assets/block_empty_black.png' },
@@ -62,20 +62,23 @@ async function setup() {
   pixiApp.stage.eventMode = 'static';
   pixiApp.stage.hitArea = pixiApp.screen;
 
-  // Callback functions
-  window.addEventListener('pointermove', (event) => {
+  console.log("canvas dimensions: ", pixiApp.canvas.width, pixiApp.canvas.height);
+  console.log("stage dimensions: ", pixiApp.stage.width, pixiApp.stage.height);
 
-    input.mouse.x = event.clientX;
-    input.mouse.y = event.clientY;
-  })
 
-  window.addEventListener('blur', () => {
-    isGameFocused = false;
-  })
+  // Disables controls when game is not focused
+  const textInput = document.getElementById('text-input-chat');
+  if (textInput) {
 
-  window.addEventListener('focus', () => {
-    isGameFocused = true;
-  })
+    textInput.addEventListener('blur', () => {
+      isGameFocused = true;
+    })
+
+    textInput.addEventListener('focus', () => {
+      isGameFocused = false;
+    })
+
+  }
 
   // Setup Map Zoom Callback
   mouse.setupMapZoom();
@@ -216,16 +219,22 @@ function handleCamera(player: Player, gameMap: GameMap) {
 
   if (cameraMode === CameraMode.Locked) {
     let p = player.getPoint();
+
     localPlayerPos.update({ x: p.asCartesian.x, y: p.asCartesian.y });
-    gameMap.container.x = -p.asIsometric.x + pixiApp.screen.width / 2;
-    gameMap.container.y = -p.asIsometric.y + pixiApp.screen.height / 2;
+
+    const stageScale = pixiApp.stage.scale.x;
+    const adjustedScreenCenterX = (pixiApp.screen.width / 2 - pixiApp.stage.x) / stageScale;
+    const adjustedScreenCenterY = (pixiApp.screen.height / 2 - pixiApp.stage.y) / stageScale;
+
+    gameMap.container.x = -p.asIsometric.x + adjustedScreenCenterX;
+    gameMap.container.y = -p.asIsometric.y + adjustedScreenCenterY;
   }
   else {
     mouse.moveMapWithMouse(input.mouse, gameMap, isGameFocused);
   }
 
   // Switch camera mode
-  if (input.keyWasPressed['KeyC']) {
+  if (input.keyWasPressed['KeyC'] && isGameFocused) {
     cameraMode = input.switchCameraMode(cameraMode);
   }
 
@@ -297,22 +306,39 @@ export let gameMap: GameMap;
   await setup();
   await preload();
 
+
+  // Overlay
+  // const overlayTexture = Texture.from('overlay');
+  // const sprite = new Sprite(overlayTexture);
+  // sprite.zIndex = 10000;
+  // sprite.width = pixiApp.screen.width;
+  // sprite.height = pixiApp.screen.height;
+  // pixiApp.stage.addChild(sprite);
+
+  // Dithering
   const customFilter = new Filter({
     glProgram: new GlProgram({
       fragment: fragmentShader,
       vertex: vertexShader,
     }),
     resources: {
-      // uNoise: blueNoise,
       timeUniforms: {
-        uTime: { value: 0.0, type: 'f32' },
-      },
-    },
+        uWidth: { value: pixiApp.screen.width, type: 'f32' },
+        uHeight: { value: pixiApp.screen.height, type: 'f32' }
+      }
+    }
   });
   pixiApp.stage.filters = [customFilter];
 
   // Initialize map and add to pixi.stage
   gameMap = addGameMap(pixiApp);
+
+  // Setup Culling for optimized rendering of the map
+  extensions.add(CullerPlugin);
+  gameMap.container.cullable = true;
+  gameMap.container.cullableChildren = true;
+  Culler.shared.cull(pixiApp.stage, pixiApp.renderer.screen);
+  pixiApp.renderer.render({ container: pixiApp.stage });
 
   //Network business
   if (window.__USER_ID__) {
@@ -322,10 +348,11 @@ export let gameMap: GameMap;
     // Testing tournamentSubscription box
     let p = playerManager.getLocalPlayer();
     if (p) {
-      let tournamentBox = new TournamentSubscription(37, 10, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('block_opaque_coloured'));
+      let tournamentBox = new TournamentSubscription(28.5, 1, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('tv_tournament'));
       gameMap.container.addChild(tournamentBox.getContext());
     }
   }
+
 
   // Testing Pong table
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
@@ -338,25 +365,26 @@ export let gameMap: GameMap;
   playerManager.initTournamentTable(tournamentTable);
 
 
-  let driver: number = 0;
   const player = playerManager.getLocalPlayer();
+  let driver: number = 0;
 
   //Game Loop
   pixiApp.ticker.add((time: Ticker) => {
 
-    customFilter.resources.timeUniforms.uniforms.uTime += 0.04 * time.deltaTime;
+    customFilter.resources.timeUniforms.uniforms.uWidth = pixiApp.screen.width;
+    customFilter.resources.timeUniforms.uniforms.uHeight = pixiApp.screen.height;;
+
     if (player) {
 
       handleCamera(player, gameMap);
       handlePongUI(pongTable, player);
       handleTournamentUI(tournamentTable, player);
       handleChatBubbles(time);
-      input.handleAnimation(input.keyIsPressed, player);
 
       // Move around
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
 
-        input.movePlayer(player, time.deltaTime);
+        input.movePlayer(player, time.deltaTime, isGameFocused);
         broadcastPositionUpdates(player);
 
       }

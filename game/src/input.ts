@@ -34,18 +34,17 @@ export function resetKeyStates(keyWasPressed: KeyPressState) {
   }
 }
 
-// Quick and dirty. TODO: dedicate separate graphics container for each tile, sort z-index based on y-position;
-// function dynamicIndexing(player: Player, pos: Vector2) {
-//   let y = Math.ceil(pos.y + 1);
-//   let x = Math.ceil(pos.x + 1);
-//   if (settings.TILEMAP[y - 1][x] > 0 || settings.TILEMAP[y][x] > 0 || settings.TILEMAP[y][x - 1] > 0) {
-//     player.getContext().zIndex = -1;
-//   }
-//   else
-//     player.getContext().zIndex = 5;
-// }
+// Update mouse position
+window.addEventListener('pointermove', (event) => {
 
-export function movePlayer(player: Player, deltaTime: number): Point {
+  mouse.x = event.clientX;
+  mouse.y = event.clientY;
+})
+
+
+export function movePlayer(player: Player, deltaTime: number, isGameFocused: boolean): Point | undefined {
+  if (!isGameFocused)
+    return;
   let pos = { x: player.position.asCartesian.x, y: player.position.asCartesian.y };
 
   if (keyIsPressed['KeyW']) {
@@ -65,9 +64,6 @@ export function movePlayer(player: Player, deltaTime: number): Point {
     player.setAnimation('east');
   }
 
-
-
-
   let x = Math.ceil(pos.x);
   let y = Math.ceil(pos.y);
 
@@ -78,30 +74,8 @@ export function movePlayer(player: Player, deltaTime: number): Point {
 
     player.updatePosition(pos);
 
-    // Primitive and scuffed depth 
-    // dynamicIndexing(player, pos);
   }
   return player.position;
-}
-
-export function handleAnimation(keyIsPressed: KeyPressState, player: Player) {
-
-  if (keyIsPressed['KeyW']) {
-    player.setAnimation('north');
-  }
-  else if (keyIsPressed['KeyS']) {
-    player.setAnimation('south');
-  }
-  else if (keyIsPressed['KeyA']) {
-    player.setAnimation('west');
-  }
-  else if (keyIsPressed['KeyD']) {
-    player.setAnimation('east');
-  }
-  else {
-    player.setAnimation('idle');
-  }
-
 }
 
 export function switchCameraMode(currentMode: CameraMode): CameraMode {

@@ -90,7 +90,7 @@ export default class Player {
 
     this.container.x = this.position.asIsometric.x;
     this.container.y = this.position.asIsometric.y;
-
+    this.container.zIndex = this.position.asIsometric.y + 7.5;
   }
 
   updatePosition(position: Vector2) {
@@ -115,6 +115,8 @@ export default class Player {
 
     // this.animation.x = this.position.asIsometric.x;
     // this.animation.y = this.position.asIsometric.y;
+    //
+    this.container.zIndex = this.position.asIsometric.y + 7.5;
 
     this.container.x = this.position.asIsometric.x;
     this.container.y = this.position.asIsometric.y;

@@ -1,4 +1,4 @@
-import { Texture, Container, Sprite } from 'pixi.js';
+import { Texture, Container, Graphics, Sprite } from 'pixi.js';
 import Ball from './ball.js';
 import Point from '../point.js';
 import Paddle from './paddle.js';
@@ -395,6 +395,12 @@ export default class PongTable {
   getContainer(): Container {
 
     return this.container;
+
+  }
+
+  getBallContext(): Graphics {
+
+    return this.ball.getContext();
 
   }
 

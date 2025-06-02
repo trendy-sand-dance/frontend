@@ -34,11 +34,56 @@ export const fragmentShader = `
 in vec2 vTextureCoord;
 in vec4 vColor;
 uniform sampler2D uTexture;
-uniform float uTime;
+uniform float uWidth;
+uniform float uHeight;
 
 float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
+
+float getDistanceFromCenter(vec2 uv) {
+    float distance = distance(uv.xy, vec2(0.5, 0.5));
+    return distance;
+}
+
+vec2 applyCurvature(vec2 uv) {
+    // Center the coordinates
+    vec2 centered = uv - 0.5;
+
+    // Apply barrel distortion
+    float distortion = 0.1; // Adjust strength
+    float r2 = dot(centered, centered);
+    vec2 curved = centered * (1.0 + distortion * r2);
+
+    // Return to 0-1 range
+    return curved + 0.5;
+}
+// TRIPPY
+// vec2 applyCurvature(vec2 uv) {
+//
+//     vec2 centered = (uv - 0.5) * 2.0; // -1 to 1 range
+//
+//     float curvature = 0.2;
+//     float r = length(centered);
+//     float distortion = 1.0 + curvature * r * r;
+//
+//     return (centered * distortion) * 0.5 + 0.5;
+// }
+
+// vec2 applyCurvature(vec2 uv) {
+//     vec2 centered = uv - 0.5;
+//
+//     // Account for aspect ratio
+//     // float aspect = uWidth / uHeight;
+//     // centered.x *= aspect;
+//
+//     float distortion = 0.1;
+//     float r2 = dot(centered, centered);
+//     vec2 curved = centered * (1.0 + distortion * r2);
+//
+//     // curved.x /= aspect;
+//     return curved + 0.5;
+// }
 
 // Simple 2x2 dither pattern
 float dither2x2(vec2 pos) {
@@ -103,26 +148,34 @@ float dither4x4(vec2 pos) {
 }
 
 void main(void) {
-    vec4 fg = texture2D(uTexture, vTextureCoord);
+
+    // CURVATURE
+    vec2 curvedUV = applyCurvature(vTextureCoord);
+
+    if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
+        return;
+    } 
+    vec4 fg = texture2D(uTexture, curvedUV);
 
     // NOISE
     // float noise = random(vTextureCoord.xy) * 1.25;
     // fg.r *= noise;
     
     // DITHERING
-    
     // float ditherValue = dither2x2(gl_FragCoord.xy);  // Sharp, chunky
     // float ditherValue = dither3x3(gl_FragCoord.xy);  // Medium detail
     float ditherValue = dither4x4(gl_FragCoord.xy);     // Classic Bayer
-    
     fg.rgb = step(ditherValue, fg.rgb);
 
     // CRT
-    // float scanline = sin(gl_FragCoord.y * 3.14159 * 0.25) * 0.1 + 0.9;
-    // fg.rgb *= scanline;
-    
-    
-    gl_FragColor = fg;
+    float scanline = sin(gl_FragCoord.y * 3.14159 * 0.25) * 0.1 + 0.9;
+    fg.rgb *= scanline;
+
+      // FADE
+      float d = getDistanceFromCenter(curvedUV);
+      fg.rgb += d * 0.25;
+      gl_FragColor = fg;
 }
 `;
 

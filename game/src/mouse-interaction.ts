@@ -1,7 +1,5 @@
 import { Graphics, Text } from "pixi.js";
 import GameMap from './gamemap.js';
-// import * as settings from './settings.js';
-// import { CameraMode } from './interfaces.js';
 
 import { pixiApp, localPlayerPos } from './main.js';
 
@@ -33,6 +31,7 @@ export class MouseData {
     return this.graphicsSelector;
   }
 }
+
 
 export function moveMapWithMouse(mousePos: Vector2, map: GameMap, focused: boolean) {
   if (!focused)
@@ -71,10 +70,12 @@ export function moveMapWithMouse(mousePos: Vector2, map: GameMap, focused: boole
 
 export function setupMapZoom() {
 
+  pixiApp.stage.scale = 2.5;
+
   window.addEventListener('wheel', (event) => {
     let zoomIntensity = 0.05;
-    let minZoom = 0.25;
-    let maxZoom = 3;
+    let minZoom = 0.75;
+    let maxZoom = 4;
     let scrollDir = event.deltaY / Math.abs(event.deltaY);
 
     enum Dir {
@@ -104,3 +105,4 @@ export function setupMapZoom() {
   });
 
 }
+
