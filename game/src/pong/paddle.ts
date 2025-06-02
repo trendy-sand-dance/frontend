@@ -1,9 +1,10 @@
-import { Graphics } from 'pixi.js';
+import { Texture, Graphics, Sprite } from 'pixi.js';
 import Point from '../point.js';
 
 export default class Paddle {
   public position: Point;
   private graphics: Graphics;
+  private sprite: Sprite;
   private paddleHeight: number;
   private paddleSpeed: number;
 
@@ -21,8 +22,14 @@ export default class Paddle {
       .lineTo(pEnd.asIsometric.x, pEnd.asIsometric.y)
       .stroke(0xffffff);
 
-    this.graphics.x = this.position.asIsometric.x;
-    this.graphics.y = this.position.asIsometric.y;
+    const texture = Texture.from('floppy_paddle');
+    this.sprite = new Sprite(texture);
+    this.sprite.anchor.set(0.5);
+    this.sprite.x = this.position.asIsometric.x;
+    this.sprite.y = this.position.asIsometric.y;
+
+    // this.graphics.x = this.position.asIsometric.x;
+    // this.graphics.y = this.position.asIsometric.y;
 
   }
 
@@ -34,12 +41,18 @@ export default class Paddle {
     this.position.update(newPos);
     this.graphics.x = this.position.asIsometric.x;
     this.graphics.y = this.position.asIsometric.y;
+
+    this.sprite.x = this.position.asIsometric.x;
+    this.sprite.y = this.position.asIsometric.y;
   }
 
   update(paddleY: number) {
     this.position.update({ x: this.position.asCartesian.x, y: paddleY });
     this.graphics.x = this.position.asIsometric.x;
     this.graphics.y = this.position.asIsometric.y;
+
+    this.sprite.x = this.position.asIsometric.x;
+    this.sprite.y = this.position.asIsometric.y;
   }
 
   getPaddleHeight() {
@@ -51,7 +64,8 @@ export default class Paddle {
   }
 
   getGraphics() {
-    return this.graphics;
+    // return this.graphics;
+    return this.sprite;
   }
 
 }

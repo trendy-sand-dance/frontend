@@ -112,8 +112,8 @@ void main(void) {
     // DITHERING
     
     // float ditherValue = dither2x2(gl_FragCoord.xy);  // Sharp, chunky
-    float ditherValue = dither3x3(gl_FragCoord.xy);  // Medium detail
-    // float ditherValue = dither4x4(gl_FragCoord.xy);     // Classic Bayer
+    // float ditherValue = dither3x3(gl_FragCoord.xy);  // Medium detail
+    float ditherValue = dither4x4(gl_FragCoord.xy);     // Classic Bayer
     
     fg.rgb = step(ditherValue, fg.rgb);
 

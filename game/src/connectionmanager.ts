@@ -1,4 +1,3 @@
-import { Texture } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import GameMap from './gamemap.js';
 
@@ -37,7 +36,7 @@ async function getUserInfo(id: number): Promise<User> {
   }
 }
 
-export function initializeLocalPlayer(localUser: User, gameMap: GameMap, texture: Texture) {
+export function initializeLocalPlayer(localUser: User, gameMap: GameMap) {
 
   let pos: Vector2 = { x: localUser.player.x, y: localUser.player.y };
 
@@ -45,7 +44,7 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap, texture
     pos = { x: 36, y: 20 };
   }
 
-  const player = playerManager.initLocalPlayer(localUser.id, localUser.username, localUser.avatar, pos, texture);
+  const player = playerManager.initLocalPlayer(localUser.id, localUser.username, localUser.avatar, pos);
 
   if (player) {
     gameMap.addPlayer(player);
@@ -56,14 +55,14 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap, texture
 
 export let gameSocket: WebSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
 
-function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap, texture: Texture) {
+function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap) {
   for (const [id, player] of players) {
 
     console.log(`Player ${id} is at (${player.x}, ${player.y})`);
 
     if (!isLocalPlayer(id)) {
       console.log("Adding player: ", id, player);
-      const newPlayer = playerManager.addPlayer(id, player.username, player.avatar, { x: player.x, y: player.y }, texture);
+      const newPlayer = playerManager.addPlayer(id, player.username, player.avatar, { x: player.x, y: player.y });
       if (newPlayer) {
         gameMap.addPlayer(newPlayer);
       }
@@ -83,10 +82,7 @@ export async function runConnectionManager(gameMap: GameMap) {
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
   localUser = await getUserInfo(window.__USER_ID__);
-  // const texture = Texture.from('player_human');
-  const texture = Texture.from('player_hooman');
-  // const texture = Texture.from('player_bunny');
-  const player = initializeLocalPlayer(localUser, gameMap, texture);
+  const player = initializeLocalPlayer(localUser, gameMap);
   if (player) {
     sendToServer(gameSocket, { type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
   }
@@ -97,7 +93,7 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     // When a new player joins, we add it to the playerManager and gameMap
     if (data.type === "new_player" && !isLocalPlayer(data.id)) {
-      const player = playerManager.addPlayer(data.id, data.username, data.avatar, data.position, texture);
+      const player = playerManager.addPlayer(data.id, data.username, data.avatar, data.position);
       if (player) {
         gameMap.addPlayer(player);
       }
@@ -105,7 +101,7 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     // We initialize all other connected players
     if (data.type == "initialize_players") {
-      initializePlayers(data.players, gameMap, texture);
+      initializePlayers(data.players, gameMap);
     }
 
     // We initialize all pong players that are currently playing or are waiting for another player

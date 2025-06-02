@@ -1,5 +1,5 @@
-import { Assets, Texture, AnimatedSprite } from "pixi.js";
-// import * as settings from './settings.js';
+import { Assets, Container, Graphics, Texture, AnimatedSprite } from "pixi.js";
+import * as settings from './settings.js';
 import Point from './point.js';
 
 interface DirectionalAnimatedSprite extends AnimatedSprite {
@@ -60,33 +60,71 @@ export default class Player {
   private username: string;
   private avatar: string;
 
-  private context: AnimatedSprite;
-  // private shadow: Graphics;
+  // private context: AnimatedSprite;
+  private shadow: Graphics;
+  private container: Container;
   private animation: DirectionalAnimatedSprite;
-  constructor(id: number, username: string, avatar: string, position: Vector2, texture: Texture) {
+  constructor(id: number, username: string, avatar: string, position: Vector2) {
     this.id = id;
     this.position = new Point(position.x, position.y);
     this.username = username;
     this.avatar = avatar;
 
     // Sprite Context
-    console.log(texture);
-
     const spritesheet = Assets.get('player_spritesheet')
     this.animation = createDirectionalAnimatedSprite(spritesheet.textures, spritesheet.data.meta.frameTags);
-    this.context = this.animation;
-    this.context.anchor.set(0.5);
-    this.context.x = this.position.asIsometric.x;
-    this.context.y = this.position.asIsometric.y;
-    // this.shadow = new Graphics().circle(this.position.asIsometric.x, this.position.asIsometric.y, 20).fill(settings.CGA_BLACK);
-    // this.shadow.alpha = 0.1;
+    this.animation.anchor.set(0.5);
+    // this.animation.x = this.position.asIsometric.x;
+    // this.animation.y = this.position.asIsometric.y;
+
+    // this.context = this.animation;
+    // this.context.anchor.set(0.5);
+    // this.context.x = this.position.asIsometric.x;
+    // this.context.y = this.position.asIsometric.y;
+    this.shadow = new Graphics().circle(0, this.animation.height * 2, 10).fill(settings.CGA_BLACK);
+    this.shadow.scale.y = 0.25;
+    this.shadow.alpha = 0.25;
+    this.container = new Container();
+    this.container.addChild(this.animation);
+    this.container.addChild(this.shadow);
+
+    this.container.x = this.position.asIsometric.x;
+    this.container.y = this.position.asIsometric.y;
 
   }
 
   updatePosition(position: Vector2) {
+
+    if ((position.x - this.position.asCartesian.x) < 0) {
+      this.animation.setAnimation('west');
+    }
+    else if ((position.x - this.position.asCartesian.x) > 0) {
+      this.animation.setAnimation('east');
+    }
+    else if ((position.y - this.position.asCartesian.y) > 0) {
+      this.animation.setAnimation('south');
+    }
+    else if ((position.y - this.position.asCartesian.y) < 0) {
+      this.animation.setAnimation('north');
+    }
+
+
     this.position.update(position);
-    this.context.x = this.position.asIsometric.x;
-    this.context.y = this.position.asIsometric.y;
+    // this.context.x = this.position.asIsometric.x;
+    // this.context.y = this.position.asIsometric.y;
+
+    // this.animation.x = this.position.asIsometric.x;
+    // this.animation.y = this.position.asIsometric.y;
+
+    this.container.x = this.position.asIsometric.x;
+    this.container.y = this.position.asIsometric.y;
+
+    let snapshot = this.position.asCartesian;
+    setTimeout(() => {
+      if (snapshot.x === this.getPosition().x && snapshot.y === this.getPosition().y) {
+        this.animation.setAnimation('idle');
+      }
+    }, 50);
 
   }
 
@@ -119,6 +157,8 @@ export default class Player {
   }
 
   getContext() {
-    return this.context;
+    // return this.context;
+    // return this.animation;
+    return this.container;
   }
 }

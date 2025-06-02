@@ -32,9 +32,11 @@ async function preload() {
   const assets = [
 
     // Player Assets
-    { alias: 'player_bunny', src: '/assets/bunny.png' },
-    { alias: 'player_human', src: '/assets/human.png' },
     { alias: 'player_spritesheet', src: '/assets/player_spritesheet.json' },
+
+    // Props
+    { alias: 'floppy_paddle', src: '/assets/floppy_paddle.png' },
+    { alias: 'pong_net', src: '/assets/pong_net.png' },
 
 
     // Map Assets

@@ -14,8 +14,8 @@ export default class Ball {
     this.graphics = new Graphics();
     this.position = new Point(position.x, position.y);
     this.speed = 0.05;
-    this.direction = { x: ((Math.random() * 2) - 1) * velocityMultiplier, y: ((Math.random() * 2) - 1) * velocityMultiplier};
-    this.graphics.circle(0, 0, 3.5).fill(0xffffff);
+    this.direction = { x: ((Math.random() * 2) - 1) * velocityMultiplier, y: ((Math.random() * 2) - 1) * velocityMultiplier };
+    this.graphics.circle(0, 0, 3.5).fill(0xbbbbbb);
     this.graphics.zIndex = 100;
 
     this.graphics.x = this.position.asIsometric.x;
@@ -31,8 +31,8 @@ export default class Ball {
     this.graphics.y = this.position.asIsometric.y;
   }
 
-  update(position : Vector2) {
-    this.position.update({x: position.x, y: position.y});
+  update(position: Vector2) {
+    this.position.update({ x: position.x, y: position.y });
     this.graphics.x = this.position.asIsometric.x;
     this.graphics.y = this.position.asIsometric.y;
   }

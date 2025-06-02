@@ -1,6 +1,6 @@
 import Player from './player.js';
 import { mouse } from './input.js';
-import { Texture, ColorMatrixFilter } from "pixi.js";
+import { ColorMatrixFilter } from "pixi.js";
 import PongTable from './pong/pongtable.js';
 // import { RoomType } from './interfaces.js';
 //import Point from './point.js';
@@ -35,8 +35,8 @@ export default class PlayerManager {
     return false;
   }
 
-  initLocalPlayer(id: number, username: string, avatar: string, position: Vector2, texture: Texture) {
-    this.localPlayer = new Player(id, username, avatar, position, texture);
+  initLocalPlayer(id: number, username: string, avatar: string, position: Vector2) {
+    this.localPlayer = new Player(id, username, avatar, position);
     return this.localPlayer;
   }
 
@@ -48,8 +48,8 @@ export default class PlayerManager {
     this.tournamentTable = table;
   }
 
-  addPlayer(id: number, username: string, avatar: string, position: Vector2, texture: Texture) {
-    const player = new Player(id, username, avatar, position, texture);
+  addPlayer(id: number, username: string, avatar: string, position: Vector2) {
+    const player = new Player(id, username, avatar, position);
     const playerSprite = player.getContext();
     const filter = new ColorMatrixFilter();
 
