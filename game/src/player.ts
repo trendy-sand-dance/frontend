@@ -158,6 +158,12 @@ export default class Player {
     return this.position.asIsometric;
   }
 
+  destroy() {
+    this.animation.destroy();
+    this.shadow.destroy();
+    this.container.destroy();
+  }
+
   getContext() {
     // return this.context;
     // return this.animation;

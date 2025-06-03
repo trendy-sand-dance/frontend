@@ -123,9 +123,12 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     // When a player disconnects, we remove it from the gameMap, playerManager
     if (data.type == "disconnect_player" && !isLocalPlayer(data.id)) {
+      console.log("Disconnecting player ", data.id);
       const mapContainer = gameMap.getContainer();
       const player = playerManager.getPlayer(data.id);
       if (player) {
+        console.log("OK?");
+        player.destroy();
         mapContainer.removeChild(player.getContext());
       }
       playerManager.removePlayer(data.id);
@@ -306,6 +309,19 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     }
 
+
+    gameSocket.onclose = (event : CloseEvent) => {
+    console.log("Close event: ", event);
+    if (gameSocket.readyState == WebSocket.OPEN) {
+      const player = playerManager.getLocalPlayer();
+      let pos: Vector2 = { x: 0, y: 0 };
+      if (player) {
+        pos = player.position.asCartesian;
+        sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
+      }
+    }
+    };
+
   };
 
   // We notify the server when a player suddenly quits the browser
@@ -316,8 +332,6 @@ export async function runConnectionManager(gameMap: GameMap) {
       if (player) {
         pos = player.position.asCartesian;
         sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
-      } else {
-        gameSocket.send(JSON.stringify({ type: "disconnection", info: "Client disconnected!", id: localUser.id, position: { x: -4.2, y: -4.2 } }));
       }
     }
   });

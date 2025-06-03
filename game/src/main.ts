@@ -337,8 +337,7 @@ export let gameMap: GameMap;
   extensions.add(CullerPlugin);
   gameMap.container.cullable = true;
   gameMap.container.cullableChildren = true;
-  Culler.shared.cull(pixiApp.stage, pixiApp.renderer.screen);
-  pixiApp.renderer.render({ container: pixiApp.stage });
+  Culler.shared.cull(gameMap.container, pixiApp.renderer.screen);
 
   //Network business
   if (window.__USER_ID__) {
