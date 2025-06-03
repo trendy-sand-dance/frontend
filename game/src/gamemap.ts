@@ -39,6 +39,8 @@ export default class GameMap {
 
   public container: Container;
 
+  private wallsContainer: Container;
+
   private graphicsContext: Graphics;
   private tilingSprites: TilingSprite[][] = [];
   private rows: number;
@@ -47,9 +49,12 @@ export default class GameMap {
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
+    this.wallsContainer = new Container();
+    this.wallsContainer.sortableChildren = true;
     this.container = new Container();
 
     this.graphicsContext = new Graphics();
+    this.container.addChild(this.wallsContainer);
     this.container.addChild(this.graphicsContext);
 
     this.rows = rows;
@@ -92,13 +97,12 @@ export default class GameMap {
   drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
     context.poly([point.x, point.y, point.x + w, point.y + h / 2, point.x, point.y + h, point.x - w, point.y + h / 2, point.x, point.y]);
     if (outline) {
-      context.fill(settings.CGA_BLACK);
-      context.stroke({ color: settings.CGA_CYAN });
+      context.fill(settings.CGA_PINK_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
     }
     else {
-      // context.fill(settings.CGA_PINK);
-      // context.fill(settings.CGA_BLACK);
-      context.stroke({ color: settings.CGA_PINK });
+      context.fill(settings.CGA_CYAN_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
     }
   }
 
@@ -123,7 +127,23 @@ export default class GameMap {
 
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
+        const context = new Graphics();
         let point = new Point(col, row);
+
+
+        if (tileMap[row][col] == -1) {
+          const texture = Texture.from('cardboard_blackhole');
+
+          const pileHeight = Math.random() * 3;
+          for (let i = 0; i < pileHeight; i++) {
+            const sprite = new Sprite(texture);
+            sprite.x = point.asIsometric.x - 32;
+            sprite.y = point.asIsometric.y - 24 - (i * 16);
+            sprite.scale = 0.5;
+            this.container.addChild(sprite);
+          }
+          tileMap[row][col] = 0;
+        }
 
         // Raise Y 
         const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
@@ -139,7 +159,7 @@ export default class GameMap {
           const p4 = new Point(col + 1, row + 1);
           p1.asIsometric.y -= currentHeightOffset;
           p4.asIsometric.y -= currentHeightOffset;
-          this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_PINK);
+          context.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_BLACK);
         }
         // East Face
         {
@@ -149,19 +169,25 @@ export default class GameMap {
           const p4 = new Point(col + 1, row);
           p1.asIsometric.y -= currentHeightOffset;
           p4.asIsometric.y -= currentHeightOffset;
-          this.graphicsContext.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_CYAN);
+          context.poly([p1.asIsometric.x, p1.asIsometric.y, p2.asIsometric.x, p2.asIsometric.y, p3.asIsometric.x, p3.asIsometric.y, p4.asIsometric.x, p4.asIsometric.y]).stroke(settings.CGA_BLACK).fill(settings.CGA_CYAN);
         }
 
-        if (tileMap[row][col] != 0)
-          this.drawIsometricTile(this.graphicsContext, point.asIsometric, this.tileSize, this.tileSize, true);
-        else
-          this.drawIsometricTile(this.graphicsContext, point.asIsometric, this.tileSize, this.tileSize, false);
+        if (tileMap[row][col] != 0) {
+          context.zIndex = point.asIsometric.y;
+          this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, true);
+        }
+        else {
+          context.zIndex = -100;
+          this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
+        }
+
+        this.wallsContainer.addChild(context);
       }
     }
   }
 
   addPlayer(player: Player) {
-    this.container.addChild(player.getContext());
+    this.wallsContainer.addChild(player.getContext());
   }
 
   getHeightOffset(col: number, row: number, tileMap: number[][]) {

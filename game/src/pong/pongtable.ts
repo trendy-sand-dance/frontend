@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js';
+import { Texture, Container, Graphics, Sprite } from 'pixi.js';
 import Ball from './ball.js';
 import Point from '../point.js';
 import Paddle from './paddle.js';
@@ -32,6 +32,8 @@ export default class PongTable {
 
   private countdownTimer: TextBox = new TextBox('3', 24, settings.TILESIZE * 2, 0);
 
+  private net: Sprite;
+
   private inProgress: boolean = false;
 
   // State in case of tournament
@@ -51,15 +53,22 @@ export default class PongTable {
     this.tableGrid = slice2DArray(parentMap, x, x + 2, y, y + 2);
 
     this.ball = new Ball({ x: 2, y: 1 });
-    this.container.addChild(this.ball.getContext());
 
     // Give PongTable position in world
     let point = new Point(this.worldPosition.x, this.worldPosition.y);
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
 
+    // Net sprit
+    const texture = Texture.from('pong_net');
+    this.net = new Sprite(texture);
+    this.net.x -= 16;
+    this.net.y += 32;
+
     // Add containers/graphics to main container
     this.countdownTimer.container.renderable = false;
+    this.container.addChild(this.net);
+    this.container.addChild(this.ball.getContext());
     this.container.addChild(this.indicators['left'].getContainer());
     this.container.addChild(this.indicators['right'].getContainer());
     this.container.addChild(this.countdownTimer.getContainer());
@@ -67,7 +76,8 @@ export default class PongTable {
     this.container.addChild(this.paddles['right'].getGraphics());
 
     this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
-    this.container.zIndex = 10;
+    // this.container.zIndex = 10;
+
   }
 
   transitionTo(newState: TournamentState) {
@@ -93,10 +103,10 @@ export default class PongTable {
 
   isPlayerAtLeft(position: Vector2): boolean {
 
-    let playerPos = { x: Math.round(position.x), y: Math.round(position.y) };
+    let playerPos = { x: Math.ceil(position.x), y: Math.ceil(position.y) };
 
-    if (playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y)
-      || playerPos.x === Math.round(this.worldPosition.x - 1) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+    if (playerPos.x === Math.ceil(this.worldPosition.x - 1) && playerPos.y === Math.ceil(this.worldPosition.y)
+      || playerPos.x === Math.ceil(this.worldPosition.x - 1) && playerPos.y === Math.ceil(this.worldPosition.y + 1)) {
       return true;
     }
 
@@ -105,10 +115,10 @@ export default class PongTable {
 
   isPlayerAtRight(position: Vector2): boolean {
 
-    let playerPos = { x: Math.round(position.x), y: Math.round(position.y) };
+    let playerPos = { x: Math.ceil(position.x), y: Math.ceil(position.y) };
 
-    if (playerPos.x === Math.round(this.worldPosition.x + 3) && playerPos.y === Math.round(this.worldPosition.y)
-      || playerPos.x === Math.round(this.worldPosition.x + 3) && playerPos.y === Math.round(this.worldPosition.y + 1)) {
+    if (playerPos.x === Math.ceil(this.worldPosition.x + 4) && playerPos.y === Math.ceil(this.worldPosition.y)
+      || playerPos.x === Math.ceil(this.worldPosition.x + 4) && playerPos.y === Math.ceil(this.worldPosition.y + 1)) {
       return true;
     }
 
@@ -208,7 +218,7 @@ export default class PongTable {
         this.countdownTimer.setTextColor(settings.CGA_WHITE);
         if (finals)
           this.countdownTimer.setText(`${this.players['left'].username} has won the tournament!`);
-        else 
+        else
           this.countdownTimer.setText(`${this.players['left'].username} has won with ${max} - ${min}!`);
       }
       else {
@@ -385,6 +395,12 @@ export default class PongTable {
   getContainer(): Container {
 
     return this.container;
+
+  }
+
+  getBallContext(): Graphics {
+
+    return this.ball.getContext();
 
   }
 
