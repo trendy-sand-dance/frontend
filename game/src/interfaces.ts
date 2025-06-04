@@ -1,5 +1,6 @@
 import Paddle from './pong/paddle.js';
 import Indicator from './ui/indicator.js';
+import MapRegion from './mapregion.js';
 
 declare global {
 
@@ -102,6 +103,14 @@ declare global {
   }
 
 
+  interface MapRegions {
+    bocal: MapRegion,
+    game: MapRegion,
+    cluster: MapRegion,
+    server: MapRegion,
+  }
+
+
   // Chat
 
   type ChatServerMessage = ConnectMessage | DisconnectMessage | TransitionMessage | RoomMessage | ChatMessage;
@@ -158,7 +167,7 @@ export enum RoomType {
   Game = "game",
   Bocal = "bocal",
   Hall = "hall",
-  Count = 5,
+  Toilet = "toilet",
 }
 
 export enum CameraMode {

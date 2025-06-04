@@ -1,4 +1,4 @@
-import { extensions, Application, Assets, CullerPlugin, Culler, Ticker, Texture, Filter, GlProgram } from "pixi.js";
+import { Application, Assets, Ticker, Texture, Filter, Graphics, GlProgram } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { addGameMap } from './gamemap.js';
 import GameMap from './gamemap.js';
@@ -10,9 +10,10 @@ import * as chatCM from './chat/chatconnectionmanager.js';
 import PongTable from './pong/pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
-import { PongState, CameraMode } from './interfaces.js';
+import { PongState, CameraMode, RoomType, MessageType } from './interfaces.js';
 import TournamentSubscription from "./pong/tournamentsubscription.js";
 import { gameSocket } from './connectionmanager.js'
+import { chatSocket } from './chat/chatconnectionmanager.js';
 import { fragmentShader, vertexShader } from "./shaders/shaders.js";
 
 // Globals
@@ -275,10 +276,32 @@ function handleScreenshake(table: PongTable, side: 'left' | 'right', driver: num
 
 }
 
+function playerHasMoved(prevPos: Vector2, playerPos: Vector2) : boolean {
+
+  return prevPos.x != playerPos.x || prevPos.y != playerPos.y;
+
+}
+
 function broadcastPositionUpdates(player: Player) {
 
   //Broadcast new position
-  if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
+  const pos : Vector2 = player.getPosition();
+  const id : number = player.getId();
+
+  if (playerHasMoved(prevPos, pos)) {
+
+    const room : RoomType = gameMap.getMapRegion(pos);
+    const oldRoom : RoomType = player.getRegion();
+    if (oldRoom != room) {
+      // gameMap.setRegionOpacity(oldRoom, 0);
+      // gameMap.setRegionOpacity(room, 1);
+      gameMap.setRegionRenderable(oldRoom, false);
+      gameMap.setRegionRenderable(room, true);
+      console.log(`Player moved from ${oldRoom} to ${room}`);
+      player.setRegion(room);
+      const transitionMessage : TransitionMessage = {type: MessageType.Transition, id, from: oldRoom, to: room};
+      chatSocket.send(JSON.stringify(transitionMessage));
+    }
 
     gameCM.sendToServer(gameSocket, {
       type: "player_move",
@@ -306,15 +329,6 @@ export let gameMap: GameMap;
   await setup();
   await preload();
 
-
-  // Overlay
-  // const overlayTexture = Texture.from('overlay');
-  // const sprite = new Sprite(overlayTexture);
-  // sprite.zIndex = 10000;
-  // sprite.width = pixiApp.screen.width;
-  // sprite.height = pixiApp.screen.height;
-  // pixiApp.stage.addChild(sprite);
-
   // Dithering
   const customFilter = new Filter({
     glProgram: new GlProgram({
@@ -329,15 +343,14 @@ export let gameMap: GameMap;
     }
   });
   pixiApp.stage.filters = [customFilter];
+  pixiApp.stage.addChild(new Graphics().rect(-500, -500, 3500, 3500).fill(settings.CGA_CYAN_DARK_BG));
 
   // Initialize map and add to pixi.stage
   gameMap = addGameMap(pixiApp);
 
   // Setup Culling for optimized rendering of the map
-  extensions.add(CullerPlugin);
   gameMap.container.cullable = true;
   gameMap.container.cullableChildren = true;
-  Culler.shared.cull(gameMap.container, pixiApp.renderer.screen);
 
   //Network business
   if (window.__USER_ID__) {
@@ -348,19 +361,27 @@ export let gameMap: GameMap;
     let p = playerManager.getLocalPlayer();
     if (p) {
       let tournamentBox = new TournamentSubscription(28.5, 1, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('tv_tournament'));
-      gameMap.container.addChild(tournamentBox.getContext());
+      const context = tournamentBox.getContext();
+      context.zIndex = 10000;
+      gameMap.addToRoomContainer(RoomType.Hall, tournamentBox.getContext());
+      const room = gameMap.getMapRegion(p.getPosition());
+      gameMap.setRegionRenderable(room, true);
     }
   }
 
 
   // Testing Pong table
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
-  gameMap.container.addChild(pongTable.getContainer());
+  const pongTableContainer = pongTable.getContainer();
+  pongTableContainer.zIndex = 10000;
+  gameMap.addToRoomContainer(RoomType.Hall, pongTableContainer);
   playerManager.initPongTable(pongTable);
 
   // Testing tournament table
   let tournamentTable = new PongTable({ x: 27, y: 2 }, settings.TILEMAP, true);
-  gameMap.container.addChild(tournamentTable.getContainer());
+  const tournamentTableContainer = tournamentTable.getContainer();
+  tournamentTableContainer.zIndex = 10000;
+  gameMap.addToRoomContainer(RoomType.Hall, tournamentTableContainer);
   playerManager.initTournamentTable(tournamentTable);
 
 

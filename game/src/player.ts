@@ -1,6 +1,7 @@
 import { Assets, Container, Graphics, Texture, AnimatedSprite } from "pixi.js";
 import * as settings from './settings.js';
 import Point from './point.js';
+import { RoomType } from "./interfaces.js";
 
 interface DirectionalAnimatedSprite extends AnimatedSprite {
   currentAnimation: string;
@@ -60,10 +61,11 @@ export default class Player {
   private username: string;
   private avatar: string;
 
-  // private context: AnimatedSprite;
+  private region : RoomType = RoomType.Hall;
   private shadow: Graphics;
   private container: Container;
   private animation: DirectionalAnimatedSprite;
+
   constructor(id: number, username: string, avatar: string, position: Vector2) {
     this.id = id;
     this.position = new Point(position.x, position.y);
@@ -84,6 +86,7 @@ export default class Player {
     this.shadow = new Graphics().circle(0, this.animation.height * 2, 10).fill(settings.CGA_BLACK);
     this.shadow.scale.y = 0.25;
     this.shadow.alpha = 0.25;
+    this.shadow.zIndex = 5000;
     this.container = new Container();
     this.container.addChild(this.animation);
     this.container.addChild(this.shadow);
@@ -91,6 +94,18 @@ export default class Player {
     this.container.x = this.position.asIsometric.x;
     this.container.y = this.position.asIsometric.y;
     this.container.zIndex = this.position.asIsometric.y + 7.5;
+  }
+
+  setRegion(room : RoomType) : void{
+
+    this.region = room;
+
+  }
+
+  getRegion() : RoomType {
+
+    return this.region;
+
   }
 
   updatePosition(position: Vector2) {

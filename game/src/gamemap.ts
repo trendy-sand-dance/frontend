@@ -1,38 +1,9 @@
-import { Application, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
+import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
+import MapRegion from './mapregion.js';
 import Point from './point.js';
 import Player from './player.js';
 import * as settings from './settings.js';
-
-enum TextureId {
-  BlockTransparentBlack,
-  BlockTransparentWhite,
-  BlockOpaqueWhite,
-  BlockOpaqueColor,
-  BlockHalfOpaqueColor,
-};
-
-const textureMap = new Map<TextureId, string>([
-  [TextureId.BlockTransparentBlack, "block_empty_black"],
-  [TextureId.BlockTransparentWhite, "block_empty_white"],
-  [TextureId.BlockOpaqueColor, "block_opaque_coloured"],
-  [TextureId.BlockOpaqueWhite, "block_opaque_white"],
-  [TextureId.BlockHalfOpaqueColor, 'block_half_opaque_coloured'],
-]);
-
-function loadTextures() {
-  let textures: Texture[] = new Array<Texture>;
-
-  for (const [id, name] of textureMap) {
-    console.log("TextureId: " + id + ", path: " + name);
-    try {
-      let texture = Texture.from(name);
-      textures.push(texture);
-    } catch (error) {
-      console.log("Hmvve", error);
-    }
-  }
-  return textures;
-}
+import { RoomType } from "./interfaces.js";
 
 export default class GameMap {
   static #instance: GameMap;
@@ -42,16 +13,16 @@ export default class GameMap {
   private wallsContainer: Container;
 
   private graphicsContext: Graphics;
-  private tilingSprites: TilingSprite[][] = [];
   private rows: number;
   private cols: number;
   private tileSize: number;
+  private mapRegions : Map<RoomType, MapRegion> = new Map<RoomType, MapRegion>();
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
-    this.wallsContainer = new Container();
+    this.wallsContainer = new Container({isRenderGroup: true});
     this.wallsContainer.sortableChildren = true;
-    this.container = new Container();
+    this.container = new Container({isRenderGroup: true});
 
     this.graphicsContext = new Graphics();
     this.container.addChild(this.wallsContainer);
@@ -60,6 +31,8 @@ export default class GameMap {
     this.rows = rows;
     this.cols = cols;
     this.tileSize = tileSize;
+
+    this.initMapRegions();
   }
 
   public static get instance(): GameMap {
@@ -69,29 +42,36 @@ export default class GameMap {
     return GameMap.#instance;
   }
 
-  initTilingSprites(tileMap: number[][]) {
-    const rows = tileMap.length;
-    const cols = tileMap[0].length;
+  private initMapRegions() : void {
 
-    try {
-      const textures = loadTextures();
-      if (!textures) {
-        console.error("Failed to load texture.");
-        return;
-      }
-      this.tilingSprites = tileMap.map(row => {
-        return row.map(value => new TilingSprite({ texture: textures[value], width: 64, height: 64 }))
-      })
+    const bocal =  new MapRegion({x: 52, y: 0}, 12, 24);
+    const game = new MapRegion({x: 22, y: 15}, 12, 9);
+    const cluster = new MapRegion({x: 0, y: 0}, 16, 23);
+    const server =  new MapRegion({x: 21, y: 0}, 3, 5);
+    const hall = new MapRegion({x: 0, y: 0}, 0, 0);
+    const toilet = new MapRegion({x: 16, y: 0}, 4, 5);
+    
+    this.mapRegions.set(RoomType.Bocal, bocal);
+    this.mapRegions.set(RoomType.Game, game);
+    this.mapRegions.set(RoomType.Cluster, cluster);
+    this.mapRegions.set(RoomType.Server, server);
+    this.mapRegions.set(RoomType.Hall, hall);
+    this.mapRegions.set(RoomType.Toilet, toilet);
 
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          // this.tilingSprites[row][col].anchor.set(0, -0.5);
-          this.container.addChild(this.tilingSprites[row][col]);
-        }
+  }
+
+  public getMapRegion(position: Vector2) : RoomType {
+
+    for (const [room, region] of this.mapRegions) {
+
+      if (region.isInRegion(position)) {
+        return room;
       }
-    } catch (error) {
-      console.error("Error initializing sprite tiles:", error);
+
     }
+
+    return RoomType.Hall;
+      
   }
 
   drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
@@ -106,22 +86,6 @@ export default class GameMap {
     }
   }
 
-  async createSpriteGrid(tileMap: number[][]) {
-
-    this.initTilingSprites(settings.TILEMAP);
-
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.cols; col++) {
-        let point = new Point(col, row);
-
-        // Raise Y 
-        point.asIsometric.y -= tileMap[row][col] * this.tileSize;
-
-        this.tilingSprites[row][col].x = point.asIsometric.x;
-        this.tilingSprites[row][col].y = point.asIsometric.y;
-      }
-    }
-  }
 
   async createGraphicsGrid(tileMap: number[][]) {
 
@@ -129,6 +93,8 @@ export default class GameMap {
       for (let col = 0; col < this.cols; col++) {
         const context = new Graphics();
         let point = new Point(col, row);
+        const room = this.getMapRegion(point.asCartesian);
+        const mapRegion = this.mapRegions.get(room);
 
 
         if (tileMap[row][col] == -1) {
@@ -140,7 +106,8 @@ export default class GameMap {
             sprite.x = point.asIsometric.x - 32;
             sprite.y = point.asIsometric.y - 24 - (i * 16);
             sprite.scale = 0.5;
-            this.container.addChild(sprite);
+            sprite.zIndex = 1000;
+            mapRegion?.addToContainer(sprite);
           }
           tileMap[row][col] = 0;
         }
@@ -181,9 +148,42 @@ export default class GameMap {
           this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
         }
 
-        this.wallsContainer.addChild(context);
+        mapRegion?.addToContainer(context);
+
+
       }
     }
+
+    for (const [room, region] of this.mapRegions) {
+      
+      console.log(room);
+      const container = region.getContainer();
+      if (room !== RoomType.Hall) {
+        container.renderable = false;
+      }
+      this.wallsContainer.addChild(container);
+    }
+  }
+
+  setRegionOpacity(room : RoomType, opacity : number) : void {
+
+    const region = this.mapRegions.get(room);
+
+    if (region) {
+      region.getContainer().alpha = opacity;
+    }
+
+  }
+
+  setRegionRenderable(room: RoomType, state : boolean) : void {
+
+    const region = this.mapRegions.get(room);
+
+    if (region) {
+      region.getContainer().renderable = state;
+    }
+
+
   }
 
   addPlayer(player: Player) {
@@ -205,6 +205,13 @@ export default class GameMap {
 
   addToContainer(context: Sprite) {
     this.container.addChild(context);
+  }
+
+  addToRoomContainer(room: RoomType, context: Sprite | Container) : void {
+
+    const mapRegion = this.mapRegions.get(room);
+    mapRegion?.addToContainer(context);
+
   }
 }
 

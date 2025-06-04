@@ -8,10 +8,11 @@ import { playerManager } from "../playermanager";
 import GameMap from '../gamemap';
 
 export const chat = new Chat("text-input-chat", "send-button-chat");
+export let chatSocket : WebSocket;
 
 export function runChatConnectionManager(gameMap : GameMap) {
 
-  const chatSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
+  chatSocket  = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
 
   if (chat) {
     console.log("Initialized Chat object");
@@ -21,8 +22,13 @@ export function runChatConnectionManager(gameMap : GameMap) {
   chatSocket.onopen = (message : Event) => {
 
     console.log("onopen message: ", message);
-    const msg : ConnectMessage = {type: MessageType.Connect, user: localUser, room: RoomType.Hall};
-    chatSocket.send(JSON.stringify(msg));
+    const player = playerManager.getLocalPlayer();
+    if (player) {
+      const room : RoomType = player.getRegion();
+      const msg : ConnectMessage = {type: MessageType.Connect, user: localUser, room: room};
+      chatSocket.send(JSON.stringify(msg));
+      console.log("We're sending the connectmessage: ", msg);
+    }
 
   }
 
