@@ -293,6 +293,10 @@ function broadcastPositionUpdates(player: Player) {
     const room : RoomType = gameMap.getMapRegion(pos);
     const oldRoom : RoomType = player.getRegion();
     if (oldRoom != room) {
+      // gameMap.setRegionOpacity(oldRoom, 0);
+      // gameMap.setRegionOpacity(room, 1);
+      gameMap.setRegionRenderable(oldRoom, false);
+      gameMap.setRegionRenderable(room, true);
       console.log(`Player moved from ${oldRoom} to ${room}`);
       player.setRegion(room);
       const transitionMessage : TransitionMessage = {type: MessageType.Transition, id, from: oldRoom, to: room};
@@ -359,6 +363,8 @@ export let gameMap: GameMap;
     if (p) {
       let tournamentBox = new TournamentSubscription(28.5, 1, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('tv_tournament'));
       gameMap.container.addChild(tournamentBox.getContext());
+      const room = gameMap.getMapRegion(p.getPosition());
+      gameMap.setRegionRenderable(room, true);
     }
   }
 

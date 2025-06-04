@@ -44,15 +44,17 @@ export default class GameMap {
 
   private initMapRegions() : void {
 
-    const bocal =  new MapRegion({x: 51, y: 0}, 12, 24);
-    const game = new MapRegion({x: 22, y: 14}, 12, 9);
+    const bocal =  new MapRegion({x: 52, y: 0}, 12, 24);
+    const game = new MapRegion({x: 22, y: 15}, 12, 9);
     const cluster = new MapRegion({x: 0, y: 0}, 16, 23);
     const server =  new MapRegion({x: 21, y: 0}, 4, 6);
+    const hall = new MapRegion({x: 0, y: 0}, 0, 0);
     
     this.mapRegions.set(RoomType.Bocal, bocal);
     this.mapRegions.set(RoomType.Game, game);
     this.mapRegions.set(RoomType.Cluster, cluster);
     this.mapRegions.set(RoomType.Server, server);
+    this.mapRegions.set(RoomType.Hall, hall);
 
   }
 
@@ -141,9 +143,46 @@ export default class GameMap {
           this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
         }
 
-        this.wallsContainer.addChild(context);
+        // this.wallsContainer.addChild(context);
+        const room = this.getMapRegion(point.asCartesian);
+        const mapRegion = this.mapRegions.get(room);
+
+        mapRegion?.addToContainer(context);
+
+
       }
     }
+
+    for (const [room, region] of this.mapRegions) {
+      
+      console.log(room);
+      const container = region.getContainer();
+      if (room !== RoomType.Hall) {
+        container.renderable = false;
+      }
+      this.wallsContainer.addChild(container);
+    }
+  }
+
+  setRegionOpacity(room : RoomType, opacity : number) : void {
+
+    const region = this.mapRegions.get(room);
+
+    if (region) {
+      region.getContainer().alpha = opacity;
+    }
+
+  }
+
+  setRegionRenderable(room: RoomType, state : boolean) : void {
+
+    const region = this.mapRegions.get(room);
+
+    if (region) {
+      region.getContainer().renderable = state;
+    }
+
+
   }
 
   addPlayer(player: Player) {
