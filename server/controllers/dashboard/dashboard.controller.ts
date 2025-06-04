@@ -10,18 +10,6 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 		// get UserPayload from cookie, this is managed by the JWT server decoration.
 		const payload: UserPayload = request.user;
 
-		//should already trigger in the prehandler but not working rn?
-		if (!payload) {
-			return reply.status(401).viewAsync(
-				"errors/error-page.ejs",
-			{
-				title: "Not logged in",
-				details: "Please log in before accessing the dashboard"
-			});
-		}
-	
-		console.log("payload", payload)
-		console.log("gameserverURL", LOCAL_GAMESERVER_URL);
 		const user: string = payload.name;
 		const id: number = Number(payload.id);
 		const response = await fetch(`${DATABASE_URL}/user/${id}`);
