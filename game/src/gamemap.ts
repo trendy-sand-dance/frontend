@@ -3,6 +3,7 @@ import MapRegion from './mapregion.js';
 import Point from './point.js';
 import Player from './player.js';
 import * as settings from './settings.js';
+import { RoomType } from "./interfaces.js";
 
 export default class GameMap {
   static #instance: GameMap;
@@ -15,7 +16,7 @@ export default class GameMap {
   private rows: number;
   private cols: number;
   private tileSize: number;
-  private mapRegions : Map<string, MapRegion> = new Map<string, MapRegion>();
+  private mapRegions : Map<RoomType, MapRegion> = new Map<RoomType, MapRegion>();
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
@@ -44,33 +45,28 @@ export default class GameMap {
   private initMapRegions() : void {
 
     const bocal =  new MapRegion({x: 51, y: 0}, 12, 24);
-    const game = new MapRegion({x: 23, y: 14}, 12, 9);
+    const game = new MapRegion({x: 22, y: 14}, 12, 9);
     const cluster = new MapRegion({x: 0, y: 0}, 16, 23);
     const server =  new MapRegion({x: 21, y: 0}, 4, 6);
     
-    this.mapRegions.set("bocal", bocal);
-    this.mapRegions.set("game", game);
-    this.mapRegions.set("cluster", cluster);
-    this.mapRegions.set("server", server);
-
-    console.log(this.mapRegions.get("bocal"));
-    console.log(this.mapRegions.get("game"));
-    console.log(this.mapRegions.get("cluster"));
-    console.log(this.mapRegions.get("server"));
+    this.mapRegions.set(RoomType.Bocal, bocal);
+    this.mapRegions.set(RoomType.Game, game);
+    this.mapRegions.set(RoomType.Cluster, cluster);
+    this.mapRegions.set(RoomType.Server, server);
 
   }
 
-  public getMapRegion(position: Vector2) : string {
+  public getMapRegion(position: Vector2) : RoomType {
 
     for (const [room, region] of this.mapRegions) {
 
-      if (region.isPlayerPresent(position)) {
+      if (region.isInRegion(position)) {
         return room;
       }
 
     }
 
-    return "hall";
+    return RoomType.Hall;
       
   }
 

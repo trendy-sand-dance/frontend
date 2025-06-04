@@ -11,7 +11,7 @@ export default class MapRegion {
 
   }
 
-  isPlayerPresent(position: Vector2) : boolean {
+  isInRegion(position: Vector2) : boolean {
 
 
     return (position.x >= this.start.x && position.x <= this.end.x)

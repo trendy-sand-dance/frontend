@@ -10,9 +10,10 @@ import * as chatCM from './chat/chatconnectionmanager.js';
 import PongTable from './pong/pongtable.js';
 import Point from './point.js';
 import Player from './player.js';
-import { PongState, CameraMode } from './interfaces.js';
+import { PongState, CameraMode, RoomType, MessageType } from './interfaces.js';
 import TournamentSubscription from "./pong/tournamentsubscription.js";
 import { gameSocket } from './connectionmanager.js'
+import { chatSocket } from './chat/chatconnectionmanager.js';
 import { fragmentShader, vertexShader } from "./shaders/shaders.js";
 
 // Globals
@@ -275,10 +276,28 @@ function handleScreenshake(table: PongTable, side: 'left' | 'right', driver: num
 
 }
 
+function playerHasMoved(prevPos: Vector2, playerPos: Vector2) : boolean {
+
+  return prevPos.x != playerPos.x || prevPos.y != playerPos.y;
+
+}
+
 function broadcastPositionUpdates(player: Player) {
 
   //Broadcast new position
-  if (prevPos.x != player.position.asCartesian.x || prevPos.y != player.position.asCartesian.y) {
+  const pos : Vector2 = player.getPosition();
+  const id : number = player.getId();
+
+  if (playerHasMoved(prevPos, pos)) {
+
+    const room : RoomType = gameMap.getMapRegion(pos);
+    const oldRoom : RoomType = player.getRegion();
+    if (oldRoom != room) {
+      console.log(`Player moved from ${oldRoom} to ${room}`);
+      player.setRegion(room);
+      const transitionMessage : TransitionMessage = {type: MessageType.Transition, id, from: oldRoom, to: room};
+      chatSocket.send(JSON.stringify(transitionMessage));
+    }
 
     gameCM.sendToServer(gameSocket, {
       type: "player_move",

@@ -1,7 +1,7 @@
 import { Container} from 'pixi.js';
 import PlayerManager from "../playermanager.js";
 import ChatBubble from '../chat/chatbubble.js';
-import { MessageType, RoomType } from "../interfaces";
+import { MessageType } from "../interfaces";
 
 export default class Chat {
 
@@ -50,7 +50,7 @@ export default class Chat {
 
         if (player && this.socket) {
           // TODO: Write function to determine which room the player is and whether it's a PM or a RM
-          const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: RoomType.Hall};
+          const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion()};
           this.socket.send(JSON.stringify(roomMessage));
           const b = new ChatBubble(player, chatMessage, this.bubbleSize);
           this.chatBubbles.push(b);
