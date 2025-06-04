@@ -86,7 +86,6 @@ fastify.decorate(
 				"errors/error-page.ejs",
 			{
 				title: "Not logged in",
-				message: "Not logged in",
 				details: "Please log in before accessing the dashboard"
 			});
 		}

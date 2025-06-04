@@ -16,7 +16,6 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 				"errors/error-page.ejs",
 			{
 				title: "Not logged in",
-				message: "Not logged in",
 				details: "Please log in before accessing the dashboard"
 			});
 		}
@@ -32,7 +31,6 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 			"errors/error-page.ejs",
 			{
 				title: "User not found",
-				message: "User not found",
 				details: "go back to the login page to log in again or register a new account"
 			});
 
