@@ -8,6 +8,7 @@ import { getPixiGame, getPlayerInfo } from '../controllers/game/game.controller.
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
 
+
 export async function routes(fastify: FastifyInstance) {
 
   // Root
@@ -56,8 +57,6 @@ export async function routes(fastify: FastifyInstance) {
 		preHandler: [fastify.authenticate],
 	}, getDashboard);
   fastify.get('/dashboard/:userid', getDashboardUser);
-
-
 
 
 
