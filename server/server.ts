@@ -82,7 +82,13 @@ fastify.decorate(
 	async (request: FastifyRequest, reply: FastifyReply) => {
 		const token = request.cookies.access_token
 		if (!token) {
-			return reply.status(401).send({ message: 'Authentication required' })
+			return reply.status(401).viewAsync(
+				"errors/error-page.ejs",
+			{
+				title: "Not logged in",
+				message: "Not logged in",
+				details: "Please log in before accessing the dashboard"
+			});
 		}
 		// here decoded will be a different type by default but we want it to be of user-payload type
 		const decoded = request.jwt.verify<FastifyJWT['user']>(token)
