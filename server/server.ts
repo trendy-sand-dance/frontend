@@ -80,9 +80,16 @@ fastify.decorate(
 	'authenticate',
 	// TODO: Add proper unauthorized page
 	async (request: FastifyRequest, reply: FastifyReply) => {
-		const token = request.cookies.access_token
+		const token = await request.cookies.access_token
 		if (!token) {
-			return reply.status(401).send({ message: 'Authentication required' })
+			// return reply.send( {message: "JFIJWDOsdwIA"});
+			await reply.view(
+				"errors/error-page.ejs",
+			{
+				title: "Not logged in (silly)",
+				details: "Please log in before accessing the dashboard"
+			});
+			return;
 		}
 		// here decoded will be a different type by default but we want it to be of user-payload type
 		const decoded = request.jwt.verify<FastifyJWT['user']>(token)

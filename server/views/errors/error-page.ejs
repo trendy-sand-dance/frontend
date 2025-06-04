@@ -1,8 +1,28 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<!-- Tab title -->
+	<title><%= title %></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen flex items-center justify-center bg-black font-mono">
+	<div class="border-2 border-pink-500 rounded-2xl shadow-2xl shadow-pink-500/25 p-12 max-w-md text-center">
+		<h1 class="text-3xl mb-4 text-pink-100 font-bold drop-shadow-lg"><%= title %></h1>
+		<p class="text-white mb-8 text-lg drop-shadow"><%= details %>.</p>
+		<button 
+			class="px-6 py-2 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 border border-pink-400"
+			hx-get="/login"
+			hx-target="body"
+			hx-swap="outerHTML"
+		>
+			login page
+		</button>
+	</div>
+</body>
+</html>
 
-<div id="replaceThis" class="text-2xl font-bold flex flex-col items-center justify-center h-screen">
-  <h1>
-    <%= code %> - <%= message %>
-  </h1>
-  <a href="/" class="button p-2 rounded-md bg-black text-[#FF55FE]">Home</a>
-</div>
+
+<!-- bg-gradient-to-br from-[#2d0036] to-[#1a0022] -->
