@@ -1,7 +1,7 @@
 import { Graphics, Text } from "pixi.js";
 import GameMap from './gamemap.js';
 
-import { pixiApp, localPlayerPos } from './main.js';
+import { pixiApp, localPlayerPos} from './main.js';
 
 export class MouseData {
 
@@ -74,7 +74,7 @@ export function setupMapZoom() {
 
   window.addEventListener('wheel', (event) => {
     let zoomIntensity = 0.05;
-    let minZoom = 0.75;
+    let minZoom = 2;
     let maxZoom = 4;
     let scrollDir = event.deltaY / Math.abs(event.deltaY);
 
@@ -84,6 +84,7 @@ export function setupMapZoom() {
     }
 
     let container = pixiApp.stage;
+    // let container = gameMap.container;
     let wOffset = localPlayerPos.asCartesian.x + pixiApp.screen.width / 2;
     let hOffset = localPlayerPos.asCartesian.y + pixiApp.screen.height / 2;
 

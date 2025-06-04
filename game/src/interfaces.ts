@@ -167,7 +167,7 @@ export enum RoomType {
   Game = "game",
   Bocal = "bocal",
   Hall = "hall",
-  Count = 5,
+  Toilet = "toilet",
 }
 
 export enum CameraMode {

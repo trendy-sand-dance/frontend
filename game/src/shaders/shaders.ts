@@ -150,13 +150,14 @@ float dither4x4(vec2 pos) {
 void main(void) {
 
     // CURVATURE
-    vec2 curvedUV = applyCurvature(vTextureCoord);
+    // vec2 curvedUV = applyCurvature(vTextureCoord);
 
-    if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
-        return;
-    } 
-    vec4 fg = texture2D(uTexture, curvedUV);
+    // if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
+    //     gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
+    //     return;
+    // } 
+    // vec4 fg = texture2D(uTexture, curvedUV);
+    vec4 fg = texture2D(uTexture, vTextureCoord);
 
     // NOISE
     // float noise = random(vTextureCoord.xy) * 1.25;
@@ -173,7 +174,7 @@ void main(void) {
     fg.rgb *= scanline;
 
       // FADE
-      float d = getDistanceFromCenter(curvedUV);
+      float d = getDistanceFromCenter(vTextureCoord);
       fg.rgb += d * 0.25;
       gl_FragColor = fg;
 }

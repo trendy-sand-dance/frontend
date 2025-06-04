@@ -86,6 +86,7 @@ export default class Player {
     this.shadow = new Graphics().circle(0, this.animation.height * 2, 10).fill(settings.CGA_BLACK);
     this.shadow.scale.y = 0.25;
     this.shadow.alpha = 0.25;
+    this.shadow.zIndex = 5000;
     this.container = new Container();
     this.container.addChild(this.animation);
     this.container.addChild(this.shadow);

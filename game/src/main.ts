@@ -1,4 +1,4 @@
-import { extensions, Application, Assets, CullerPlugin, Culler, Ticker, Texture, Filter, GlProgram } from "pixi.js";
+import { Application, Assets, Ticker, Texture, Filter, Graphics, GlProgram } from "pixi.js";
 import { playerManager } from './playermanager.js';
 import { addGameMap } from './gamemap.js';
 import GameMap from './gamemap.js';
@@ -343,15 +343,14 @@ export let gameMap: GameMap;
     }
   });
   pixiApp.stage.filters = [customFilter];
+  pixiApp.stage.addChild(new Graphics().rect(-500, -500, 3500, 3500).fill(settings.CGA_CYAN_DARK_BG));
 
   // Initialize map and add to pixi.stage
   gameMap = addGameMap(pixiApp);
 
   // Setup Culling for optimized rendering of the map
-  extensions.add(CullerPlugin);
   gameMap.container.cullable = true;
   gameMap.container.cullableChildren = true;
-  Culler.shared.cull(gameMap.container, pixiApp.renderer.screen);
 
   //Network business
   if (window.__USER_ID__) {
@@ -362,7 +361,9 @@ export let gameMap: GameMap;
     let p = playerManager.getLocalPlayer();
     if (p) {
       let tournamentBox = new TournamentSubscription(28.5, 1, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('tv_tournament'));
-      gameMap.container.addChild(tournamentBox.getContext());
+      const context = tournamentBox.getContext();
+      context.zIndex = 10000;
+      gameMap.addToRoomContainer(RoomType.Hall, tournamentBox.getContext());
       const room = gameMap.getMapRegion(p.getPosition());
       gameMap.setRegionRenderable(room, true);
     }
@@ -371,12 +372,16 @@ export let gameMap: GameMap;
 
   // Testing Pong table
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
-  gameMap.container.addChild(pongTable.getContainer());
+  const pongTableContainer = pongTable.getContainer();
+  pongTableContainer.zIndex = 10000;
+  gameMap.addToRoomContainer(RoomType.Hall, pongTableContainer);
   playerManager.initPongTable(pongTable);
 
   // Testing tournament table
   let tournamentTable = new PongTable({ x: 27, y: 2 }, settings.TILEMAP, true);
-  gameMap.container.addChild(tournamentTable.getContainer());
+  const tournamentTableContainer = tournamentTable.getContainer();
+  tournamentTableContainer.zIndex = 10000;
+  gameMap.addToRoomContainer(RoomType.Hall, tournamentTableContainer);
   playerManager.initTournamentTable(tournamentTable);
 
 

@@ -1,4 +1,4 @@
-import { Graphics , Container } from "pixi.js";
+import { Sprite, Graphics , Container } from "pixi.js";
 
 export default class MapRegion {
 
@@ -23,7 +23,7 @@ export default class MapRegion {
 
   }
 
-  addToContainer(tile : Graphics) : void {
+  addToContainer(tile : Graphics | Sprite | Container) : void {
 
     this.container.addChild(tile);
 

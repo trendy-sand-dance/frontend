@@ -20,9 +20,9 @@ export default class GameMap {
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
-    this.wallsContainer = new Container();
+    this.wallsContainer = new Container({isRenderGroup: true});
     this.wallsContainer.sortableChildren = true;
-    this.container = new Container();
+    this.container = new Container({isRenderGroup: true});
 
     this.graphicsContext = new Graphics();
     this.container.addChild(this.wallsContainer);
@@ -47,14 +47,16 @@ export default class GameMap {
     const bocal =  new MapRegion({x: 52, y: 0}, 12, 24);
     const game = new MapRegion({x: 22, y: 15}, 12, 9);
     const cluster = new MapRegion({x: 0, y: 0}, 16, 23);
-    const server =  new MapRegion({x: 21, y: 0}, 4, 6);
+    const server =  new MapRegion({x: 21, y: 0}, 3, 5);
     const hall = new MapRegion({x: 0, y: 0}, 0, 0);
+    const toilet = new MapRegion({x: 16, y: 0}, 4, 5);
     
     this.mapRegions.set(RoomType.Bocal, bocal);
     this.mapRegions.set(RoomType.Game, game);
     this.mapRegions.set(RoomType.Cluster, cluster);
     this.mapRegions.set(RoomType.Server, server);
     this.mapRegions.set(RoomType.Hall, hall);
+    this.mapRegions.set(RoomType.Toilet, toilet);
 
   }
 
@@ -91,6 +93,8 @@ export default class GameMap {
       for (let col = 0; col < this.cols; col++) {
         const context = new Graphics();
         let point = new Point(col, row);
+        const room = this.getMapRegion(point.asCartesian);
+        const mapRegion = this.mapRegions.get(room);
 
 
         if (tileMap[row][col] == -1) {
@@ -102,7 +106,8 @@ export default class GameMap {
             sprite.x = point.asIsometric.x - 32;
             sprite.y = point.asIsometric.y - 24 - (i * 16);
             sprite.scale = 0.5;
-            this.container.addChild(sprite);
+            sprite.zIndex = 1000;
+            mapRegion?.addToContainer(sprite);
           }
           tileMap[row][col] = 0;
         }
@@ -142,10 +147,6 @@ export default class GameMap {
           context.zIndex = -100;
           this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
         }
-
-        // this.wallsContainer.addChild(context);
-        const room = this.getMapRegion(point.asCartesian);
-        const mapRegion = this.mapRegions.get(room);
 
         mapRegion?.addToContainer(context);
 
@@ -204,6 +205,13 @@ export default class GameMap {
 
   addToContainer(context: Sprite) {
     this.container.addChild(context);
+  }
+
+  addToRoomContainer(room: RoomType, context: Sprite | Container) : void {
+
+    const mapRegion = this.mapRegions.get(room);
+    mapRegion?.addToContainer(context);
+
   }
 }
 
