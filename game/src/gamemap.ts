@@ -1,38 +1,8 @@
-import { Application, Container, Graphics, Sprite, Texture, TilingSprite } from "pixi.js";
+import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
+import MapRegion from './mapregion.js';
 import Point from './point.js';
 import Player from './player.js';
 import * as settings from './settings.js';
-
-enum TextureId {
-  BlockTransparentBlack,
-  BlockTransparentWhite,
-  BlockOpaqueWhite,
-  BlockOpaqueColor,
-  BlockHalfOpaqueColor,
-};
-
-const textureMap = new Map<TextureId, string>([
-  [TextureId.BlockTransparentBlack, "block_empty_black"],
-  [TextureId.BlockTransparentWhite, "block_empty_white"],
-  [TextureId.BlockOpaqueColor, "block_opaque_coloured"],
-  [TextureId.BlockOpaqueWhite, "block_opaque_white"],
-  [TextureId.BlockHalfOpaqueColor, 'block_half_opaque_coloured'],
-]);
-
-function loadTextures() {
-  let textures: Texture[] = new Array<Texture>;
-
-  for (const [id, name] of textureMap) {
-    console.log("TextureId: " + id + ", path: " + name);
-    try {
-      let texture = Texture.from(name);
-      textures.push(texture);
-    } catch (error) {
-      console.log("Hmvve", error);
-    }
-  }
-  return textures;
-}
 
 export default class GameMap {
   static #instance: GameMap;
@@ -42,10 +12,10 @@ export default class GameMap {
   private wallsContainer: Container;
 
   private graphicsContext: Graphics;
-  private tilingSprites: TilingSprite[][] = [];
   private rows: number;
   private cols: number;
   private tileSize: number;
+  private mapRegions : Map<string, MapRegion> = new Map<string, MapRegion>();
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
@@ -60,6 +30,8 @@ export default class GameMap {
     this.rows = rows;
     this.cols = cols;
     this.tileSize = tileSize;
+
+    this.initMapRegions();
   }
 
   public static get instance(): GameMap {
@@ -69,29 +41,37 @@ export default class GameMap {
     return GameMap.#instance;
   }
 
-  initTilingSprites(tileMap: number[][]) {
-    const rows = tileMap.length;
-    const cols = tileMap[0].length;
+  private initMapRegions() : void {
 
-    try {
-      const textures = loadTextures();
-      if (!textures) {
-        console.error("Failed to load texture.");
-        return;
-      }
-      this.tilingSprites = tileMap.map(row => {
-        return row.map(value => new TilingSprite({ texture: textures[value], width: 64, height: 64 }))
-      })
+    const bocal =  new MapRegion({x: 51, y: 0}, 12, 24);
+    const game = new MapRegion({x: 23, y: 14}, 12, 9);
+    const cluster = new MapRegion({x: 0, y: 0}, 16, 23);
+    const server =  new MapRegion({x: 21, y: 0}, 4, 6);
+    
+    this.mapRegions.set("bocal", bocal);
+    this.mapRegions.set("game", game);
+    this.mapRegions.set("cluster", cluster);
+    this.mapRegions.set("server", server);
 
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-          // this.tilingSprites[row][col].anchor.set(0, -0.5);
-          this.container.addChild(this.tilingSprites[row][col]);
-        }
+    console.log(this.mapRegions.get("bocal"));
+    console.log(this.mapRegions.get("game"));
+    console.log(this.mapRegions.get("cluster"));
+    console.log(this.mapRegions.get("server"));
+
+  }
+
+  public getMapRegion(position: Vector2) : string {
+
+    for (const [room, region] of this.mapRegions) {
+
+      if (region.isPlayerPresent(position)) {
+        return room;
       }
-    } catch (error) {
-      console.error("Error initializing sprite tiles:", error);
+
     }
+
+    return "hall";
+      
   }
 
   drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
@@ -106,22 +86,6 @@ export default class GameMap {
     }
   }
 
-  async createSpriteGrid(tileMap: number[][]) {
-
-    this.initTilingSprites(settings.TILEMAP);
-
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.cols; col++) {
-        let point = new Point(col, row);
-
-        // Raise Y 
-        point.asIsometric.y -= tileMap[row][col] * this.tileSize;
-
-        this.tilingSprites[row][col].x = point.asIsometric.x;
-        this.tilingSprites[row][col].y = point.asIsometric.y;
-      }
-    }
-  }
 
   async createGraphicsGrid(tileMap: number[][]) {
 

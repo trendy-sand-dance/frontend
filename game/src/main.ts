@@ -306,15 +306,6 @@ export let gameMap: GameMap;
   await setup();
   await preload();
 
-
-  // Overlay
-  // const overlayTexture = Texture.from('overlay');
-  // const sprite = new Sprite(overlayTexture);
-  // sprite.zIndex = 10000;
-  // sprite.width = pixiApp.screen.width;
-  // sprite.height = pixiApp.screen.height;
-  // pixiApp.stage.addChild(sprite);
-
   // Dithering
   const customFilter = new Filter({
     glProgram: new GlProgram({

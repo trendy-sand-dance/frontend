@@ -1,5 +1,6 @@
 import Paddle from './pong/paddle.js';
 import Indicator from './ui/indicator.js';
+import MapRegion from './mapregion.js';
 
 declare global {
 
@@ -99,6 +100,14 @@ declare global {
     wins: number,
     losses: number,
     player: PlayerData,
+  }
+
+
+  interface MapRegions {
+    bocal: MapRegion,
+    game: MapRegion,
+    cluster: MapRegion,
+    server: MapRegion,
   }
 
 
