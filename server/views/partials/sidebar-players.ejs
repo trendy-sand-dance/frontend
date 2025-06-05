@@ -33,7 +33,7 @@
 					</div>
 				</div>
 				<% }); %>
-				<% } else { %> <p class="text-gray-500 italic">No incoming friend requests.</p> <% } %>
+				<% } else { %> <p class="text-purple-500 italic">No incoming friend requests.</p> <% } %>
 			</section>
 			
 			<!-- Friends -->
@@ -44,7 +44,7 @@
 			<div class="flex items-center justify-between bg-green-100 p-2 rounded shadow">
 				<div>
 					<strong><%= friend.username %></strong> 
-			  <div class="text-sm text-gray-600">Wins: <%= friend.wins %> | Losses: <%= friend.losses %></div>
+			  <div class="text-sm text-purple-600">Wins: <%= friend.wins %> | Losses: <%= friend.losses %></div>
 			</div>
 			<button
 			class="text-red-500 hover:text-red-700"
@@ -61,7 +61,7 @@
 		  </div>
 		<% }); %>
 	  <% } else { %>
-		<p class="text-gray-500 italic">No friends yet.</p>
+		<p class="text-purple-500 italic">No friends yet.</p>
 	  <% } %>
 	</section>
   
@@ -83,7 +83,7 @@
 		  </div>
 		<% }); %>
 	  <% } else { %>
-		<p class="text-gray-500 italic">No pending requests.</p>
+		<p class="text-purple-500 italic">No pending requests.</p>
 	  <% } %>
 	</section>
   
@@ -103,7 +103,7 @@
 		  </div>
 		<% }); %>
 	  <% } else { %>
-		<p class="text-gray-500 italic">No blocked users.</p>
+		<p class="text-purple-500 italic">No blocked users.</p>
 	  <% } %>
 	</section>
   
