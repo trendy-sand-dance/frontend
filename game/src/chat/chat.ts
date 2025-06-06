@@ -1,19 +1,19 @@
-import { Container} from 'pixi.js';
-import PlayerManager from "../playermanager.js";
+import { Container } from 'pixi.js';
+import PlayerManager from "../player/playermanager.js";
 import ChatBubble from '../chat/chatbubble.js';
 import { MessageType } from "../interfaces";
 
 export default class Chat {
 
-  private textInput : HTMLInputElement;
-  private sendButton : HTMLButtonElement;
-  private chatDisplay : HTMLElement;
+  private textInput: HTMLInputElement;
+  private sendButton: HTMLButtonElement;
+  private chatDisplay: HTMLElement;
   // private messages : string[] = [];
-  private chatBubbles : ChatBubble[] = [];
-  private socket : WebSocket | null = null;
-  private bubbleSize : number = 20;
+  private chatBubbles: ChatBubble[] = [];
+  private socket: WebSocket | null = null;
+  private bubbleSize: number = 20;
 
-  public constructor(inputElementId : string, sendButtonElementId : string) {
+  public constructor(inputElementId: string, sendButtonElementId: string) {
 
     this.textInput = document.getElementById(inputElementId) as HTMLInputElement;
     if (this.textInput === null) {
@@ -30,7 +30,7 @@ export default class Chat {
 
   }
 
-  private getTextInput() : string | undefined{
+  private getTextInput(): string | undefined {
 
     if (this.textInput) {
       return this.textInput.value;
@@ -40,36 +40,36 @@ export default class Chat {
 
   }
 
-  private handleTextInput(playerManager : PlayerManager, mapContainer : Container) : void {
+  private handleTextInput(playerManager: PlayerManager, mapContainer: Container): void {
 
-      const chatMessage = this.getTextInput();
+    const chatMessage = this.getTextInput();
 
-      if (chatMessage) {
+    if (chatMessage) {
 
-        const player = playerManager.getLocalPlayer();
+      const player = playerManager.getLocalPlayer();
 
-        if (player && this.socket) {
-          // TODO: Write function to determine which room the player is and whether it's a PM or a RM
-          const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion()};
-          this.socket.send(JSON.stringify(roomMessage));
-          const b = new ChatBubble(player, chatMessage, this.bubbleSize);
-          this.chatBubbles.push(b);
-          mapContainer.addChild(b.getContainer());
-          console.log("We pushing");
-        }
-
+      if (player && this.socket) {
+        // TODO: Write function to determine which room the player is and whether it's a PM or a RM
+        const roomMessage: RoomMessage = { type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion() };
+        this.socket.send(JSON.stringify(roomMessage));
+        const b = new ChatBubble(player, chatMessage, this.bubbleSize);
+        this.chatBubbles.push(b);
+        mapContainer.addChild(b.getContainer());
+        console.log("We pushing");
       }
 
-      this.textInput.value = "";
+    }
+
+    this.textInput.value = "";
 
   }
 
-  public bind(chatServer : WebSocket, playerManager : PlayerManager, mapContainer : Container) : void {
+  public bind(chatServer: WebSocket, playerManager: PlayerManager, mapContainer: Container): void {
 
     this.socket = chatServer;
 
     this.sendButton.addEventListener("click", () => {
-        this.handleTextInput(playerManager, mapContainer);
+      this.handleTextInput(playerManager, mapContainer);
     });
 
     document.addEventListener("keydown", (e) => {
@@ -80,8 +80,8 @@ export default class Chat {
 
   }
 
-  public createChatBubble(message : RoomMessage, playerManager : PlayerManager, mapContainer : Container) {
-  
+  public createChatBubble(message: RoomMessage, playerManager: PlayerManager, mapContainer: Container) {
+
     const player = playerManager.getPlayer(message.id);
     if (player) {
       const b = new ChatBubble(player, message.message, this.bubbleSize);
@@ -91,13 +91,13 @@ export default class Chat {
 
   }
 
-  public getChatBubbles() : ChatBubble[] {
+  public getChatBubbles(): ChatBubble[] {
 
     return this.chatBubbles;
 
   }
 
-  public destroyBubble(bubble : ChatBubble) : void {
+  public destroyBubble(bubble: ChatBubble): void {
 
     const index = this.chatBubbles.indexOf(bubble);
     if (index !== -1) {
@@ -109,13 +109,13 @@ export default class Chat {
 
   }
 
-  public availableChatBubbles() : boolean {
+  public availableChatBubbles(): boolean {
 
     return this.chatBubbles.length > 0;
 
   }
 
-  public popChatBubble() : ChatBubble | undefined {
+  public popChatBubble(): ChatBubble | undefined {
 
     return this.chatBubbles.pop();
 

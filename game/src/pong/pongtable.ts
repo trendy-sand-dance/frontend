@@ -1,13 +1,13 @@
 import { Texture, Container, Graphics, Sprite } from 'pixi.js';
 import Ball from './ball.js';
-import Point from '../point.js';
+import Point from '../utility/point.js';
 import Paddle from './paddle.js';
 import Indicator from '../ui/indicator.js';
-import Player from '../player.js';
-import * as cm from '../connectionmanager.ts'
+import Player from '../player/player.js';
+import * as cm from '../gameserver/connectionmanager.ts'
 import * as settings from '../settings.js';
 import { PongState, TournamentState } from '../interfaces.js';
-import { gameSocket } from '../connectionmanager.ts';
+import { gameSocket } from '../gameserver/connectionmanager.ts';
 import TextBox from '../ui/textbox.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {

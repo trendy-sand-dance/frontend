@@ -11,9 +11,9 @@ export default class TextBox {
   private height: number;
   private width: number;
 
-  private backgroundColor : string = settings.CGA_BLACK;
-  private strokeColor : string = settings.CGA_PINK;
-  private textColor : string = settings.CGA_PINK;
+  private backgroundColor: string = settings.CGA_BLACK;
+  private strokeColor: string = settings.CGA_PINK;
+  private textColor: string = settings.CGA_PINK;
 
   constructor(text: string, textSize: number, x: number, y: number) {
     this.container = new Container();
@@ -73,13 +73,13 @@ export default class TextBox {
 
   }
 
-  setTextColor(color : string) {
+  setTextColor(color: string) {
 
     this.textColor = color;
 
   }
 
-  setStrokeColor(color : string) {
+  setStrokeColor(color: string) {
 
     this.strokeColor = color;
 

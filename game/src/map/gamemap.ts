@@ -1,9 +1,9 @@
 import { Application, Container, Graphics, Sprite, Texture } from "pixi.js";
 import MapRegion from './mapregion.js';
-import Point from './point.js';
-import Player from './player.js';
-import * as settings from './settings.js';
-import { RoomType } from "./interfaces.js";
+import Point from '../utility/point.js';
+import Player from '../player/player.js';
+import * as settings from '../settings.js';
+import { RoomType } from "../interfaces.js";
 
 export default class GameMap {
   static #instance: GameMap;
@@ -16,13 +16,13 @@ export default class GameMap {
   private rows: number;
   private cols: number;
   private tileSize: number;
-  private mapRegions : Map<RoomType, MapRegion> = new Map<RoomType, MapRegion>();
+  private mapRegions: Map<RoomType, MapRegion> = new Map<RoomType, MapRegion>();
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
-    this.wallsContainer = new Container({isRenderGroup: true});
+    this.wallsContainer = new Container({ isRenderGroup: true });
     this.wallsContainer.sortableChildren = true;
-    this.container = new Container({isRenderGroup: true});
+    this.container = new Container({ isRenderGroup: true });
 
     this.graphicsContext = new Graphics();
     this.container.addChild(this.wallsContainer);
@@ -42,15 +42,15 @@ export default class GameMap {
     return GameMap.#instance;
   }
 
-  private initMapRegions() : void {
+  private initMapRegions(): void {
 
-    const bocal =  new MapRegion({x: 52, y: 0}, 12, 24);
-    const game = new MapRegion({x: 22, y: 15}, 12, 9);
-    const cluster = new MapRegion({x: 0, y: 0}, 16, 23);
-    const server =  new MapRegion({x: 21, y: 0}, 3, 5);
-    const hall = new MapRegion({x: 0, y: 0}, 0, 0);
-    const toilet = new MapRegion({x: 16, y: 0}, 4, 5);
-    
+    const bocal = new MapRegion({ x: 52, y: 0 }, 12, 24);
+    const game = new MapRegion({ x: 22, y: 15 }, 12, 9);
+    const cluster = new MapRegion({ x: 0, y: 0 }, 16, 23);
+    const server = new MapRegion({ x: 21, y: 0 }, 3, 5);
+    const hall = new MapRegion({ x: 0, y: 0 }, 0, 0);
+    const toilet = new MapRegion({ x: 16, y: 0 }, 4, 5);
+
     this.mapRegions.set(RoomType.Bocal, bocal);
     this.mapRegions.set(RoomType.Game, game);
     this.mapRegions.set(RoomType.Cluster, cluster);
@@ -60,7 +60,7 @@ export default class GameMap {
 
   }
 
-  public getMapRegion(position: Vector2) : RoomType {
+  public getMapRegion(position: Vector2): RoomType {
 
     for (const [room, region] of this.mapRegions) {
 
@@ -71,7 +71,7 @@ export default class GameMap {
     }
 
     return RoomType.Hall;
-      
+
   }
 
   drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
@@ -155,7 +155,7 @@ export default class GameMap {
     }
 
     for (const [room, region] of this.mapRegions) {
-      
+
       console.log(room);
       const container = region.getContainer();
       if (room !== RoomType.Hall) {
@@ -165,7 +165,7 @@ export default class GameMap {
     }
   }
 
-  setRegionOpacity(room : RoomType, opacity : number) : void {
+  setRegionOpacity(room: RoomType, opacity: number): void {
 
     const region = this.mapRegions.get(room);
 
@@ -175,7 +175,7 @@ export default class GameMap {
 
   }
 
-  setRegionRenderable(room: RoomType, state : boolean) : void {
+  setRegionRenderable(room: RoomType, state: boolean): void {
 
     const region = this.mapRegions.get(room);
 
@@ -207,7 +207,7 @@ export default class GameMap {
     this.container.addChild(context);
   }
 
-  addToRoomContainer(room: RoomType, context: Sprite | Container) : void {
+  addToRoomContainer(room: RoomType, context: Sprite | Container): void {
 
     const mapRegion = this.mapRegions.get(room);
     mapRegion?.addToContainer(context);

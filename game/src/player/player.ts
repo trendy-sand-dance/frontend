@@ -1,7 +1,7 @@
 import { Assets, Container, Graphics, Texture, AnimatedSprite } from "pixi.js";
-import * as settings from './settings.js';
-import Point from './point.js';
-import { RoomType } from "./interfaces.js";
+import * as settings from '../settings.js';
+import Point from '../utility/point.js';
+import { RoomType } from "../interfaces.js";
 
 interface DirectionalAnimatedSprite extends AnimatedSprite {
   currentAnimation: string;
@@ -61,7 +61,7 @@ export default class Player {
   private username: string;
   private avatar: string;
 
-  private region : RoomType = RoomType.Hall;
+  private region: RoomType = RoomType.Hall;
   private shadow: Graphics;
   private container: Container;
   private animation: DirectionalAnimatedSprite;
@@ -96,13 +96,13 @@ export default class Player {
     this.container.zIndex = this.position.asIsometric.y + 7.5;
   }
 
-  setRegion(room : RoomType) : void{
+  setRegion(room: RoomType): void {
 
     this.region = room;
 
   }
 
-  getRegion() : RoomType {
+  getRegion(): RoomType {
 
     return this.region;
 

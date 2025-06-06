@@ -1,5 +1,5 @@
 import { Graphics } from "pixi.js";
-import Point from '../point.js';
+import Point from '../utility/point.js';
 
 const velocityMultiplier = 1.2;
 

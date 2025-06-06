@@ -1,5 +1,5 @@
-import { playerManager } from './playermanager.js';
-import GameMap from './gamemap.js';
+import { playerManager } from '../player/playermanager.js';
+import GameMap from '../map/gamemap.js';
 
 
 export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
@@ -310,16 +310,16 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
 
-    gameSocket.onclose = (event : CloseEvent) => {
-    console.log("Close event: ", event);
-    if (gameSocket.readyState == WebSocket.OPEN) {
-      const player = playerManager.getLocalPlayer();
-      let pos: Vector2 = { x: 0, y: 0 };
-      if (player) {
-        pos = player.position.asCartesian;
-        sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
+    gameSocket.onclose = (event: CloseEvent) => {
+      console.log("Close event: ", event);
+      if (gameSocket.readyState == WebSocket.OPEN) {
+        const player = playerManager.getLocalPlayer();
+        let pos: Vector2 = { x: 0, y: 0 };
+        if (player) {
+          pos = player.position.asCartesian;
+          sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
+        }
       }
-    }
     };
 
   };

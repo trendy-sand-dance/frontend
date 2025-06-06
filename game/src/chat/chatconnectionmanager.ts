@@ -1,31 +1,31 @@
-import { initializeWebsocket } from "../connectionmanager";
+import { initializeWebsocket } from "../gameserver/connectionmanager";
 import { messageHandlers } from "./messagehandler";
 import { MessageType } from "../interfaces";
 import { RoomType } from "../interfaces";
-import { localUser } from '../connectionmanager';
+import { localUser } from '../gameserver/connectionmanager';
 import Chat from './chat';
-import { playerManager } from "../playermanager";
-import GameMap from '../gamemap';
+import { playerManager } from "../player/playermanager";
+import GameMap from '../map/gamemap';
 
 export const chat = new Chat("text-input-chat", "send-button-chat");
-export let chatSocket : WebSocket;
+export let chatSocket: WebSocket;
 
-export function runChatConnectionManager(gameMap : GameMap) {
+export function runChatConnectionManager(gameMap: GameMap) {
 
-  chatSocket  = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
+  chatSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
 
   if (chat) {
     console.log("Initialized Chat object");
     chat.bind(chatSocket, playerManager, gameMap.container);
   }
 
-  chatSocket.onopen = (message : Event) => {
+  chatSocket.onopen = (message: Event) => {
 
     console.log("onopen message: ", message);
     const player = playerManager.getLocalPlayer();
     if (player) {
-      const room : RoomType = player.getRegion();
-      const msg : ConnectMessage = {type: MessageType.Connect, user: localUser, room: room};
+      const room: RoomType = player.getRegion();
+      const msg: ConnectMessage = { type: MessageType.Connect, user: localUser, room: room };
       chatSocket.send(JSON.stringify(msg));
       console.log("We're sending the connectmessage: ", msg);
     }
@@ -61,7 +61,7 @@ export function runChatConnectionManager(gameMap : GameMap) {
     console.log("Beforeunload: ");
   });
 
-  
+
   chatSocket.onerror = (message) => {
     console.log("Websocket error: ", message);
   };
