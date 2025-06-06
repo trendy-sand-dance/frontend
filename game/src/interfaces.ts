@@ -164,6 +164,7 @@ export enum MessageType {
   Transition = "transition",
   RoomChat = "room_chat",
   PersonalChat = "personal_chat",
+  GameInvite = "game_invite"
 }
 
 export enum RoomType {

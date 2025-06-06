@@ -24,6 +24,7 @@ export let localPlayerPos: Point = new Point(0, 0);
 let isGameFocused = true;
 let screenShake = false;
 let cameraMode: CameraMode = CameraMode.Locked;
+export let uiContainer = new Container();
 
 async function preload() {
 
@@ -84,6 +85,12 @@ async function setup() {
 
   // Setup Map Zoom Callback
   mouse.setupMapZoom();
+
+  // Setting up UI container
+  uiContainer.position.set(0, 0);
+  uiContainer.zIndex = 100000;
+  uiContainer.label = "ui";
+  pixiApp.stage.addChild(uiContainer);
 
   console.log("Pixi app initialized:", pixiApp);
 }
@@ -329,6 +336,7 @@ function handleInvites(time: Ticker, invites: Invitation[]): void {
       invite.animate(time);
     } else {
       invite.destroy();
+      playerManager.removeInvite(invite);
     }
 
   }
@@ -399,22 +407,6 @@ export let gameMap: GameMap;
   tournamentTableContainer.zIndex = 10000;
   gameMap.addToRoomContainer(RoomType.Hall, tournamentTableContainer);
   playerManager.initTournamentTable(tournamentTable);
-
-
-  // Invitation
-  let p = playerManager.getLocalPlayer();
-  let uiContainer = new Container();
-  uiContainer.position.set(0, 0);
-  uiContainer.zIndex = 100000;
-  uiContainer.label = "ui";
-  pixiApp.stage.addChild(uiContainer);
-  if (p) {
-    for (let i = 0; i < 4; i++) {
-      const invite = playerManager.addInvite({ type: "invite", id: p.getId() });
-      if (invite)
-        uiContainer.addChild(invite.container);
-    }
-  }
 
 
   const player = playerManager.getLocalPlayer();

@@ -1,5 +1,6 @@
 import { playerManager } from '../player/playermanager.js';
 import GameMap from '../map/gamemap.js';
+import { uiContainer } from '../main.js';
 
 
 export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
@@ -226,6 +227,17 @@ export async function runConnectionManager(gameMap: GameMap) {
       }
 
     }
+
+    // Game invite
+    if (data.type == "game_invite") {
+      if (isLocalPlayer(data.id)) {
+        const inviteMessage: GameInviteMessage = data as GameInviteMessage;
+        const invite = playerManager.addInvite(inviteMessage);
+        if (invite)
+          uiContainer.addChild(invite.container);
+      }
+    }
+
 
     // Tournament
     if (data.type == "announce_match") {
