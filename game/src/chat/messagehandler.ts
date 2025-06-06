@@ -1,5 +1,5 @@
 import { chat } from './chatconnectionmanager';
-import { playerManager } from '../playermanager';
+import { playerManager } from '../player/playermanager';
 import { gameMap } from '../main';
 
 // Message Handler

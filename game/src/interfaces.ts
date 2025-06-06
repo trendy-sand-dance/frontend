@@ -1,6 +1,6 @@
 import Paddle from './pong/paddle.js';
 import Indicator from './ui/indicator.js';
-import MapRegion from './mapregion.js';
+import MapRegion from './map/mapregion.js';
 
 declare global {
 
@@ -63,6 +63,11 @@ declare global {
     direction?: string,
     pongPlayer?: PongPlayer,
     tournament?: boolean,
+  }
+
+  type GameInviteMessage = {
+    type: string,
+    id: number,
   }
 
   interface UserData {
@@ -159,6 +164,7 @@ export enum MessageType {
   Transition = "transition",
   RoomChat = "room_chat",
   PersonalChat = "personal_chat",
+  GameInvite = "game_invite"
 }
 
 export enum RoomType {

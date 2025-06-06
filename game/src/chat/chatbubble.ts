@@ -1,5 +1,5 @@
 import TextBox from '../ui/textbox';
-import Player from '../player';
+import Player from '../player/player';
 import { Ticker } from "pixi.js";
 
 export default class ChatBubble extends TextBox {

@@ -1,5 +1,6 @@
-import { playerManager } from './playermanager.js';
-import GameMap from './gamemap.js';
+import { playerManager } from '../player/playermanager.js';
+import GameMap from '../map/gamemap.js';
+import { uiContainer } from '../main.js';
 
 
 export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
@@ -227,6 +228,17 @@ export async function runConnectionManager(gameMap: GameMap) {
 
     }
 
+    // Game invite
+    if (data.type == "game_invite") {
+      if (isLocalPlayer(data.id)) {
+        const inviteMessage: GameInviteMessage = data as GameInviteMessage;
+        const invite = playerManager.addInvite(inviteMessage);
+        if (invite)
+          uiContainer.addChild(invite.container);
+      }
+    }
+
+
     // Tournament
     if (data.type == "announce_match") {
       console.log(`(left) ${data.players.left.username} is playing against (right) ${data.players.right.username}. Time left to ready up: ${data.seconds}`)
@@ -310,16 +322,16 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
 
-    gameSocket.onclose = (event : CloseEvent) => {
-    console.log("Close event: ", event);
-    if (gameSocket.readyState == WebSocket.OPEN) {
-      const player = playerManager.getLocalPlayer();
-      let pos: Vector2 = { x: 0, y: 0 };
-      if (player) {
-        pos = player.position.asCartesian;
-        sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
+    gameSocket.onclose = (event: CloseEvent) => {
+      console.log("Close event: ", event);
+      if (gameSocket.readyState == WebSocket.OPEN) {
+        const player = playerManager.getLocalPlayer();
+        let pos: Vector2 = { x: 0, y: 0 };
+        if (player) {
+          pos = player.position.asCartesian;
+          sendToServer(gameSocket, { type: "disconnection", id: localUser.id, position: pos });
+        }
       }
-    }
     };
 
   };

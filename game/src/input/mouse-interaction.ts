@@ -1,7 +1,7 @@
 import { Graphics, Text } from "pixi.js";
-import GameMap from './gamemap.js';
+import GameMap from '../map/gamemap.js';
 
-import { pixiApp, localPlayerPos} from './main.js';
+import { pixiApp, localPlayerPos } from '../main.js';
 
 export class MouseData {
 
@@ -84,6 +84,7 @@ export function setupMapZoom() {
     }
 
     let container = pixiApp.stage;
+
     // let container = gameMap.container;
     let wOffset = localPlayerPos.asCartesian.x + pixiApp.screen.width / 2;
     let hOffset = localPlayerPos.asCartesian.y + pixiApp.screen.height / 2;
@@ -97,9 +98,9 @@ export function setupMapZoom() {
     }
     else if (scrollDir == Dir.Down && container.scale.x > minZoom) {
       const scaleFactor = 1 - (container.scale.x / (container.scale.x + zoomIntensity));
+
       container.scale.x -= zoomIntensity;
       container.scale.y -= zoomIntensity;
-
       container.x += (wOffset - container.x) * scaleFactor;
       container.y += (hOffset - container.y) * scaleFactor;
     }

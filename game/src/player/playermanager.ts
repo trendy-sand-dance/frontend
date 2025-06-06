@@ -1,9 +1,10 @@
-import Player from './player.js';
-import { mouse } from './input.js';
 import { ColorMatrixFilter } from "pixi.js";
-import PongTable from './pong/pongtable.js';
-// import { RoomType } from './interfaces.js';
-//import Point from './point.js';
+import Player from './player.js';
+import Invitation from '../ui/invitation.js';
+import { mouse } from '../input/input.js';
+import { gameSocket } from "../gameserver/connectionmanager.js";
+import PongTable from '../pong/pongtable.js';
+import { MessageType } from "../interfaces.js";
 import('htmx.org');
 
 const playerInfoBox = document.getElementById("pixi-player-info");
@@ -15,6 +16,7 @@ export default class PlayerManager {
   public localPlayer: Player | null = null;
   public pongTable: PongTable | null = null;
   public tournamentTable: PongTable | null = null;
+  public invites: Invitation[] = [];
 
   private constructor() {
 
@@ -26,6 +28,30 @@ export default class PlayerManager {
     }
 
     return PlayerManager.#instance;
+  }
+
+  public addInvite(inviteMessage: GameInviteMessage): Invitation | undefined {
+
+    const player = this.getPlayer(inviteMessage.id);
+    if (player) {
+      const invite = new Invitation(player, this.invites.length);
+      this.invites.push(invite);
+      return invite;
+    }
+
+  }
+
+  public removeInvite(invite: Invitation): void {
+
+    const index = this.invites.indexOf(invite);
+    this.invites.splice(index, 1);
+
+  }
+
+  public getInvites(): Invitation[] {
+
+    return this.invites;
+
   }
 
   isLocalPlayerInitialized(): boolean {
@@ -135,6 +161,21 @@ export default class PlayerManager {
             else if (isBtnThere) {
               isBtnThere.innerHTML = "Send friend request";
             }
+
+
+            // Game Invite btn
+            const gameInviteBtn = document.getElementById('gameInviteBtn');
+
+            if (gameInviteBtn) {
+
+              gameInviteBtn.onclick = () => {
+                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, id: user.id };
+                gameSocket.send(JSON.stringify(inviteMessage));
+              }
+
+            }
+
+
 
             window.htmx.process(document.body);
           }

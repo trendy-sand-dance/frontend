@@ -1,4 +1,4 @@
-import * as settings from './settings.js';
+import * as settings from '../settings.js';
 
 export default class Point {
   public asCartesian: Vector2;

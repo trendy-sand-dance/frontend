@@ -1,7 +1,7 @@
-import * as settings from "./settings.js";
-import Player from "./player.js";
-import Point from './point.js';
-import { CameraMode } from './interfaces.js';
+import * as settings from "../settings.js";
+import Player from "../player/player.js";
+import Point from '../utility/point.js';
+import { CameraMode } from '../interfaces.js';
 
 type KeyPressState = {
   [key: string]: boolean;

@@ -1,18 +1,19 @@
-import { Application, Assets, Ticker, Texture, Filter, Graphics, GlProgram } from "pixi.js";
-import { playerManager } from './playermanager.js';
-import { addGameMap } from './gamemap.js';
-import GameMap from './gamemap.js';
+import { Application, Assets, Container, Ticker, Texture, Filter, Graphics, GlProgram } from "pixi.js";
+import { playerManager } from './player/playermanager.js';
+import { addGameMap } from './map/gamemap.js';
+import GameMap from './map/gamemap.js';
 import * as settings from './settings.js';
-import * as mouse from './mouse-interaction.js';
-import * as input from './input.js';
-import * as gameCM from './connectionmanager.js';
+import * as mouse from './input/mouse-interaction.js';
+import * as input from './input/input.js';
+import * as gameCM from './gameserver/connectionmanager.js';
 import * as chatCM from './chat/chatconnectionmanager.js';
 import PongTable from './pong/pongtable.js';
-import Point from './point.js';
-import Player from './player.js';
+import Point from './utility/point.js';
+import Player from './player/player.js';
+import Invitation from "./ui/invitation.js";
 import { PongState, CameraMode, RoomType, MessageType } from './interfaces.js';
 import TournamentSubscription from "./pong/tournamentsubscription.js";
-import { gameSocket } from './connectionmanager.js'
+import { gameSocket } from './gameserver/connectionmanager.js'
 import { chatSocket } from './chat/chatconnectionmanager.js';
 import { fragmentShader, vertexShader } from "./shaders/shaders.js";
 
@@ -23,6 +24,7 @@ export let localPlayerPos: Point = new Point(0, 0);
 let isGameFocused = true;
 let screenShake = false;
 let cameraMode: CameraMode = CameraMode.Locked;
+export let uiContainer = new Container();
 
 async function preload() {
 
@@ -83,6 +85,12 @@ async function setup() {
 
   // Setup Map Zoom Callback
   mouse.setupMapZoom();
+
+  // Setting up UI container
+  uiContainer.position.set(0, 0);
+  uiContainer.zIndex = 100000;
+  uiContainer.label = "ui";
+  pixiApp.stage.addChild(uiContainer);
 
   console.log("Pixi app initialized:", pixiApp);
 }
@@ -258,7 +266,6 @@ function handleChatBubbles(time: Ticker): void {
 
 }
 
-
 function handleScreenshake(table: PongTable, side: 'left' | 'right', driver: number): void {
 
   if (table.collidesWithPaddle(side) && !screenShake) {
@@ -276,7 +283,7 @@ function handleScreenshake(table: PongTable, side: 'left' | 'right', driver: num
 
 }
 
-function playerHasMoved(prevPos: Vector2, playerPos: Vector2) : boolean {
+function playerHasMoved(prevPos: Vector2, playerPos: Vector2): boolean {
 
   return prevPos.x != playerPos.x || prevPos.y != playerPos.y;
 
@@ -285,13 +292,13 @@ function playerHasMoved(prevPos: Vector2, playerPos: Vector2) : boolean {
 function broadcastPositionUpdates(player: Player) {
 
   //Broadcast new position
-  const pos : Vector2 = player.getPosition();
-  const id : number = player.getId();
+  const pos: Vector2 = player.getPosition();
+  const id: number = player.getId();
 
   if (playerHasMoved(prevPos, pos)) {
 
-    const room : RoomType = gameMap.getMapRegion(pos);
-    const oldRoom : RoomType = player.getRegion();
+    const room: RoomType = gameMap.getMapRegion(pos);
+    const oldRoom: RoomType = player.getRegion();
     if (oldRoom != room) {
       // gameMap.setRegionOpacity(oldRoom, 0);
       // gameMap.setRegionOpacity(room, 1);
@@ -299,7 +306,7 @@ function broadcastPositionUpdates(player: Player) {
       gameMap.setRegionRenderable(room, true);
       console.log(`Player moved from ${oldRoom} to ${room}`);
       player.setRegion(room);
-      const transitionMessage : TransitionMessage = {type: MessageType.Transition, id, from: oldRoom, to: room};
+      const transitionMessage: TransitionMessage = { type: MessageType.Transition, id, from: oldRoom, to: room };
       chatSocket.send(JSON.stringify(transitionMessage));
     }
 
@@ -320,6 +327,23 @@ function isAtTable(id: number, table: PongTable) {
   return false;
 
 }
+
+function handleInvites(time: Ticker, invites: Invitation[]): void {
+
+  for (const invite of invites) {
+
+    if (!invite.dead()) {
+      invite.animate(time);
+    } else {
+      invite.destroy();
+      playerManager.removeInvite(invite);
+    }
+
+  }
+
+}
+
+
 
 
 export let gameMap: GameMap;
@@ -400,6 +424,7 @@ export let gameMap: GameMap;
       handlePongUI(pongTable, player);
       handleTournamentUI(tournamentTable, player);
       handleChatBubbles(time);
+      handleInvites(time, playerManager.getInvites());
 
       // Move around
       if (!pongTable.isPlayerReady(player.id) && !tournamentTable.isPlayerReady(player.id)) {
