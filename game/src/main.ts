@@ -16,6 +16,7 @@ import TournamentSubscription from "./pong/tournamentsubscription.js";
 import { gameSocket } from './gameserver/connectionmanager.js'
 import { chatSocket } from './chat/chatconnectionmanager.js';
 import { fragmentShader, vertexShader } from "./shaders/shaders.js";
+import { lerpNumber } from "./utility/lerp.js";
 
 // Globals
 const pixiApp: Application = new Application();
@@ -289,6 +290,29 @@ function playerHasMoved(prevPos: Vector2, playerPos: Vector2): boolean {
 
 }
 
+let transitionTimer = 0;
+let fade: boolean = false;
+let previousRoom: RoomType | null = null;
+let currentRoom: RoomType | null = null;
+
+
+function fadeRoom(ticker: Ticker) {
+
+  if (fade && previousRoom !== null && currentRoom !== null) {
+    transitionTimer += ticker.deltaTime * 0.05;
+    const alpha = lerpNumber(0, 1, transitionTimer);
+    gameMap.setRegionOpacity(currentRoom, alpha);
+    gameMap.setRegionOpacity(previousRoom, 1 - alpha);
+    if (alpha >= 1) {
+      fade = false;
+      transitionTimer = 0;
+      previousRoom = null;
+      currentRoom = null;
+    }
+  }
+
+}
+
 function broadcastPositionUpdates(player: Player) {
 
   //Broadcast new position
@@ -297,17 +321,25 @@ function broadcastPositionUpdates(player: Player) {
 
   if (playerHasMoved(prevPos, pos)) {
 
-    const room: RoomType = gameMap.getMapRegion(pos);
+    const newRoom: RoomType = gameMap.getMapRegion(pos);
     const oldRoom: RoomType = player.getRegion();
-    if (oldRoom != room) {
-      // gameMap.setRegionOpacity(oldRoom, 0);
-      // gameMap.setRegionOpacity(room, 1);
+
+    if (oldRoom != newRoom) {
+      currentRoom = newRoom;
+      previousRoom = oldRoom;
       gameMap.setRegionRenderable(oldRoom, false);
-      gameMap.setRegionRenderable(room, true);
-      console.log(`Player moved from ${oldRoom} to ${room}`);
-      player.setRegion(room);
-      const transitionMessage: TransitionMessage = { type: MessageType.Transition, id, from: oldRoom, to: room };
-      chatSocket.send(JSON.stringify(transitionMessage));
+      gameMap.setRegionRenderable(newRoom, true);
+      gameMap.setRegionOpacity(oldRoom, 1);
+      gameMap.setRegionOpacity(newRoom, 0);
+      gameMap.removeFromRoomContainer(oldRoom, player.getContext());
+      gameMap.addToRoomContainer(newRoom, player.getContext());
+      fade = true;
+      console.log(`Player moved from ${oldRoom} to ${newRoom}`);
+      player.setRegion(newRoom);
+      const transitionMessage: TransitionMessage = { type: MessageType.Transition, id, from: oldRoom, to: newRoom };
+      if (chatSocket.readyState === 1 || chatSocket.readyState === WebSocket.OPEN) {
+        chatSocket.send(JSON.stringify(transitionMessage));
+      }
     }
 
     gameCM.sendToServer(gameSocket, {
@@ -317,6 +349,7 @@ function broadcastPositionUpdates(player: Player) {
     });
 
   }
+
 
 }
 
@@ -390,6 +423,7 @@ export let gameMap: GameMap;
       gameMap.addToRoomContainer(RoomType.Hall, tournamentBox.getContext());
       const room = gameMap.getMapRegion(p.getPosition());
       gameMap.setRegionRenderable(room, true);
+      gameMap.setRegionOpacity(room, 1);
     }
   }
 
@@ -420,6 +454,7 @@ export let gameMap: GameMap;
 
     if (player) {
 
+      fadeRoom(time);
       handleCamera(player, gameMap);
       handlePongUI(pongTable, player);
       handleTournamentUI(tournamentTable, player);

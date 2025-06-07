@@ -1,4 +1,4 @@
-import { Texture, Container, Graphics, Sprite } from 'pixi.js';
+import { Texture, Sprite, Container, Graphics } from 'pixi.js';
 import Ball from './ball.js';
 import Point from '../utility/point.js';
 import Paddle from './paddle.js';
@@ -25,6 +25,7 @@ export default class PongTable {
   private worldPosition: Vector2;
   private tableGrid: number[][] = []; //4x2
 
+  private table: Graphics = new Graphics();
   private ball: Ball;
   private paddles: Paddles = { left: new Paddle({ x: 0, y: 0 }, 0.5, 0.05), right: new Paddle({ x: 4, y: 0 }, 0.5, 0.05) };
   private players: PongPlayers = { left: null, right: null };
@@ -65,7 +66,13 @@ export default class PongTable {
     this.net.x -= 16;
     this.net.y += 32;
 
+    //Table 
+    this.drawIsometricTile(this.table, { x: 0, y: 0 }, 32 * 2, 32 * 2, true);
+    this.drawIsometricTile(this.table, { x: 32 * 2, y: 16 * 2 }, 32 * 2, 32 * 2, false);
+
     // Add containers/graphics to main container
+    this.table.y += 8
+    this.container.addChild(this.table);
     this.countdownTimer.container.renderable = false;
     this.container.addChild(this.net);
     this.container.addChild(this.ball.getContext());
@@ -75,9 +82,21 @@ export default class PongTable {
     this.container.addChild(this.paddles['left'].getGraphics());
     this.container.addChild(this.paddles['right'].getGraphics());
 
-    this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
+    this.container.y -= (this.tableGrid[0][0]) * settings.TILESIZE / 2; // Compensate height for elevated tiles
     // this.container.zIndex = 10;
 
+  }
+
+  drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
+    context.poly([point.x, point.y, point.x + w, point.y + h / 2, point.x, point.y + h, point.x - w, point.y + h / 2, point.x, point.y]);
+    if (outline) {
+      context.fill(settings.CGA_PINK_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
+    }
+    else {
+      context.fill(settings.CGA_CYAN_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
+    }
   }
 
   transitionTo(newState: TournamentState) {

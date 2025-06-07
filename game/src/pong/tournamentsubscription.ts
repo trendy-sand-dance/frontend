@@ -34,7 +34,6 @@ export default class TournamentSubscription {
     });
 
     let p = new Point(x, y);
-    console.log(this.server.url);
 
     this.subscriptionBox.x = p.asIsometric.x - 32;
     this.subscriptionBox.y = p.asIsometric.y - 32 * 2;

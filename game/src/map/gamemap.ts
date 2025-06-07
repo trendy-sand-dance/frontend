@@ -96,6 +96,9 @@ export default class GameMap {
         const room = this.getMapRegion(point.asCartesian);
         const mapRegion = this.mapRegions.get(room);
 
+        if (tileMap[row][col] === 1.01 && room === RoomType.Hall) {
+          continue;
+        }
 
         if (tileMap[row][col] == -1) {
           const texture = Texture.from('cardboard_blackhole');
@@ -187,7 +190,11 @@ export default class GameMap {
   }
 
   addPlayer(player: Player) {
-    this.wallsContainer.addChild(player.getContext());
+
+    const room = this.getMapRegion(player.getPosition());
+    this.mapRegions.get(room)?.addToContainer(player.getContext());
+    // this.wallsContainer.addChild(player.getContext());
+
   }
 
   getHeightOffset(col: number, row: number, tileMap: number[][]) {
@@ -205,6 +212,16 @@ export default class GameMap {
 
   addToContainer(context: Sprite) {
     this.container.addChild(context);
+  }
+
+  removeFromRoomContainer(room: RoomType, context: Sprite | Container): void {
+
+    const mapRegion = this.mapRegions.get(room);
+    if (mapRegion) {
+      const container = mapRegion.getContainer();
+      container.removeChild(context);
+    }
+
   }
 
   addToRoomContainer(room: RoomType, context: Sprite | Container): void {

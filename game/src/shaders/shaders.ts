@@ -175,7 +175,7 @@ void main(void) {
 
       // FADE
       float d = getDistanceFromCenter(vTextureCoord);
-      fg.rgb += d * 0.25;
+      fg.rgb -= d * 0.3;
       gl_FragColor = fg;
 }
 `;
