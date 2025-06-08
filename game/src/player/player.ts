@@ -140,6 +140,7 @@ export default class Player {
     setTimeout(() => {
       if (snapshot.x === this.getPosition().x && snapshot.y === this.getPosition().y) {
         this.animation.setAnimation('idle');
+        console.log("player zIndex: ", this.container.zIndex);
       }
     }, 50);
 

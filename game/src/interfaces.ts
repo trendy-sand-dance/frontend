@@ -8,6 +8,7 @@ declare global {
     __INITIAL_STATE__: UserData;
     __GAMESERVER_URL__: string;
     __USER_ID__: number;
+    __DEV__: boolean;
     htmx: typeof import('htmx.org');
   }
 

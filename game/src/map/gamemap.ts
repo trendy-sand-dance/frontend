@@ -10,7 +10,6 @@ export default class GameMap {
 
   public container: Container;
 
-  private wallsContainer: Container;
 
   private graphicsContext: Graphics;
   private rows: number;
@@ -20,12 +19,10 @@ export default class GameMap {
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
-    this.wallsContainer = new Container({ isRenderGroup: true });
-    this.wallsContainer.sortableChildren = true;
     this.container = new Container({ isRenderGroup: true });
+    this.container.sortableChildren = true;
 
     this.graphicsContext = new Graphics();
-    this.container.addChild(this.wallsContainer);
     this.container.addChild(this.graphicsContext);
 
     this.rows = rows;
@@ -120,7 +117,8 @@ export default class GameMap {
         point.asIsometric.y -= currentHeightOffset;
 
         // Draw walls
-        // TODO Turn the following scoped bits into functions
+        // TODO: Turn the following scoped bits into functions
+        //
         //South Face
         {
           const p1 = new Point(col, row + 1);
@@ -164,7 +162,7 @@ export default class GameMap {
       if (room !== RoomType.Hall) {
         container.renderable = false;
       }
-      this.wallsContainer.addChild(container);
+      this.container.addChild(container);
     }
   }
 
@@ -193,7 +191,6 @@ export default class GameMap {
 
     const room = this.getMapRegion(player.getPosition());
     this.mapRegions.get(room)?.addToContainer(player.getContext());
-    // this.wallsContainer.addChild(player.getContext());
 
   }
 
@@ -208,6 +205,12 @@ export default class GameMap {
 
   getContainer() {
     return this.container;
+  }
+
+  getRoomContainer(room: RoomType) {
+
+    return this.mapRegions.get(room)?.getContainer();
+
   }
 
   addToContainer(context: Sprite) {

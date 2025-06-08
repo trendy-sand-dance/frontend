@@ -334,19 +334,23 @@ function broadcastPositionUpdates(player: Player) {
       gameMap.removeFromRoomContainer(oldRoom, player.getContext());
       gameMap.addToRoomContainer(newRoom, player.getContext());
       fade = true;
-      console.log(`Player moved from ${oldRoom} to ${newRoom}`);
       player.setRegion(newRoom);
-      const transitionMessage: TransitionMessage = { type: MessageType.Transition, id, from: oldRoom, to: newRoom };
-      if (chatSocket.readyState === 1 || chatSocket.readyState === WebSocket.OPEN) {
-        chatSocket.send(JSON.stringify(transitionMessage));
+
+      if (!window.__DEV__) {
+        const transitionMessage: TransitionMessage = { type: MessageType.Transition, id, from: oldRoom, to: newRoom };
+        if (chatSocket.readyState === 1 || chatSocket.readyState === WebSocket.OPEN) {
+          chatSocket.send(JSON.stringify(transitionMessage));
+        }
       }
     }
 
-    gameCM.sendToServer(gameSocket, {
-      type: "player_move",
-      id: player.getId(),
-      position: player.getPosition(),
-    });
+    if (!window.__DEV__) {
+      gameCM.sendToServer(gameSocket, {
+        type: "player_move",
+        id: player.getId(),
+        position: player.getPosition(),
+      });
+    }
 
   }
 
@@ -410,7 +414,7 @@ export let gameMap: GameMap;
   gameMap.container.cullableChildren = true;
 
   //Network business
-  if (window.__USER_ID__) {
+  if (window.__USER_ID__ && !window.__DEV__) {
     await gameCM.runConnectionManager(gameMap);
     chatCM.runChatConnectionManager(gameMap);
 
@@ -426,12 +430,27 @@ export let gameMap: GameMap;
       gameMap.setRegionOpacity(room, 1);
     }
   }
+  else {
+    gameCM.initializeLocalPlayer({
+      id: 420,
+      username: "dev",
+      avatar: "none",
+      status: true,
+      wins: 0,
+      losses: 0,
+      player: {
+        id: 420,
+        userId: 420,
+        x: 37,
+        y: 18,
+      }
+    }, gameMap)
+  }
 
 
   // Testing Pong table
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
   const pongTableContainer = pongTable.getContainer();
-  pongTableContainer.zIndex = 10000;
   gameMap.addToRoomContainer(RoomType.Hall, pongTableContainer);
   playerManager.initPongTable(pongTable);
 

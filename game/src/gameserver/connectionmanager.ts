@@ -55,7 +55,8 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap) {
 
 }
 
-export let gameSocket: WebSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
+export let gameSocket: WebSocket;
+export let localUser: User;
 
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap) {
   for (const [id, player] of players) {
@@ -77,9 +78,10 @@ function isLocalPlayer(id: number): boolean {
   return id == window.__USER_ID__;
 }
 
-export let localUser: User;
 
 export async function runConnectionManager(gameMap: GameMap) {
+
+  gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.

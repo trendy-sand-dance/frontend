@@ -9,6 +9,8 @@ import * as settings from '../settings.js';
 import { PongState, TournamentState } from '../interfaces.js';
 import { gameSocket } from '../gameserver/connectionmanager.ts';
 import TextBox from '../ui/textbox.js';
+import { gameMap } from '../main.ts';
+import { RoomType } from '../interfaces.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
   const slicedRows = array.slice(fromY, toY);
@@ -25,7 +27,7 @@ export default class PongTable {
   private worldPosition: Vector2;
   private tableGrid: number[][] = []; //4x2
 
-  private table: Graphics = new Graphics();
+  private table: Graphics[] = [];
   private ball: Ball;
   private paddles: Paddles = { left: new Paddle({ x: 0, y: 0 }, 0.5, 0.05), right: new Paddle({ x: 4, y: 0 }, 0.5, 0.05) };
   private players: PongPlayers = { left: null, right: null };
@@ -51,12 +53,14 @@ export default class PongTable {
     let x = Math.round(position.x);
     let y = Math.round(position.y);
 
-    this.tableGrid = slice2DArray(parentMap, x, x + 2, y, y + 2);
+    this.tableGrid = slice2DArray(parentMap, x, x + 4, y, y + 2);
 
     this.ball = new Ball({ x: 2, y: 1 });
 
     // Give PongTable position in world
     let point = new Point(this.worldPosition.x, this.worldPosition.y);
+    this.container.sortableChildren = true;
+    this.container.zIndex = point.asIsometric.y;
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
 
@@ -67,12 +71,26 @@ export default class PongTable {
     this.net.y += 32;
 
     //Table 
-    this.drawIsometricTile(this.table, { x: 0, y: 0 }, 32 * 2, 32 * 2, true);
-    this.drawIsometricTile(this.table, { x: 32 * 2, y: 16 * 2 }, 32 * 2, 32 * 2, false);
+    console.log(`tableGrid len: ${this.tableGrid[0].length}, ${this.tableGrid.length}`)
+    for (let i = 0; i < this.tableGrid.length; i++) {
+      for (let j = 0; j < this.tableGrid[0].length; j++) {
+
+        const context: Graphics = new Graphics();
+        let tilePosition: Point = new Point(j, i);
+        this.drawIsometricTile(context, tilePosition.asIsometric, settings.TILESIZE, settings.TILESIZE, true);
+        const zIndex = new Point(this.worldPosition.x + j, this.worldPosition.y + i).asIsometric.y;
+        context.zIndex = zIndex + 8;
+        console.log(`Tile ${x + j}, ${y + i} zIndex:`, context.zIndex);
+        context.y += 8
+        this.table.push(context);
+        this.container.addChild(context);
+      }
+    }
+    // this.drawIsometricTile(this.table, { x: 0, y: 0 }, 32 * 2, 32 * 2, true);
+    // this.drawIsometricTile(this.table, { x: 32 * 2, y: 16 * 2 }, 32 * 2, 32 * 2, false);
 
     // Add containers/graphics to main container
-    this.table.y += 8
-    this.container.addChild(this.table);
+    // this.container.addChild(this.table);
     this.countdownTimer.container.renderable = false;
     this.container.addChild(this.net);
     this.container.addChild(this.ball.getContext());
@@ -83,7 +101,6 @@ export default class PongTable {
     this.container.addChild(this.paddles['right'].getGraphics());
 
     this.container.y -= (this.tableGrid[0][0]) * settings.TILESIZE / 2; // Compensate height for elevated tiles
-    // this.container.zIndex = 10;
 
   }
 
