@@ -88,12 +88,29 @@ export default class GameMap {
 
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
+        // Init point and graphics
         const context = new Graphics();
         let point = new Point(col, row);
+
+        // Get room
         const room = this.getMapRegion(point.asCartesian);
         const mapRegion = this.mapRegions.get(room);
 
+        // Raise Y 
+        const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
+        point.asIsometric.y -= currentHeightOffset;
+
+        // Draw pong table tiles
         if (tileMap[row][col] === 1.01 && room === RoomType.Hall) {
+          context.zIndex = point.asIsometric.y ;
+          this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, true);
+          mapRegion?.addToContainer(context);
+          continue;
+        }
+        if (tileMap[row][col] === 1.02 && room === RoomType.Hall) {
+          context.zIndex = point.asIsometric.y ;
+          this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
+          mapRegion?.addToContainer(context);
           continue;
         }
 
@@ -112,9 +129,6 @@ export default class GameMap {
           tileMap[row][col] = 0;
         }
 
-        // Raise Y 
-        const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
-        point.asIsometric.y -= currentHeightOffset;
 
         // Draw walls
         // TODO: Turn the following scoped bits into functions

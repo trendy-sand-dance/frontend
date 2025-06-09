@@ -424,7 +424,7 @@ export let gameMap: GameMap;
       let tournamentBox = new TournamentSubscription(28.5, 1, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('tv_tournament'));
       const context = tournamentBox.getContext();
       context.zIndex = 10000;
-      gameMap.addToRoomContainer(RoomType.Hall, tournamentBox.getContext());
+      gameMap.addToRoomContainer(RoomType.Hall, context);
       const room = gameMap.getMapRegion(p.getPosition());
       gameMap.setRegionRenderable(room, true);
       gameMap.setRegionOpacity(room, 1);
@@ -451,6 +451,7 @@ export let gameMap: GameMap;
   // Testing Pong table
   let pongTable = new PongTable({ x: 37, y: 15 }, settings.TILEMAP, false);
   const pongTableContainer = pongTable.getContainer();
+  pongTableContainer.zIndex = 10000;
   gameMap.addToRoomContainer(RoomType.Hall, pongTableContainer);
   playerManager.initPongTable(pongTable);
 

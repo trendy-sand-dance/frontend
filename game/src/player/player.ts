@@ -125,12 +125,6 @@ export default class Player {
 
 
     this.position.update(position);
-    // this.context.x = this.position.asIsometric.x;
-    // this.context.y = this.position.asIsometric.y;
-
-    // this.animation.x = this.position.asIsometric.x;
-    // this.animation.y = this.position.asIsometric.y;
-    //
     this.container.zIndex = this.position.asIsometric.y + 7.5;
 
     this.container.x = this.position.asIsometric.x;
@@ -140,7 +134,6 @@ export default class Player {
     setTimeout(() => {
       if (snapshot.x === this.getPosition().x && snapshot.y === this.getPosition().y) {
         this.animation.setAnimation('idle');
-        console.log("player zIndex: ", this.container.zIndex);
       }
     }, 50);
 
