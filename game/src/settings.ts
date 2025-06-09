@@ -12,6 +12,12 @@ export const CGA_BLACK = '#101010';
 export const CGA_CYAN_DARK = '#023C3C';
 export const CGA_WHITE = '#ffffff';
 
+
+export const CITRUS_PURPLE = '#6e38d6';
+export const CITRUS_YELLOW = '#b9ad09';
+export const CITRUS_GREEN = '#00b103';
+export const CITRUS_BLUE = '#0832e9';
+
 // Tile settings
 export const TILESIZE = 32;
 export const PLAYERSIZE = 5;

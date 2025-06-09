@@ -268,6 +268,8 @@ function handleChatBubbles(time: Ticker): void {
 }
 
 function handleScreenshake(table: PongTable, side: 'left' | 'right', driver: number): void {
+  if (!table.isInProgress())
+    return;
 
   if (table.collidesWithPaddle(side) && !screenShake) {
 
