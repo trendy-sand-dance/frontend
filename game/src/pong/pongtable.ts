@@ -1,4 +1,4 @@
-import { Texture, Container, Graphics, Sprite } from 'pixi.js';
+import { Texture, Sprite, Container, Graphics } from 'pixi.js';
 import Ball from './ball.js';
 import Point from '../utility/point.js';
 import Paddle from './paddle.js';
@@ -50,12 +50,16 @@ export default class PongTable {
     let x = Math.round(position.x);
     let y = Math.round(position.y);
 
-    this.tableGrid = slice2DArray(parentMap, x, x + 2, y, y + 2);
+    this.tableGrid = slice2DArray(parentMap, x, x + 4, y, y + 2);
 
     this.ball = new Ball({ x: 2, y: 1 });
 
     // Give PongTable position in world
     let point = new Point(this.worldPosition.x, this.worldPosition.y);
+    // this.container.sortableChildren = true;
+    const heightOffset = this.getHeightOffset(0, 0, this.tableGrid, settings.TILESIZE);
+    this.container.y -= heightOffset * 2;
+    this.container.zIndex = point.asIsometric.y + heightOffset;
     this.container.x += point.asIsometric.x;
     this.container.y += point.asIsometric.y;
 
@@ -65,7 +69,31 @@ export default class PongTable {
     this.net.x -= 16;
     this.net.y += 32;
 
-    // Add containers/graphics to main container
+    //Table 
+    // if (!this.isTournament)
+    //   console.log(`tableGrid len: ${this.tableGrid[0].length}, ${this.tableGrid.length}`)
+
+    // for (let i = 0; i < this.tableGrid.length; i++) {
+    //   for (let j = 0; j < this.tableGrid[0].length; j++) {
+
+    //     const context: Graphics = new Graphics();
+    //     context.sortableChildren = true;
+    //     let tilePosition: Point = new Point(j, i);
+    //     if (j >= 2) {
+    //       this.drawIsometricTile(context, tilePosition.asIsometric, settings.TILESIZE, settings.TILESIZE, false);
+    //     }
+    //     else {
+    //       this.drawIsometricTile(context, tilePosition.asIsometric, settings.TILESIZE, settings.TILESIZE, true);
+    //     }
+    //     const zIndex = new Point(this.worldPosition.x + j, this.worldPosition.y + i).asIsometric.y;
+    //     context.zIndex = zIndex;
+    //     console.log(`Tile ${x + j}, ${y + i} zIndex:`, context.zIndex);
+    //     // context.y += 8;
+    //     this.container.addChild(context);
+    //   }
+    // }
+    // this.container.visible = false;
+
     this.countdownTimer.container.renderable = false;
     this.container.addChild(this.net);
     this.container.addChild(this.ball.getContext());
@@ -75,9 +103,23 @@ export default class PongTable {
     this.container.addChild(this.paddles['left'].getGraphics());
     this.container.addChild(this.paddles['right'].getGraphics());
 
-    this.container.y -= this.tableGrid[0][0] * settings.TILESIZE / 2; // Compensate height for elevated tiles
-    // this.container.zIndex = 10;
 
+  }
+
+  getHeightOffset(col: number, row: number, tileMap: number[][], tileSize: number) {
+    return tileMap[row][col] * tileSize / 4;
+  }
+
+  drawIsometricTile(context: Graphics, point: Vector2, w: number, h: number, outline: boolean) {
+    context.poly([point.x, point.y, point.x + w, point.y + h / 2, point.x, point.y + h, point.x - w, point.y + h / 2, point.x, point.y]);
+    if (outline) {
+      context.fill(settings.CGA_PINK_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
+    }
+    else {
+      context.fill(settings.CGA_CYAN_DARK);
+      context.stroke({ color: settings.CGA_BLACK });
+    }
   }
 
   transitionTo(newState: TournamentState) {
@@ -228,6 +270,7 @@ export default class PongTable {
         else
           this.countdownTimer.setText(`${this.players['right'].username} has won with ${max} - ${min}!`);
       }
+      this.countdownTimer.update();
 
       setTimeout(() => {
         this.countdownTimer.container.renderable = false;

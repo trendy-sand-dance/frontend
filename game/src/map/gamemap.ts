@@ -10,7 +10,6 @@ export default class GameMap {
 
   public container: Container;
 
-  private wallsContainer: Container;
 
   private graphicsContext: Graphics;
   private rows: number;
@@ -20,12 +19,10 @@ export default class GameMap {
 
   private constructor(rows: number, cols: number, tileSize: number) {
 
-    this.wallsContainer = new Container({ isRenderGroup: true });
-    this.wallsContainer.sortableChildren = true;
     this.container = new Container({ isRenderGroup: true });
+    this.container.sortableChildren = true;
 
     this.graphicsContext = new Graphics();
-    this.container.addChild(this.wallsContainer);
     this.container.addChild(this.graphicsContext);
 
     this.rows = rows;
@@ -91,11 +88,31 @@ export default class GameMap {
 
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
+        // Init point and graphics
         const context = new Graphics();
         let point = new Point(col, row);
+
+        // Get room
         const room = this.getMapRegion(point.asCartesian);
         const mapRegion = this.mapRegions.get(room);
 
+        // Raise Y 
+        const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
+        point.asIsometric.y -= currentHeightOffset;
+
+        // Draw pong table tiles
+        if (tileMap[row][col] === 1.01 && room === RoomType.Hall) {
+          context.zIndex = point.asIsometric.y ;
+          this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, true);
+          mapRegion?.addToContainer(context);
+          continue;
+        }
+        if (tileMap[row][col] === 1.02 && room === RoomType.Hall) {
+          context.zIndex = point.asIsometric.y ;
+          this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
+          mapRegion?.addToContainer(context);
+          continue;
+        }
 
         if (tileMap[row][col] == -1) {
           const texture = Texture.from('cardboard_blackhole');
@@ -112,12 +129,10 @@ export default class GameMap {
           tileMap[row][col] = 0;
         }
 
-        // Raise Y 
-        const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
-        point.asIsometric.y -= currentHeightOffset;
 
         // Draw walls
-        // TODO Turn the following scoped bits into functions
+        // TODO: Turn the following scoped bits into functions
+        //
         //South Face
         {
           const p1 = new Point(col, row + 1);
@@ -161,7 +176,7 @@ export default class GameMap {
       if (room !== RoomType.Hall) {
         container.renderable = false;
       }
-      this.wallsContainer.addChild(container);
+      this.container.addChild(container);
     }
   }
 
@@ -187,7 +202,10 @@ export default class GameMap {
   }
 
   addPlayer(player: Player) {
-    this.wallsContainer.addChild(player.getContext());
+
+    const room = this.getMapRegion(player.getPosition());
+    this.mapRegions.get(room)?.addToContainer(player.getContext());
+
   }
 
   getHeightOffset(col: number, row: number, tileMap: number[][]) {
@@ -203,8 +221,24 @@ export default class GameMap {
     return this.container;
   }
 
+  getRoomContainer(room: RoomType) {
+
+    return this.mapRegions.get(room)?.getContainer();
+
+  }
+
   addToContainer(context: Sprite) {
     this.container.addChild(context);
+  }
+
+  removeFromRoomContainer(room: RoomType, context: Sprite | Container): void {
+
+    const mapRegion = this.mapRegions.get(room);
+    if (mapRegion) {
+      const container = mapRegion.getContainer();
+      container.removeChild(context);
+    }
+
   }
 
   addToRoomContainer(room: RoomType, context: Sprite | Container): void {

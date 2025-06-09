@@ -46,29 +46,31 @@ float getDistanceFromCenter(vec2 uv) {
     return distance;
 }
 
-vec2 applyCurvature(vec2 uv) {
-    // Center the coordinates
-    vec2 centered = uv - 0.5;
-
-    // Apply barrel distortion
-    float distortion = 0.1; // Adjust strength
-    float r2 = dot(centered, centered);
-    vec2 curved = centered * (1.0 + distortion * r2);
-
-    // Return to 0-1 range
-    return curved + 0.5;
-}
-// TRIPPY
 // vec2 applyCurvature(vec2 uv) {
+//     // Center the coordinates
+//     vec2 centered = uv - 0.5;
 //
-//     vec2 centered = (uv - 0.5) * 2.0; // -1 to 1 range
+//     // Apply barrel distortion
+//     float distortion = 0.1; // Adjust strength
+//     float r2 = dot(centered, centered);
+//     vec2 curved = centered * (1.0 + distortion * r2);
 //
-//     float curvature = 0.2;
-//     float r = length(centered);
-//     float distortion = 1.0 + curvature * r * r;
-//
-//     return (centered * distortion) * 0.5 + 0.5;
+//     // Return to 0-1 range
+//     return curved + 0.5;
 // }
+//
+// TRIPPY
+//
+vec2 applyCurvature(vec2 uv) {
+
+    vec2 centered = (uv - 0.5) * 2.0; // -1 to 1 range
+
+    float curvature = 0.1;
+    float r = length(centered);
+    float distortion = 1.0 + curvature * r * r;
+
+    return (centered * distortion) * 0.45 + 0.50;
+}
 
 // vec2 applyCurvature(vec2 uv) {
 //     vec2 centered = uv - 0.5;
@@ -150,14 +152,14 @@ float dither4x4(vec2 pos) {
 void main(void) {
 
     // CURVATURE
-    // vec2 curvedUV = applyCurvature(vTextureCoord);
+    vec2 curvedUV = applyCurvature(vTextureCoord);
 
-    // if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
-    //     gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
-    //     return;
-    // } 
-    // vec4 fg = texture2D(uTexture, curvedUV);
-    vec4 fg = texture2D(uTexture, vTextureCoord);
+    if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
+        return;
+    } 
+    vec4 fg = texture2D(uTexture, curvedUV);
+    // vec4 fg = texture2D(uTexture, vTextureCoord);
 
     // NOISE
     // float noise = random(vTextureCoord.xy) * 1.25;
@@ -175,7 +177,7 @@ void main(void) {
 
       // FADE
       float d = getDistanceFromCenter(vTextureCoord);
-      fg.rgb += d * 0.25;
+      fg.rgb -= d * 0.3;
       gl_FragColor = fg;
 }
 `;

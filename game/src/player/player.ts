@@ -1,5 +1,4 @@
 import { Assets, Container, Graphics, Texture, AnimatedSprite } from "pixi.js";
-import * as settings from '../settings.js';
 import Point from '../utility/point.js';
 import { RoomType } from "../interfaces.js";
 
@@ -76,14 +75,7 @@ export default class Player {
     const spritesheet = Assets.get('player_spritesheet')
     this.animation = createDirectionalAnimatedSprite(spritesheet.textures, spritesheet.data.meta.frameTags);
     this.animation.anchor.set(0.5);
-    // this.animation.x = this.position.asIsometric.x;
-    // this.animation.y = this.position.asIsometric.y;
-
-    // this.context = this.animation;
-    // this.context.anchor.set(0.5);
-    // this.context.x = this.position.asIsometric.x;
-    // this.context.y = this.position.asIsometric.y;
-    this.shadow = new Graphics().circle(0, this.animation.height * 2, 10).fill(settings.CGA_BLACK);
+    this.shadow = new Graphics().circle(0, this.animation.height * 2, 10).fill('#000000');
     this.shadow.scale.y = 0.25;
     this.shadow.alpha = 0.25;
     this.shadow.zIndex = 5000;
@@ -125,12 +117,6 @@ export default class Player {
 
 
     this.position.update(position);
-    // this.context.x = this.position.asIsometric.x;
-    // this.context.y = this.position.asIsometric.y;
-
-    // this.animation.x = this.position.asIsometric.x;
-    // this.animation.y = this.position.asIsometric.y;
-    //
     this.container.zIndex = this.position.asIsometric.y + 7.5;
 
     this.container.x = this.position.asIsometric.x;

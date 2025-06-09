@@ -1,5 +1,6 @@
 import { playerManager } from '../player/playermanager.js';
 import GameMap from '../map/gamemap.js';
+import { RoomType } from '../interfaces.js';
 import { uiContainer } from '../main.js';
 
 
@@ -54,7 +55,8 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap) {
 
 }
 
-export let gameSocket: WebSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
+export let gameSocket: WebSocket;
+export let localUser: User;
 
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap) {
   for (const [id, player] of players) {
@@ -76,9 +78,10 @@ function isLocalPlayer(id: number): boolean {
   return id == window.__USER_ID__;
 }
 
-export let localUser: User;
 
 export async function runConnectionManager(gameMap: GameMap) {
+
+  gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
@@ -110,9 +113,9 @@ export async function runConnectionManager(gameMap: GameMap) {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
         const pongPlayer = data.left as PongPlayer || data.right as PongPlayer;
-        console.log("pongPlayer: ", pongPlayer);
+        // console.log("pongPlayer: ", pongPlayer);
         const player = playerManager.getPlayer(pongPlayer.id);
-        console.log("player: ", player);
+        // console.log("player: ", player);
         if (pongPlayer && player) {
           const side = pongPlayer.side as 'left' | 'right';
           pongTable.setPlayerReady(player, side);
@@ -128,7 +131,6 @@ export async function runConnectionManager(gameMap: GameMap) {
       const mapContainer = gameMap.getContainer();
       const player = playerManager.getPlayer(data.id);
       if (player) {
-        console.log("OK?");
         player.destroy();
         mapContainer.removeChild(player.getContext());
       }
@@ -139,7 +141,16 @@ export async function runConnectionManager(gameMap: GameMap) {
     // We update the player position
     if (data.type == "player_move" && !isLocalPlayer(data.id)) {
       const player = playerManager.getPlayer(data.id);
-      player?.updatePosition(data.position);
+      if (player) {
+        const oldRoom: RoomType = gameMap.getMapRegion(player.getPosition());
+        const newRoom: RoomType = gameMap.getMapRegion(data.position);
+        if (oldRoom != newRoom) {
+          gameMap.removeFromRoomContainer(oldRoom, player.getContext());
+          gameMap.addToRoomContainer(newRoom, player.getContext());
+        }
+        player.updatePosition(data.position);
+      }
+
     }
 
 
