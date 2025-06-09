@@ -2,6 +2,9 @@ import { Container} from 'pixi.js';
 import PlayerManager from "../playermanager.js";
 import ChatBubble from '../chat/chatbubble.js';
 import { MessageType } from "../interfaces";
+import { DATABASE_URL } from '../../../server/config';
+import Player from '../player.js';
+
 
 export default class Chat {
 
@@ -33,12 +36,47 @@ export default class Chat {
   private getTextInput() : string | undefined{
 
     if (this.textInput) {
-      return this.textInput.value;
+		return this.textInput.value;
     }
-
+	
     return undefined;
+	
+}
 
+private async sendIfWhisper(message : string, player : Player)
+{
+	if (message.charAt(0) != '@' || message.length < 2)
+		return false;
+	let	nameEnd : number = message.indexOf(" ");
+	if (nameEnd === -1)
+		return false; 
+	const targetName : string = message.slice(1, nameEnd);
+	const response = await fetch(`${DATABASE_URL}/game/players/${targetName}`);
+	if (!response.ok)
+	{
+		//make it give a specific "user not found" feedback to user in future
+		console.log("Can't find user: ", targetName);
+		return false;
+	}
+	const msgContent : string = message.slice(nameEnd);
+	const targetPlayer = await response.json() as Player;
+
+
+	const whisper : ChatMessage = 
+					{	type: MessageType.PersonalChat,
+						fromId: player.getId(),
+						toId: targetPlayer.id,
+						message: msgContent,
+						timestamp: new Date().toLocaleString()
+					};
+
+	this.socket!.send(JSON.stringify(whisper)); //! cause socket existence gets checked in parent func, should i keep check in case of dc?
+	this.chatBubbles.push(new ChatBubble(player, "pst pst", 10));
+	
+	console.log("%cwhisper send!", "color: purple");
   }
+
+
 
   private handleTextInput(playerManager : PlayerManager, mapContainer : Container) : void {
 
@@ -48,7 +86,7 @@ export default class Chat {
 
         const player = playerManager.getLocalPlayer();
 
-        if (player && this.socket) {
+        if (player && this.socket && !this.sendIfWhisper(chatMessage, player)) {
           // TODO: Write function to determine which room the player is and whether it's a PM or a RM
           const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion()};
           this.socket.send(JSON.stringify(roomMessage));
@@ -60,9 +98,10 @@ export default class Chat {
 
       }
 
-      this.textInput.value = "";
+	this.textInput.value = "";
 
   }
+
 
   public bind(chatServer : WebSocket, playerManager : PlayerManager, mapContainer : Container) : void {
 
