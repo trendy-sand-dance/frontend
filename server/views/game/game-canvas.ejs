@@ -1,7 +1,31 @@
 <!DOCTYPE html>
 <div id="pixi-container" class="bg-black border border-[#FF55FE] text-white w-full h-full">
-  <script type="module" src="<%= file %>">
-  </script>
+  <!-- <script type="module" src="<%= file %>"> -->
+  <!-- </script> -->
+<script>
+ (async function() { 
+   if (window.gameModule) { 
+     // Clean up existing instance 
+     if (window.gameModule.destroy) { 
+       window.gameModule.destroy(); 
+     } 
+   } 
+
+   try { 
+     // Dynamic import - this will re-execute the module 
+     const module = await import('/<%= file %>?t=' + Date.now()); 
+     window.gameModule = module.default || module; 
+
+     // Initialize if it has an init method 
+     if (window.gameModule.init) { 
+       window.gameModule.init(); 
+     } 
+   } catch (error) { 
+     console.error('Failed to load game module:', error); 
+   } 
+ })(); 
+
+   </script> 
 </div>
 
 <!-- Pixi Player info card on click -->
@@ -64,20 +88,26 @@
 
 <script> 
 
-// Player card
-const playerInfoBox = document.getElementById("pixi-player-info");
-const closeBtn = document.getElementById("closeBtnPlayerInfo");
+if (!window.playerInfoScriptInitialized) {
 
-closeBtn.addEventListener("click", () => { 
-  playerInfoBox.style.display = "none";
-});
+  window.playerInfoScriptInitialized = true;
 
-// Tournament info
-const tournamentInfoBox = document.getElementById("pixi-tournament-info");
-const closeBtnTournament = document.getElementById("closeBtnTournamentInfo");
+  // Player card
+  const playerInfoBox = document.getElementById("pixi-player-info");
+  const closeBtn = document.getElementById("closeBtnPlayerInfo");
 
-closeBtnTournament.addEventListener("click", () => { 
-  tournamentInfoBox.style.display = "none";
-});
+  closeBtn.addEventListener("click", () => { 
+    playerInfoBox.style.display = "none";
+  });
+
+  // Tournament info
+  const tournamentInfoBox = document.getElementById("pixi-tournament-info");
+  const closeBtnTournament = document.getElementById("closeBtnTournamentInfo");
+
+  closeBtnTournament.addEventListener("click", () => { 
+    tournamentInfoBox.style.display = "none";
+  });
+
+}
 
 </script>

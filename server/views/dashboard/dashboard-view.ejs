@@ -17,17 +17,29 @@
 <body class="bg-[#01FFFF]" hx-ext="events">
 
   <script>
-    const username = "<%=user%>"
-    const id = "<%=id%>";
-    const gameserverURL = "<%=gameserverURL%>";
 
-    window.__INITIAL_STATE__ = "<%=user%>";
-    window.__USER_ID__ = "<%=id%>";
-    window.__GAMESERVER_URL__ = "<%=gameserverURL%>";
-    console.table(window.__INITIAL_STATE__);
-    console.table(window.__GAMESERVER_URL__);
-	console.log("username : ", username)
-	console.log("id : ", id)
+    if (!window.globalsInitialized) { 
+      window.globalsInitialized = true;
+
+      const username = "<%=user%>"
+      const id = "<%=id%>";
+      const gameserverURL = "<%=gameserverURL%>";
+
+      window.__INITIAL_STATE__ = "<%=user%>";
+      window.__USER_ID__ = "<%=id%>";
+      window.__GAMESERVER_URL__ = "<%=gameserverURL%>";
+      console.table(window.__INITIAL_STATE__);
+      console.table(window.__GAMESERVER_URL__);
+      console.log("username : ", username)
+      console.log("id : ", id)
+    } 
+    else {
+
+      console.log("user after pagination: ", window.__INITIAL_STATE__);
+      console.log("id after pagination: ", window.__USER_ID__);
+
+    }
+
   </script>
 
 	<div class="relative w-screen h-screen overflow-hidden bg-black">
@@ -116,30 +128,26 @@
 
 
 <script>
-	let prevcontent = 0;
-	function toggleSidebar(newcontent)
-	{
-		const sidebar = document.getElementById('sidebar');
-		if (!sidebar) return;
-		
-		if (sidebar.classList.contains('hidden'))
-			sidebar.classList.remove('hidden');
-		else if (prevcontent === newcontent)
-			sidebar.classList.add('hidden');
-		prevcontent = newcontent;
-	}
-</script>
-<!-- <script>
-	function toggleSidebar(newcontent)
-	{
-		
-		const sidebar = document.getElementById('sidebar');
-		if (sidebar && prevcontent == newcontent)
-		{
-			sidebar.classList.toggle('hidden');
-		}
-	}
-</script> -->
 
+  if (!window.sidebarScriptLoaded) {
+
+    window.sidebarScriptLoaded = true;
+
+    let prevcontent = 0;
+    function toggleSidebar(newcontent)
+    {
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+
+      if (sidebar.classList.contains('hidden'))
+        sidebar.classList.remove('hidden');
+        else if (prevcontent === newcontent)
+          sidebar.classList.add('hidden');
+      prevcontent = newcontent;
+    }
+  }
+
+
+</script>
 
 </html>

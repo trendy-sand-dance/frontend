@@ -59,15 +59,20 @@ async function setup() {
 
   const container = document.getElementById("pixi-container");
   if (container) {
+
+    const canvas = document.getElementById("pixi-canvas");
+
+    if (canvas)
+      canvas.remove();
+
     await pixiApp.init({ background: settings.CGA_BLACK, resizeTo: container });
     container.appendChild(pixiApp.canvas);
+    pixiApp.canvas.setAttribute("id", "pixi-canvas");
+
   }
 
   pixiApp.stage.eventMode = 'static';
   pixiApp.stage.hitArea = pixiApp.screen;
-
-  console.log("canvas dimensions: ", pixiApp.canvas.width, pixiApp.canvas.height);
-  console.log("stage dimensions: ", pixiApp.stage.width, pixiApp.stage.height);
 
 
   // Disables controls when game is not focused

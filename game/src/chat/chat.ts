@@ -7,7 +7,7 @@ export default class Chat {
 
   private textInput: HTMLInputElement;
   private sendButton: HTMLButtonElement;
-  private chatDisplay: HTMLElement;
+  // private chatDisplay: HTMLElement;
   // private messages : string[] = [];
   private chatBubbles: ChatBubble[] = [];
   private socket: WebSocket | null = null;
@@ -23,10 +23,10 @@ export default class Chat {
     if (this.sendButton === null) {
       console.error("Couldn't get sendButton for Chat");
     }
-    this.chatDisplay = document.getElementById("chat-message-display") as HTMLElement;
-    if (this.chatDisplay === null) {
-      console.error("Couldn't get chatDisplay for Chat");
-    }
+    // this.chatDisplay = document.getElementById("chat-message-display") as HTMLElement;
+    // if (this.chatDisplay === null) {
+    //   console.error("Couldn't get chatDisplay for Chat");
+    // }
 
   }
 

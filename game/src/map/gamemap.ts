@@ -102,13 +102,13 @@ export default class GameMap {
 
         // Draw pong table tiles
         if (tileMap[row][col] === 1.01 && room === RoomType.Hall) {
-          context.zIndex = point.asIsometric.y ;
+          context.zIndex = point.asIsometric.y;
           this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, true);
           mapRegion?.addToContainer(context);
           continue;
         }
         if (tileMap[row][col] === 1.02 && room === RoomType.Hall) {
-          context.zIndex = point.asIsometric.y ;
+          context.zIndex = point.asIsometric.y;
           this.drawIsometricTile(context, point.asIsometric, this.tileSize, this.tileSize, false);
           mapRegion?.addToContainer(context);
           continue;
@@ -171,7 +171,6 @@ export default class GameMap {
 
     for (const [room, region] of this.mapRegions) {
 
-      console.log(room);
       const container = region.getContainer();
       if (room !== RoomType.Hall) {
         container.renderable = false;
