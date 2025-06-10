@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 
-<div class="flex flex-row bg-cyan-500 rounded-md">
+<div class="flex flex-row bg-[--color-secondary] text-[--color-text] rounded-md">
 
   <div class="flex justify-center">
-    <img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
+    <img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-black rounded-[50%] max-w-10 h-auto">
   </div>
 
-  <div id='openProfileDialog' class="flex flex-row w-32 justify-between cursor-pointer hover:bg-white">
-    <p class="border-l border-black p-2">
+  <div id='openProfileDialog' class="flex flex-row w-32 justify-between cursor-pointer bg-[--color-secondary] hover:bg-[--color-accent]">
+    <p class="border-l font-silkscreen text-[--color-text] border-[--color-accent] p-2">
       <%= username %>
     </p>
-    <i class='fas fa-pen text-xs flex'></i>
+    <i class='fas fa-pen text-xs flex text-[--color-accent]'></i>
   </div>
 
-  <dialog id="profileDialog" class="rounded-md p-4 w-2/6 h-2/6 bg-[#01FFFF]">
+  <dialog id="profileDialog" class="rounded-md p-4 w-2/6 h-2/6 bg-[--color-background] text-[--color-text]">
 
     <div id="closingDiv" class="flex flex-col h-full w-full justify-between">
 
       <div class="flex justify-end">
-        <button type="button" id="closeProfileDialog">X</button>
+        <button type="button" id="closeProfileDialog" class="text-[--color-text]">X</button>
       </div>
 
       <div class="flex flex-row">
-        <div class="flex flex-col">
-          <p class="p-2">Username: </p>
-          <p class="p-2">E-mail: </p>
-          <p class="p-2">Avatar: </p>
+        <div class="flex flex-col text-[--color-secondary]">
+          <h3 class="p-2">Username: </h3>
+          <h3 class="p-2">E-mail: </h3>
+          <h3 class="p-2">Avatar: </h3>
         </div>
 
         <div class="flex flex-col">
-          <p class="p-2">
+          <p class="p-2 text-[--color-text]">
             <%= username %>
-              <i id="openUsernameInput" class='fas fa-pen text-xs flex'></i>
+              <i id="openUsernameInput" class='fas fa-pen text-xs flex text-[--color-accent]'></i>
               <div id="usernameInput" class="hidden">
                 <form hx-post="/editUsername/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
                   <input type="text" name="newUsername">
@@ -40,11 +40,10 @@
               </div>
           </p>
 
-
-          <p class="p-2">
+          <p class="p-2 text-[--color-text]">
             <%= email %>
 
-			<i id="openEmailInput" class='fas fa-pen text-xs flex'></i>
+			<i id="openEmailInput" class='fas fa-pen text-xs flex text-[--color-accent]'></i>
 			<div id="emailInput" class="hidden">
 				<form hx-post="/editEmail/<%=username %>" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
 					<input type="text" name="newEmail">
@@ -54,8 +53,8 @@
 		</p>
 	
 		
-		<img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-cyan-100 rounded-[50%] max-w-10 h-auto">
-		<i id="openAvatarInput" class='fas fa-pen text-xs flex'></i>
+		<img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-[--color-background] rounded-[50%] max-w-10 h-auto">
+		<i id="openAvatarInput" class='fas fa-pen text-xs flex text-[--color-accent]'></i>
 		<div id="avatarInput" class="hidden">
 		  <form hx-post="/editAvatar/<%=username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
 
@@ -82,9 +81,9 @@
       </script>
 
 
-      <div class="flex justify-end content-end w-[100%] p-2 border-t border-black mt-auto">
+      <div class="flex justify-end content-end w-[100%] p-2 border-t border-[--color-secondary] mt-auto">
         <form action="/logout" method="get" hx-push-url="/">
-          <input type="submit" class="text-gray-700 cursor-pointer" value="Sign Out" />
+          <input type="submit" class="text-[text-muted] cursor-pointer hover:text-[--color-accent]" value="Sign Out" />
         </form>
       </div>
 

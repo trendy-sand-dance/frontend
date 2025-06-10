@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 :root {
+
   --color-cgya-cyan: #01FFFF;
   --color-cgya-pink: #FF55FE;
+
+  --color-primary: #8e008e;
+  --color-secondary: #035959;
+  --color-accent: #6f9191;
+  --color-background: #013333;
+  --color-surface: #0ea905;
+  --color-text: #a4c6c6;
+  --color-text-muted: #909595;
 }

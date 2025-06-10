@@ -10,11 +10,14 @@
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
   <script src="https://kit.fontawesome.com/3f6a90a5aa.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 
 
 </head>
 
-<body class="bg-[#01FFFF]" hx-ext="events">
+<body class="bg-[--color-background]" hx-ext="events">
 
   <script>
 
@@ -42,7 +45,7 @@
 
   </script>
 
-	<div class="relative w-screen h-screen overflow-hidden bg-black">
+	<div class="relative w-screen h-screen overflow-hidden bg-[--color-background]">
 
 		<!-- Game Canvas -->
 		<div class="absolute inset-0 z-0">
@@ -54,21 +57,18 @@
 		<!-- Sidebar -->
 		<aside 
 			id="sidebar"
-			class="hidden absolute top-0 right-0 w-1/6 h-full flex-col bg-[#301934] border-x border-purple-500 z-10 animate-slide-in">
-		<div id="sidebar-content" class="flex-1 overflow-y-auto p-4">
+			class="hidden absolute top-0 right-0 w-1/6 h-[calc(100vh-64px)] flex-col bg-[--color-background] border-x z-10 animate-slide-in">
 			<!-- Dynamic sidebar content -->
-			class="hidden absolute top-0 right-0 w-1/6 h-full flex-col bg-[#01FFFF] border-l border-cyan-400 z-10 animate-slide-in">
-		<div id="sidebar-content" class="flex flex-col overflow-y-auto p-4 h-full justify-between">
+		<div id="sidebar-content" class="flex flex-col overflow-y-auto overflow-x-hidden p-4 justify-between h-full">
 
 			    <!-- Dynamic sidebar content -->
-          <div id="chat-messages" class="p-4 text-black animate-slide-in"></div>
+          <div id="sidebar-content-replaceable" class="p-4"></div>
           
           <!-- Chat Text box -->
-          <div class="flex justify-center flex-col h-1/6 p-4">
-            <div class="border border-cyan-600 rounded-md p-2">
-              <input id="text-input-chat" type="text" placeholder="Type here..." class="bg-[#01FFFF] w-full outline-none">
+          <div id="sidebar-content-chat" class="flex justify-center flex-col h-1/6 p-4 hidden">
+            <div class="border border-[--color-secondary] rounded-md p-2">
+              <input id="text-input-chat" type="text" placeholder="Type here..." class="bg-[--color-background] text-[--color-text] w-full outline-none">
               <div class="flex flex-row justify-between">
-                <button type="">:)</button>
                 <button id="send-button-chat" type="">=></button>
               </div>
             </div>
@@ -79,7 +79,7 @@
 		</aside>
 	
 		<!-- Bottom Navbar -->
-		<nav class="absolute bottom-0 left-0 right-0 bg-[#301934] flex items-center p-4 space-x-4 border-t border-cyan-400 z-20">
+		<nav class="absolute bottom-0 left-0 right-0 text-[--color-text] bg-[--color-background] bg-opacity-50 flex items-center p-4 space-x-4 border-t border-[--color-secondary] z-20">
 	
 		<div id="dashboard-profile-button"
 			hx-get="/dashboard/<%= id %>"
@@ -90,64 +90,104 @@
 	
 		<button type="button"
 			hx-get="/sidebar/chat"
-			hx-target="#chat-messages"
+			hx-target="#sidebar-content-replaceable"
 			hx-swap="innerHTML"
 			onclick="toggleSidebar(1)"
-			class="rounded-md p-2 justify-right bg-cyan-400 hover:bg-sky-700 active:bg-violet-500">
+			class="rounded-md p-2 justify-right bg-[--color-secondary] hover:bg-[--color-accent]">
 			Chat 💬💬💬
 		</button>
 	
 		<button 
 			type="button"
 			hx-get="/viewPlayers/<%= user %>"
-			hx-target="#sidebar-content"
+			hx-target="#sidebar-content-replaceable"
 			hx-swap="innerHTML"
 			onclick="toggleSidebar(2)"
-			class="rounded-md p-2 justify-right bg-cyan-400 hover:bg-sky-700 active:bg-violet-500">
+			class="rounded-md p-2 justify-right bg-[--color-secondary] hover:bg-[--color-accent]">
 			Friendos 👬👫👭
 		</button>
 
 		<button 
 			type="button"
 			hx-get="/viewMatchHistory/<%= id %>"
-			hx-target="#sidebar-content"
+			hx-target="#sidebar-content-replaceable"
 			hx-swap="innerHTML"
 			onclick="toggleSidebar(3)"
-			class="rounded-md p-2 justify-right bg-cyan-400 hover:bg-sky-700 active:bg-violet-500">
+			class="rounded-md p-2 justify-right bg-[--color-secondary] hover:bg-[--color-accent]">
 			match history 🎮📜
 		</button>
-		
 	
 		</nav>
 	
 		</div>
-	  
 
 </body>
 
 
 
 <script>
-
   if (!window.sidebarScriptLoaded) {
-
     window.sidebarScriptLoaded = true;
-
-    let prevcontent = 0;
-    function toggleSidebar(newcontent)
-    {
-      const sidebar = document.getElementById('sidebar');
-      if (!sidebar) return;
-
-      if (sidebar.classList.contains('hidden'))
-        sidebar.classList.remove('hidden');
-        else if (prevcontent === newcontent)
-          sidebar.classList.add('hidden');
+  let prevcontent = 0;
+  
+  function toggleSidebar(newcontent) {
+    const sidebar = document.getElementById('sidebar');
+    const chatInput = document.getElementById('sidebar-content-chat');
+    if (!sidebar) return;
+    
+    if (chatInput) { // Makes the chat input only pop up when chat sidebar is toggled
+      if (newcontent == 1) {
+        chatInput.style.display = "block";
+      } else {
+        chatInput.style.display = "none";
+      }
+    }
+    
+    const isHidden = sidebar.classList.contains('hidden');
+    const isSameContent = prevcontent === newcontent;
+    
+    if (isHidden || !isSameContent) {
+      // Opening or switching content
+      sidebar.classList.remove('hidden', 'animate-slide-out');
+      sidebar.classList.add('animate-slide-in');
       prevcontent = newcontent;
+      history.pushState({ sidebarVisible: true, content: newcontent }, '');
+    } else {
+      // Closing - animate out then hide
+      sidebar.classList.remove('animate-slide-in');
+      sidebar.classList.add('animate-slide-out');
+      
+      // Wait for animation to complete before hiding
+      setTimeout(() => {
+        sidebar.classList.add('hidden');
+        sidebar.classList.remove('animate-slide-out');
+      }, 300); // Match your animation duration
+      
+      history.pushState({ sidebarVisible: false, content: newcontent }, '');
     }
   }
-
-
+  
+  // Listen to browser navigation (back/forward)
+  window.addEventListener('popstate', (event) => {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    const state = event.state;
+    if (state) {
+      prevcontent = state.content;
+      if (state.sidebarVisible) {
+        sidebar.classList.remove('hidden', 'animate-slide-out');
+        sidebar.classList.add('animate-slide-in');
+      } else {
+        sidebar.classList.remove('animate-slide-in');
+        sidebar.classList.add('animate-slide-out');
+        setTimeout(() => {
+          sidebar.classList.add('hidden');
+          sidebar.classList.remove('animate-slide-out');
+        }, 300);
+      }
+    }
+  });
+  }
 </script>
 
 </html>
