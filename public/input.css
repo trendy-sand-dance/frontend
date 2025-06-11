@@ -14,4 +14,12 @@
   --color-surface: #0ea905;
   --color-text: #a4c6c6;
   --color-text-muted: #909595;
+
+  font-family: "Silkscreen", sans-serif;
+
+
+}
+
+body {
+    font-family: "Silkscreen", sans-serif;
 }

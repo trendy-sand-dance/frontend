@@ -1,4 +1,4 @@
-<h2 class="text-xl text-[--color-ui-text-header] font-bold mb-4">Match History</h2>
+<h2 class="text-xl text-[--color-secondary] font-bold mb-4">Match History</h2>
 
 
 <div class="space-y-4">
@@ -6,8 +6,8 @@
     const won = match.lost.username === match.opponent;
     const glow = won ? 'shadow-[0_0_15px_#22c55e]' : 'shadow-[0_0_15px_#ef4444]';
     const borderColor = won ? 'border-green-400' : 'border-red-500';
-    const bgColor = won ? '!bg-green-950' : 'bg-red-950';
-    const textColor = won ? 'text-green-300' : 'text-red-300';
+    const bgColor = won ? '!bg-[--color-secondary]' : 'bg-[--color-secondary]';
+    const textColor = won ? 'text-[--color-text]' : 'text-[--color-text]';
     const result = won ? 'Victory' : 'Defeat';
   %>
     <div class="rounded-xl p-4 border-2 <%= borderColor %> <%= bgColor %> <%= textColor %> font-mono transition-all hover:<%= glow %>">
