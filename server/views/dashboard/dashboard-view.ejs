@@ -86,10 +86,14 @@
 			hx-trigger="load"
 			hx-swap="innerHTML"
 			hx-target="this">
+      
 		</div>
 	
-		<button type="button"
+		<button 
+      id="chat-content-btn"
+      type="button"
 			hx-get="/sidebar/chat"
+      hx-trigger='click, popstate-triggered'
 			hx-target="#sidebar-content-replaceable"
 			hx-swap="innerHTML"
 			onclick="toggleSidebar(1)"
@@ -98,7 +102,9 @@
 		</button>
 	
 		<button 
+      id="friend-content-btn"
 			type="button"
+      hx-trigger='click, popstate-triggered'
 			hx-get="/viewPlayers/<%= user %>"
 			hx-target="#sidebar-content-replaceable"
 			hx-swap="innerHTML"
@@ -108,7 +114,9 @@
 		</button>
 
 		<button 
+      id="match-content-btn"
 			type="button"
+      hx-trigger='click, popstate-triggered'
 			hx-get="/viewMatchHistory/<%= id %>"
 			hx-target="#sidebar-content-replaceable"
 			hx-swap="innerHTML"
@@ -127,66 +135,101 @@
 
 <script>
   if (!window.sidebarScriptLoaded) {
+
     window.sidebarScriptLoaded = true;
-  let prevcontent = 0;
-  
-  function toggleSidebar(newcontent) {
-    const sidebar = document.getElementById('sidebar');
-    const chatInput = document.getElementById('sidebar-content-chat');
-    if (!sidebar) return;
-    
-    if (chatInput) { // Makes the chat input only pop up when chat sidebar is toggled
+    let prevcontent = 0;
+    let contentMap = {1: "chat-content-btn", 2: "friend-content-btn", 3: "match-content-btn"};
+
+    function hideElement(element, newcontent) {
+
       if (newcontent == 1) {
-        chatInput.style.display = "block";
-      } else {
-        chatInput.style.display = "none";
+        element.style.display = "block"
       }
+      else {
+        element.style.display = "none";
+      }
+
     }
-    
-    const isHidden = sidebar.classList.contains('hidden');
-    const isSameContent = prevcontent === newcontent;
-    
-    if (isHidden || !isSameContent) {
-      // Opening or switching content
-      sidebar.classList.remove('hidden', 'animate-slide-out');
-      sidebar.classList.add('animate-slide-in');
-      prevcontent = newcontent;
-      history.pushState({ sidebarVisible: true, content: newcontent }, '');
-    } else {
-      // Closing - animate out then hide
-      sidebar.classList.remove('animate-slide-in');
-      sidebar.classList.add('animate-slide-out');
-      
+
+    function openSidebar(sidebarElement) { 
+
+      sidebarElement.classList.remove('hidden', 'animate-slide-out');
+      sidebarElement.classList.add('animate-slide-in');
+
+    }
+
+    function closeSidebar(sidebarElement) { 
+
+      sidebarElement.classList.remove('animate-slide-in');
+      sidebarElement.classList.add('animate-slide-out');
+
       // Wait for animation to complete before hiding
       setTimeout(() => {
-        sidebar.classList.add('hidden');
-        sidebar.classList.remove('animate-slide-out');
+        sidebarElement.classList.add('hidden');
+        sidebarElement.classList.remove('animate-slide-out');
       }, 300); // Match your animation duration
-      
-      history.pushState({ sidebarVisible: false, content: newcontent }, '');
+
+
     }
-  }
-  
-  // Listen to browser navigation (back/forward)
-  window.addEventListener('popstate', (event) => {
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar) return;
-    const state = event.state;
-    if (state) {
-      prevcontent = state.content;
-      if (state.sidebarVisible) {
-        sidebar.classList.remove('hidden', 'animate-slide-out');
-        sidebar.classList.add('animate-slide-in');
-      } else {
-        sidebar.classList.remove('animate-slide-in');
-        sidebar.classList.add('animate-slide-out');
-        setTimeout(() => {
-          sidebar.classList.add('hidden');
-          sidebar.classList.remove('animate-slide-out');
-        }, 300);
+
+    function toggleSidebar(newcontent) {
+
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+
+      const chatInput = document.getElementById('sidebar-content-chat');
+      hideElement(chatInput, newcontent);
+
+      const isHidden = sidebar.classList.contains('hidden');
+      const isSameContent = prevcontent === newcontent;
+
+      if (isHidden || !isSameContent) {
+        openSidebar(sidebar);
+        prevcontent = newcontent;
+        history.pushState({ sidebarVisible: true, content: newcontent }, '');
+        console.log("Opening: pushing new state");
+        console.log(history);
+      } 
+      else {
+        closeSidebar(sidebar, newcontent);
+        history.pushState({ sidebarVisible: false, content: newcontent }, '');
+        console.log("Closing: pushing new state");
+        console.log(history);
       }
+
     }
-  });
+
+    // Listen to browser navigation (back/forward)
+    window.addEventListener('popstate', (event) => {
+
+      const sidebar = document.getElementById('sidebar');
+      if (!sidebar) return;
+
+      const state = event.state;
+      console.log("state: ", event.state);
+      console.log("history: ", history);
+
+      if (state) {
+
+        prevcontent = state.content;
+
+        if (state.sidebarVisible) {
+          openSidebar(sidebar);
+        } 
+        else {
+          closeSidebar(sidebar);
+        }
+
+
+        const dynamicElement = document.getElementById(contentMap[state.content]);
+        if (dynamicElement) { 
+          dynamicElement.dispatchEvent(new Event('popstate-triggered'));
+        }
+
+      }
+
+    });
+
   }
 </script>
 
