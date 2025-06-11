@@ -208,6 +208,32 @@ export default class PlayerManager {
 
   }
 
+  getUsernameById(id : number) : string {
+
+	const player = this.players.get(id);
+	if (player) {
+		return player.getUsername();
+	}
+
+	return "";
+	
+  }
+
+  getId(username : string) : number {
+
+	for (const [id, player] of this.players) {
+		
+		if (player.getUsername() === username) {
+			console.log(id);
+			return player.getId();
+		}
+
+	}
+
+	return -1;
+
+  }
+
   getPlayers() {
 
     return this.players;
