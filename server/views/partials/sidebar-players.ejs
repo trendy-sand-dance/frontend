@@ -41,7 +41,7 @@
 				<h2 class="text-xl text-[--color-secondary] font-bold mb-2">Friends</h2>
 				<% if (friends.length > 0) { %>
 		<% friends.forEach(function(friend) { %>
-			<div class="flex items-center justify-between text-[--color-accent] bg-[--color-secondary] p-2 rounded shadow">
+			<div class="flex items-center justify-between text-[--color-text] bg-[--color-secondary] p-2 rounded shadow">
 				<div>
 					<strong><%= friend.username %></strong> 
 			  <div class="text-sm text-[--color-text-muted]">Wins: <%= friend.wins %> | Losses: <%= friend.losses %></div>
@@ -70,7 +70,7 @@
 	  <h2 class="text-xl text-[--color-secondary] font-bold mb-2">Pending Requests</h2>
 	  <% if (pending.length > 0) { %>
 		<% pending.forEach(function(pend) { %>
-		  <div class="flex items-center justify-between text-[--color-accent] bg-[--color-secondary] p-2 rounded shadow">
+		  <div class="flex items-center justify-between text-[--color-text] bg-[--color-secondary] p-2 rounded shadow">
 			  <div><strong><%= pend.username %></strong></div>
 			  <button
 			  class="accept-button text-[--color-text] hover:text-[--color-accent]"

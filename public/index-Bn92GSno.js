@@ -1402,9 +1402,9 @@ vec2 applyCurvature(vec2 uv) {
 
     float curvature = 0.1;
     float r = length(centered);
-    float distortion = 1.0 + curvature * r * r;
+    float distortion = 0.5 + curvature * r * r;
 
-    return (centered * distortion) * 0.45 + 0.50;
+    return (centered * distortion) * 0.5 + 0.5;
 }
 
 // vec2 applyCurvature(vec2 uv) {
@@ -1487,14 +1487,14 @@ float dither4x4(vec2 pos) {
 void main(void) {
 
     // CURVATURE
-    vec2 curvedUV = applyCurvature(vTextureCoord);
+    // vec2 curvedUV = applyCurvature(vTextureCoord);
 
-    if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
-        return;
-    } 
-    vec4 fg = texture2D(uTexture, curvedUV);
-    // vec4 fg = texture2D(uTexture, vTextureCoord);
+    // if (curvedUV.x < 0.0 || curvedUV.x > 1.0 || curvedUV.y < 0.0 || curvedUV.y > 1.0) {
+    //     gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); // Black outside
+    //     return;
+    // } 
+    // vec4 fg = texture2D(uTexture, curvedUV);
+    vec4 fg = texture2D(uTexture, vTextureCoord);
 
     // NOISE
     // float noise = random(vTextureCoord.xy) * 1.25;
