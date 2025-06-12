@@ -10,6 +10,7 @@ import('htmx.org');
 const playerInfoBox = document.getElementById("pixi-player-info");
 
 export default class PlayerManager {
+
   static #instance: PlayerManager;
 
   public players = new Map<number, Player>;
@@ -170,7 +171,9 @@ export default class PlayerManager {
 
               gameInviteBtn.onclick = () => {
                 const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, id: user.id };
-                gameSocket.send(JSON.stringify(inviteMessage));
+                if (gameSocket) {
+                  gameSocket.send(JSON.stringify(inviteMessage));
+                }
               }
 
             }

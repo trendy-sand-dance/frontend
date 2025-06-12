@@ -4,15 +4,12 @@ import { RoomType } from '../interfaces.js';
 import { uiContainer } from '../main.js';
 
 
-export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
+export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket | undefined {
 
   if (serverAddress) {
-    return new WebSocket(`ws://${serverAddress}:${port}/${endpoint}`); // 8003/ws-gameserver
+    return new WebSocket(`wss://${serverAddress}:${port}/${endpoint}`); // 8003/ws-gameserver
   }
-  else {
-    console.warn("Server address not defined... this may cause issues with the websocket connection");
-    return new WebSocket("");
-  }
+  console.error(`Error: couldn't initialize wss://${serverAddress}:${port}/${endpoint}`);
 
 }
 
@@ -54,7 +51,7 @@ export function initializeLocalPlayer(localUser: User, gameMap: GameMap) {
 
 }
 
-export let gameSocket: WebSocket;
+export let gameSocket: WebSocket | undefined;
 export let localUser: User;
 
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap) {
@@ -81,9 +78,10 @@ function isLocalPlayer(id: number): boolean {
 export async function runConnectionManager(gameMap: GameMap) {
 
   gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
-  if (gameSocket) {
-    console.info(`Sucessfully connected to the game server ${gameSocket.url}`);
-  }
+  if (!gameSocket) 
+    return ;
+
+  console.info(`Sucessfully connected to the game server ${gameSocket.url}`);
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
@@ -335,9 +333,9 @@ export async function runConnectionManager(gameMap: GameMap) {
     }
 
 
-    gameSocket.onclose = (event: CloseEvent) => {
+    gameSocket!.onclose = (event: CloseEvent) => {
       console.log("Close event: ", event);
-      if (gameSocket.readyState == WebSocket.OPEN) {
+      if (gameSocket && gameSocket.readyState == WebSocket.OPEN) {
         const player = playerManager.getLocalPlayer();
         let pos: Vector2 = { x: 0, y: 0 };
         if (player) {
@@ -351,7 +349,8 @@ export async function runConnectionManager(gameMap: GameMap) {
 
   // We notify the server when a player suddenly quits the browser
   window.addEventListener("beforeunload", () => {
-    if (gameSocket.readyState == WebSocket.OPEN) {
+
+    if (gameSocket && gameSocket.readyState == WebSocket.OPEN) {
       const player = playerManager.getLocalPlayer();
       let pos: Vector2 = { x: 0, y: 0 };
       if (player) {

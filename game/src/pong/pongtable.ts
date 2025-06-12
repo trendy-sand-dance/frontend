@@ -321,22 +321,30 @@ export default class PongTable {
 
     if (side !== null && keyIsPressed['ArrowUp']) {
       console.log("We are sending up");
-      cm.sendToServer(gameSocket, {
-        type: "paddle_move",
-        side: side,
-        direction: "up",
-        tournament: this.isTournament,
-      });
+      if (gameSocket) {
+
+        cm.sendToServer(gameSocket, {
+          type: "paddle_move",
+          side: side,
+          direction: "up",
+          tournament: this.isTournament,
+        });
+
+      }
     }
 
     if (side !== null && keyIsPressed['ArrowDown']) {
       console.log("We are sending down");
-      cm.sendToServer(gameSocket, {
-        type: "paddle_move",
-        side: side,
-        direction: "down",
-        tournament: this.isTournament,
-      });
+      if (gameSocket) {
+
+        cm.sendToServer(gameSocket, {
+          type: "paddle_move",
+          side: side,
+          direction: "down",
+          tournament: this.isTournament,
+        });
+
+      }
     }
 
   }

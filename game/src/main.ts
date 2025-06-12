@@ -112,7 +112,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
 
     const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
-    if (!pongTable.isSideReady(side)) {
+    if (gameSocket && !pongTable.isSideReady(side)) {
       gameCM.sendToServer(gameSocket, { type: "join_pong", pongPlayer: newPlayer });
     }
     else {
@@ -120,7 +120,7 @@ function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
       if (existingPlayer && existingPlayer.id !== player.id) {
         alert("There's already another player at the table!");
       }
-      else if (existingPlayer) {
+      else if (gameSocket && existingPlayer) {
         gameCM.sendToServer(gameSocket, { type: "leave_pong", pongPlayer: existingPlayer });
       }
     }
@@ -142,7 +142,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
 
       const newPlayer: PongPlayer = { id: player.getId(), username: player.getUsername(), paddleY: 1, ready: false, score: 0, side: side };
 
-      if (!tournamentTable.isSideReady(side)) {
+      if (gameSocket && !tournamentTable.isSideReady(side)) {
         gameCM.sendToServer(gameSocket, { type: "join_pong_tournament", pongPlayer: newPlayer });
       }
       else {
@@ -150,7 +150,7 @@ function joinOrLeaveTournamentTable(tournamentTable: PongTable, player: Player) 
         if (existingPlayer && existingPlayer.id !== player.id) {
           alert("There's already another player at the table!");
         }
-        else if (existingPlayer) {
+        else if (gameSocket && existingPlayer) {
           gameCM.sendToServer(gameSocket, { type: "leave_pong_tournament", pongPlayer: existingPlayer });
         }
       }
@@ -343,7 +343,7 @@ function broadcastPositionUpdates(player: Player) {
       fade = true;
       player.setRegion(newRoom);
 
-      if (!window.__DEV__) {
+      if (!window.__DEV__ && chatSocket) {
         const transitionMessage: TransitionMessage = { type: MessageType.Transition, id, from: oldRoom, to: newRoom };
         if (chatSocket.readyState === 1 || chatSocket.readyState === WebSocket.OPEN) {
           chatSocket.send(JSON.stringify(transitionMessage));
@@ -351,7 +351,7 @@ function broadcastPositionUpdates(player: Player) {
       }
     }
 
-    if (!window.__DEV__) {
+    if (!window.__DEV__ && gameSocket) {
       gameCM.sendToServer(gameSocket, {
         type: "player_move",
         id: player.getId(),
@@ -427,7 +427,7 @@ export let gameMap: GameMap;
 
     // Testing tournamentSubscription box
     let p = playerManager.getLocalPlayer();
-    if (p) {
+    if (p && gameSocket) {
       let tournamentBox = new TournamentSubscription(28.5, 1, gameSocket, { id: p.id, username: p.getUsername(), avatar: p.getAvatar(), wins: 0, losses: 0, local: false }, Texture.from('tv_tournament'));
       const context = tournamentBox.getContext();
       context.zIndex = 10000;
