@@ -97,20 +97,20 @@ private sendIfWhisper(message : string, player : Player, playerManager : PlayerM
 	mapContainer.addChild(bubble.getContainer());
 
 	console.log("%cwhisper send!", "color: purple");
-	this.RendermsgHTML(msgContent, player.getUsername());
+	this.renderMsgHTML(msgContent, player.getUsername());
 
 	return true;
 
 }
 
-public RendermsgHTML(msg : string, senderName: string)
+public renderMsgHTML(msg : string, senderName: string)
 {
 	this.chatDisplay = document.getElementById("chat-message-display") as HTMLElement;
     if (this.chatDisplay === null) {
       console.error("Couldn't get chatDisplay for Chat");
     }
 	const chatdiv = document.createElement("div") as HTMLElement;
-	chatdiv.setAttribute("class", "bg-white rounded p-2");
+	chatdiv.setAttribute("class", "bg-[--color-secondary] text-[--color-text] rounded p-2");
 	chatdiv.innerHTML = `${senderName}: ${msg}`;
 	this.chatDisplay.appendChild(chatdiv);
 	// this.chatDisplay
@@ -139,7 +139,7 @@ private handleTextInput(playerManager : PlayerManager, mapContainer : Container)
 			this.chatBubbles.push(b);
 
 			mapContainer.addChild(b.getContainer());
-			this.RendermsgHTML(chatMessage, player.getUsername());
+			this.renderMsgHTML(chatMessage, player.getUsername());
 
 			console.log("We pushing");
 		}
