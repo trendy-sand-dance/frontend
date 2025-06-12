@@ -15,12 +15,10 @@ export const messageHandlers: Record<string, MessageHandler> = {
     else {
       console.log("Couldn't create a session on the chat server :(");
     }
-    server.send("Yep");
+    server.send(`${server.url} connected`);
   },
   "confirm": (data: ChatServerMessage, server: WebSocket) => {
-    console.log(data.type);
-    console.log(server.url);
-    console.log(`Succesfully connected to the chat server ${server.url}`);
+    console.log(`MessageHandler: ${data.type}, from ${server.url}`);
   },
   // "disconnect": (data: ChatServerMessage, server: WebSocket) => {
   //   const msg: DisconnectMessage = data as DisconnectMessage;

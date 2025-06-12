@@ -7,7 +7,6 @@ import { uiContainer } from '../main.js';
 export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
 
   if (serverAddress) {
-    console.log("Succesfully connected with the server");
     return new WebSocket(`ws://${serverAddress}:${port}/${endpoint}`); // 8003/ws-gameserver
   }
   else {
@@ -82,6 +81,9 @@ function isLocalPlayer(id: number): boolean {
 export async function runConnectionManager(gameMap: GameMap) {
 
   gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
+  if (gameSocket) {
+    console.info(`Sucessfully connected to the game server ${gameSocket.url}`);
+  }
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.

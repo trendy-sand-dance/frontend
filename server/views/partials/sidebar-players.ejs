@@ -2,58 +2,58 @@
 
 <div 
 	id="friend-view"
-	class="p-4 space-y-6 text-cyan-500 animate-slide-in"
+	class="p-4 space-y-6"
 	hx-get="/viewPlayers/<%= username %>"
 	hx-trigger="refreshSidebar from:body"
 	hx-swap="outerHTML">
 	<!-- Requests -->
 	<section>
-		<h2 class="text-xl font-bold mb-2">Friend Requests</h2>
+		<h2 class="text-xl text-[--color-secondary] font-bold mb-2">Friend Requests</h2>
 		<% if (requests.length > 0) 
 			{ 
 			%> <% requests.forEach(function(req) 
 				{ %>
-				<div class="flex items-center justify-between bg-blue-100 p-2 rounded shadow">
+				<div class="flex items-center justify-between text-[--color-text] bg-[--color-secondary] p-2 rounded shadow">
 					<div>
 						<strong><%= req.username %></strong>
 					</div>
 					<div 
 						class="space-x-2">
 						<button
-							class="accept-button"
+							class="accept-button text-[--color-text] hover:text-[--color-accent]"
 							hx-post="/acceptReq/<%=userId%>/<%=req.id%>"
 							hx-swap="none">
 							Accept
 						</button>
 						<button 
-							class="text-red-500 hover:text-red-700"
+							class="text-[--color-text-muted] hover:text-[--color-accent]"
 							hx-delete="/rejectReq/<%=userId%>/<%=req.id%>">
 							Decline
 						</button>
 					</div>
 				</div>
 				<% }); %>
-				<% } else { %> <p class="text-gray-500 italic">No incoming friend requests.</p> <% } %>
+				<% } else { %> <p class="text-[--color-text-muted] italic">No incoming friend requests.</p> <% } %>
 			</section>
 			
 			<!-- Friends -->
 			<section>
-				<h2 class="text-xl font-bold mb-2">Friends</h2>
+				<h2 class="text-xl text-[--color-secondary] font-bold mb-2">Friends</h2>
 				<% if (friends.length > 0) { %>
 		<% friends.forEach(function(friend) { %>
-			<div class="flex items-center justify-between bg-green-100 p-2 rounded shadow">
+			<div class="flex items-center justify-between text-[--color-text] bg-[--color-secondary] p-2 rounded shadow">
 				<div>
 					<strong><%= friend.username %></strong> 
-			  <div class="text-sm text-gray-600">Wins: <%= friend.wins %> | Losses: <%= friend.losses %></div>
+			  <div class="text-sm text-[--color-text-muted]">Wins: <%= friend.wins %> | Losses: <%= friend.losses %></div>
 			</div>
 			<button
-			class="text-red-500 hover:text-red-700"
+			class="text-[--color-text] hover:text-[--color-accent]"
 			hx-swap="none"
 			hx-delete="/deleteFriend/<%=friend.id%>/<%=userId%>">
 			Unfriend
 		</button>
 		<button 
-			class="bg-red-500 hover:bg-red-1000"
+			class="text-[--color-text] hover:text-[--color-accent]"
 			hx-swap="none"
 			hx-post="/block/<%=friend.id%>/<%=userId%>">
 			Block
@@ -61,41 +61,39 @@
 		  </div>
 		<% }); %>
 	  <% } else { %>
-		<p class="text-gray-500 italic">No friends yet.</p>
+		<p class="text-[--color-text-muted] italic">No friends yet.</p>
 	  <% } %>
 	</section>
   
 	<!-- Pending -->
 	<section>
-	  <h2 class="text-xl font-bold mb-2">Pending Requests</h2>
+	  <h2 class="text-xl text-[--color-secondary] font-bold mb-2">Pending Requests</h2>
 	  <% if (pending.length > 0) { %>
 		<% pending.forEach(function(pend) { %>
-		  <div class="flex items-center justify-between bg-yellow-100 p-2 rounded shadow">
+		  <div class="flex items-center justify-between text-[--color-text] bg-[--color-secondary] p-2 rounded shadow">
 			  <div><strong><%= pend.username %></strong></div>
 			  <button
-			  class="accept-button"
+			  class="accept-button text-[--color-text] hover:text-[--color-accent]"
 			hx-delete="/rejectReq/<%=pend.id%>/<%=userId%>"
 			hx-swap="none">
-			<!-- class="text-green-500 hover:text-green-700" -->
-					<!-- > -->
-					Cancel Request
+					Cancel request
 			</button>
 		  </div>
 		<% }); %>
 	  <% } else { %>
-		<p class="text-gray-500 italic">No pending requests.</p>
+		<p class="text-[--color-text-muted] italic">No pending requests.</p>
 	  <% } %>
 	</section>
   
 	<!-- Blocked -->
 	<section>
-	  <h2 class="text-xl font-bold mb-2">Blocked Users</h2>
+	  <h2 class="text-xl text-[--color-secondary] font-bold mb-2">Blocked Users</h2>
 	  <% if (blocked.length > 0) { %>
 		<% blocked.forEach(function(block) { %>
-		  <div class="flex items-center justify-between bg-red-100 p-2 rounded shadow">
+		  <div class="flex items-center justify-between bg-[--color-secondary] text-[--color-text] p-2 rounded shadow">
 			<div><strong><%= block.username %></strong></div>
 			<button
-				class="text-blue-500 hover:text-blue-700"
+				class="text-[--color-text] hover:text-[--color-accent]"
 				hx-swap="none"
 				hx-delete="/deleteFriend/<%=block.id%>/<%=userId%>">
 				Unblock
@@ -103,7 +101,7 @@
 		  </div>
 		<% }); %>
 	  <% } else { %>
-		<p class="text-gray-500 italic">No blocked users.</p>
+		<p class="text-[--color-text-muted] italic">No blocked users.</p>
 	  <% } %>
 	</section>
   

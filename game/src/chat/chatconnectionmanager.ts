@@ -13,21 +13,22 @@ export let chatSocket: WebSocket;
 export function runChatConnectionManager(gameMap: GameMap) {
 
   chatSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
+  if (chatSocket) {
+    console.info(`Sucessfully connected to the chat server ${chatSocket.url}`);
+  }
 
   if (chat) {
-    console.log("Initialized Chat object");
     chat.bind(chatSocket, playerManager, gameMap.container);
   }
 
   chatSocket.onopen = (message: Event) => {
 
-    console.log("onopen message: ", message);
+    console.log(message);
     const player = playerManager.getLocalPlayer();
     if (player) {
       const room: RoomType = player.getRegion();
       const msg: ConnectMessage = { type: MessageType.Connect, user: localUser, room: room };
       chatSocket.send(JSON.stringify(msg));
-      console.log("We're sending the connectmessage: ", msg);
     }
 
   }
@@ -37,7 +38,6 @@ export function runChatConnectionManager(gameMap: GameMap) {
     try {
 
       const data: ChatServerMessage = JSON.parse(message.data);
-      console.log("Message: ", data);
       const handler = messageHandlers[data.type];
 
       if (handler) {
