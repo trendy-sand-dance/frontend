@@ -26,7 +26,9 @@ export async function editUsername(request: FastifyRequest, reply: FastifyReply)
 	} catch (error) {
 		console.error(error);
 		const err = error as { code: number, message: string };
-		return reply.code(err.code).send({ error: err.message });
+		console.log("I AM HERE");
+		//return reply.code(err.code).send({ error: err.message });
+		return reply.viewAsync("errors/error-500.ejs");
 	}
 }
 
