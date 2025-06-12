@@ -46,6 +46,7 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
 
   } catch (error) {
     const err = error as { code: number, message: string };
+	console.log("ERROR CODE = ", err.code);
     return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", {
       code: err.code,
       message: err.message

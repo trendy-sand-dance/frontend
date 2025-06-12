@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-const DATABASE_URL: string = "http://database_container:3000";
+const DATABASE_URL: string = "https://database_container:3000";
 
 export async function getRegisterView(request: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("account/register-view.ejs");
@@ -24,7 +24,7 @@ export async function registerUser(request: FastifyRequest, reply: FastifyReply)
 	return reply.viewAsync("account/login-view.ejs");
     } catch (error) {
     	const err = error as { code: number, message: string };
-    	return reply.code(err.code).viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
+    	return reply.viewAsync("errors/incorrect-userdetails.ejs", { code: err.code, message: err.message });
 	}
 }
 

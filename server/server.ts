@@ -17,29 +17,52 @@ import pluginCookie from '@fastify/cookie'
 import { FastifyStaticOptions } from '@fastify/static';
 import './setUpFetch';
 
-// Utility
 import path from 'node:path';
+
 import fs from 'fs';
-const key =  path.join(path.dirname(__dirname), './server/server.key');
-const cert = path.join(path.dirname(__dirname), './server/server.crt');
+const key =  './setup/server.key';
+const cert = './setup/server.crt';
 
 const fastify: FastifyInstance = Fastify({
   logger: {
     transport: {
-      target: 'pino-pretty',
-      options: {
-        translateTime: 'HH:MM:ss Z',
-        ignore: 'pid,hostname',
-        colorize: true,
-      }
-    },
-    level: 'warn'
-  },
-  https: {
-    key: fs.readFileSync(key),
-    cert: fs.readFileSync(cert),
-  }
+		target: 'pino-pretty',
+		options: {
+			translateTime: 'HH:MM:ss Z',
+			ignore: 'pid,hostname',
+			colorize: true,
+			}
+		},
+		level: 'info'
+	},
+    https: {
+     key: fs.readFileSync(key),
+     cert: fs.readFileSync(cert),
+   }
 });
+
+// Utility
+//import fs from 'fs';
+//const key =  path.join(path.dirname(__dirname), './server/server.key');
+//const cert = path.join(path.dirname(__dirname), './server/server.crt');
+
+//const fastify: FastifyInstance = Fastify({
+//  logger: {
+//    transport: {
+//      target: 'pino-pretty',
+//      options: {
+//        translateTime: 'HH:MM:ss Z',
+//        ignore: 'pid,hostname',
+//        colorize: true,
+//      }
+//    },
+//    level: 'warn'
+//  },
+//  https: {
+//    key: fs.readFileSync(key),
+//    cert: fs.readFileSync(cert),
+//  }
+//});
 
 fastify.register(pluginMultipart), {
   limits: { fileSize: 10 * 1024 * 1024 }
