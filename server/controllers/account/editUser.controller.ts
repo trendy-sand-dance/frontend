@@ -14,7 +14,6 @@ async function notifyGameserver(username: string, newUsername: string | null, ne
         'Content-Type': 'application/json',
       },
       body: data
-
     });
 
     if (!response.ok) {
@@ -23,6 +22,10 @@ async function notifyGameserver(username: string, newUsername: string | null, ne
       throw { code: response.status, message: responseBody.error };
 
     }
+
+    const d = await response.json();
+
+    console.log("We notified the gameserver: ", d);
 
   }
   catch (error) {
@@ -52,6 +55,7 @@ export async function editUsername(request: FastifyRequest, reply: FastifyReply)
     }
 
     const newUserData = await fetch(`${DATABASE_URL}/dashboard/${newUsername}`);
+    await notifyGameserver(username, newUsername, null);
     const resData = await newUserData.json() as { email: string, avatar: string };
     return reply.viewAsync("dashboard/profile-button.ejs", { username: newUsername, email: resData.email, img_avatar: resData.avatar });
   } catch (error) {
@@ -158,6 +162,7 @@ export async function editAvatar(request: FastifyRequest, reply: FastifyReply) {
       throw { code: resEdit.status, message: responseBody.error };
     }
     const newUserData = await fetch(`${DATABASE_URL}/dashboard/${username}`);
+    await notifyGameserver(username, null, filename);
     const resData = await newUserData.json() as { email: string, avatar: string };
     console.log("resdata avatar = ", resData.avatar);
     return reply.viewAsync("dashboard/profile-button.ejs", { username: username, email: resData.email, img_avatar: resData.avatar });
