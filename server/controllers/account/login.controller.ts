@@ -9,7 +9,6 @@ export async function getLoginView(request: FastifyRequest, reply: FastifyReply)
 
 
 export async function login(request: FastifyRequest, reply: FastifyReply) {
-
   try {
     const { username, password } = request.body as { username: string, password: string };
 
