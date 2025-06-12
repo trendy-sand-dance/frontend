@@ -153,7 +153,7 @@ export default class PlayerManager {
               const btn = document.createElement('button');
               btn.setAttribute("id", "friendReqBtn");
               btn.setAttribute("type", "button");
-              btn.setAttribute("class", "bg-[#FF55FE] text-white rounded-md p-2");
+              btn.setAttribute("class", "bg-[--color-secondary] text-[--color-text] hover:bg-[--color-accent] rounded-md p-2");
               btn.setAttribute("hx-post", `sendReq/${id}/${window.__USER_ID__}`);
               btn.innerHTML = "Send friend request";
               friendReq.appendChild(btn);

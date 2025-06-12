@@ -1,11 +1,35 @@
 <!DOCTYPE html>
 <div id="pixi-container" class="bg-black border border-[#FF55FE] text-white w-full h-full">
-  <script type="module" src="<%= file %>">
-  </script>
+  <!-- <script type="module" src="<%= file %>"> -->
+  <!-- </script> -->
+<script>
+ (async function() { 
+   if (window.gameModule) { 
+     // Clean up existing instance 
+     if (window.gameModule.destroy) { 
+       window.gameModule.destroy(); 
+     } 
+   } 
+
+   try { 
+     // Dynamic import - this will re-execute the module 
+     const module = await import('/<%= file %>?t=' + Date.now()); 
+     window.gameModule = module.default || module; 
+
+     // Initialize if it has an init method 
+     if (window.gameModule.init) { 
+       window.gameModule.init(); 
+     } 
+   } catch (error) { 
+     console.error('Failed to load game module:', error); 
+   } 
+ })(); 
+
+   </script> 
 </div>
 
 <!-- Pixi Player info card on click -->
-<div id="pixi-player-info" class="w-128 h-128 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
+<div id="pixi-player-info" class="w-128 h-128 absolute bg-[--color-background] text-[--color-text-muted] z-10 hidden rounded-md p-2">
 
   <div class="flex justify-end">
     <div id="closeBtnPlayerInfo" class="cursor-pointer">X</div>
@@ -15,7 +39,7 @@
 
     <div id="infoCard" class="flex flex-row justify-center">
       <img id="infoAvatar">
-      <h2 class="font-extrabold content-center" id="infoUsername"></h2>
+      <h2 class="font-extrabold content-center text-[--color-accent]" id="infoUsername"></h2>
     </div>
     <div class="flex flex-col" id="infoStats">
       <p id="winsAndLosses">Wins: (error) | Losses: (error)</p>
@@ -28,7 +52,7 @@
     </div>
 
     <div class="flex justify-center" id ="gameInvite">
-      <button  id="gameInviteBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2">Invite to play</button>
+      <button  id="gameInviteBtn" type="button" class="bg-[--color-secondary] text-[--color-text] hover:bg-[--color-accent] rounded-md p-2">Invite to play</button>
     </div>
 
   </div>
@@ -37,7 +61,7 @@
 
 
 <!-- Pixi Tournament info on click -->
-<div id="pixi-tournament-info" class="w-128 h-128 absolute bg-[#01FFFF] z-10 hidden rounded-md p-2">
+<div id="pixi-tournament-info" class="w-128 h-128 absolute bg-[--color-background] text-[--color-text] z-10 hidden rounded-md p-2">
 
   <div class="flex justify-end">
     <div id="closeBtnTournamentInfo" class="cursor-pointer">X</div>
@@ -50,12 +74,12 @@
     </div>
 
     <!-- Subscribed players go here -->
-    <div id="infoCardTournament" class="flex flex-row justify-center" hx-get="/getTournamentPlayers" hx-swap="innerHTML" hx-trigger="load, customEvent from:body">
+    <div id="infoCardTournament" class="flex flex-row justify-center text-[--color-text-muted]" hx-get="/getTournamentPlayers" hx-swap="innerHTML" hx-trigger="load, customEvent from:body">
     </div>
 
     <div class="flex justify-center">
-      <button  id="joinTournamentBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2 hover:bg-[#FF66FF]" onclick="htmx.trigger('#infoCardTournament', 'customEvent')">Subscribe</button>
-      <button  id="leaveTournamentBtn" type="button" class="bg-[#FF55FE] text-white rounded-md p-2 hover:bg-[#FF66FF]" onclick="htmx.trigger('#infoCardTournament', 'customEvent')">Unsubscribe</button>
+      <button  id="joinTournamentBtn" type="button" class="bg-[--color-secondary] text-[--color-text] rounded-md p-2 hover:bg-[--color-accent]" onclick="htmx.trigger('#infoCardTournament', 'customEvent')">Subscribe</button>
+      <button  id="leaveTournamentBtn" type="button" class="bg-[--color-secondary] text-[--color-text] rounded-md p-2 hover:bg-[--color-accent]" onclick="htmx.trigger('#infoCardTournament', 'customEvent')">Unsubscribe</button>
     </div>
 
   </div>
@@ -64,20 +88,26 @@
 
 <script> 
 
-// Player card
-const playerInfoBox = document.getElementById("pixi-player-info");
-const closeBtn = document.getElementById("closeBtnPlayerInfo");
+if (!window.playerInfoScriptInitialized) {
 
-closeBtn.addEventListener("click", () => { 
-  playerInfoBox.style.display = "none";
-});
+  window.playerInfoScriptInitialized = true;
 
-// Tournament info
-const tournamentInfoBox = document.getElementById("pixi-tournament-info");
-const closeBtnTournament = document.getElementById("closeBtnTournamentInfo");
+  // Player card
+  const playerInfoBox = document.getElementById("pixi-player-info");
+  const closeBtn = document.getElementById("closeBtnPlayerInfo");
 
-closeBtnTournament.addEventListener("click", () => { 
-  tournamentInfoBox.style.display = "none";
-});
+  closeBtn.addEventListener("click", () => { 
+    playerInfoBox.style.display = "none";
+  });
+
+  // Tournament info
+  const tournamentInfoBox = document.getElementById("pixi-tournament-info");
+  const closeBtnTournament = document.getElementById("closeBtnTournamentInfo");
+
+  closeBtnTournament.addEventListener("click", () => { 
+    tournamentInfoBox.style.display = "none";
+  });
+
+}
 
 </script>

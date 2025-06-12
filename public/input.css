@@ -3,6 +3,22 @@
 @tailwind utilities;
 
 :root {
+
   --color-cgya-cyan: #01FFFF;
   --color-cgya-pink: #FF55FE;
+  --color-primary: #8e008e;
+  --color-secondary: #620051;
+  --color-accent: #6f9191;
+  --color-background: #002424;
+  --color-surface: #0ea905;
+  --color-text: #a4c6c6;
+  --color-text-muted: #909595;
+
+  font-family: "Silkscreen", sans-serif;
+
+
+}
+
+body {
+    font-family: "Silkscreen", sans-serif;
 }
