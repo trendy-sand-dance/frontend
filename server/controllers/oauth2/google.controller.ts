@@ -1,5 +1,5 @@
 import {FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
-import { DATABASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../config';
+import { DATABASE_URL } from '../../config';
 import { User } from '../../types';
 import { setJwt } from '../../utility/jwt';
 
@@ -31,28 +31,39 @@ export function googleOAuth2Routes (
 		const response_json = await response.json() as googleOauth2Response;
 
 
-		const login_user_resp = await fetch(`${DATABASE_URL}/login_google`, {
+		const login_user_resp = await fetch(`${DATABASE_URL}/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
 				username: response_json.name,
-				email: response_json.email,
+				gooAuth: true
 			})
 		});
 
-		if (!login_user_resp.ok)
+		// TODO: check if user exists if not create it.
+    if (response.status == 401)
 		{
-			console.log("something fucky when ton")
-			// TODO: Add Merlin's error handling.
-			return;
-		}
 
+    }
 
 		const user = await login_user_resp.json() as User;
-		console.log("freshly created user : ", user);
 		await setJwt(request, reply, user);
+
+		// console.log("username : ", response_json);
+		//
+		// const register_user_resp = await fetch(`${DATABASE_URL}/register`, {
+		// 	method: 'POST',
+		// 	headers: {
+		// 		'Content-Type': 'application/json',
+		// 	},
+		// 	body: JSON.stringify({
+		//     username: response_json.name,
+		//     email: response_json.email,
+		// 		gooAuth: true
+		//  })
+		// });
 
 		// reply.redirect("http://localhost:8000/?access_token=" + token.access_token);
 		// reply.redirect("http://localhost:8000/?access_token=" + token.access_token);
