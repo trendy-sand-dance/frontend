@@ -115,26 +115,16 @@
       return toggle;
     }
 
-		export function toggleEmailInput_func()
-		{
-      toggleEmailInput = toggleInput(emailInput, toggleEmailInput);
-		}
-
     document.getElementById("openUsernameInput").addEventListener("click", () => {
       toggleUsernameInput = toggleInput(usernameInput, toggleUsernameInput)
     });
-    document.getElementById("openEmailInput").addEventListener("click", toggleEmailInput_func);
-
+    document.getElementById("openEmailInput").addEventListener("click", () => {
+      toggleEmailInput = toggleInput(emailInput, toggleEmailInput);
+    });
     document.getElementById("openAvatarInput").addEventListener("click", () => {
       toggleAvatarInput = toggleInput(avatarInput, toggleAvatarInput)
     });
 
-				if (window.__IS_GOOGLE_USER__ === 'true')
-			{
-    			document.getElementById("openEmailInput").removeEventListener("click", toggleEmailInput_func);
-    			document.getElementById("openEmailInput").remove();
-				}
-		
   </script>
 
   <script type="module">
@@ -152,6 +142,5 @@
     document.getElementById("closeProfileDialog").addEventListener("click", () => toggleModal());
     // dialog.addEventListener("click", (event) => {if (event.target.id !== 'closing-div') {toggleModal();} });
   </script>
-
 
 </div>
