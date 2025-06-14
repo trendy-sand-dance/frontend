@@ -14,9 +14,16 @@ export function googleOAuth2Routes (
         const { token } = await app.GoogleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
 
 
-				const response = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token.access_token}`);
-				
-				console.log("doxxedd lmao: ", await response.json());
+        // Redirect to our frontend side
+        // You can get the access token from the URI Query and save it as a cookie in the client browser
+				// info = fetch("https://www.googleapis.com/oauth2/v3/userinfo?access_token=")
+				const user_info = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token.access_token}`, {
+					method: 'GET',
+					headers: {
+						Accept: '*/*',
+					},
+				});
+				console.log("doxxedd lmao: ", user_info);
         reply.redirect("http://localhost:8000/?access_token=" + token.access_token);
     });
 
