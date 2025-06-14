@@ -9,7 +9,6 @@ import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboa
 import {viewMatchHistory} from '../controllers/account/matchHistory.controller.js';
 // import sidebarController from "../controllers/playground.controller.js";
 
-
 export async function routes(fastify: FastifyInstance) {
 
   // Root
