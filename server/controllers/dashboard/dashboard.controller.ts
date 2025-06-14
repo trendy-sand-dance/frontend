@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-// import { User, UserPayload } from '../../types';
-import { DATABASE_URL, LOCAL_GAMESERVER_URL, USERMANAGEMENT_URL } from '../../config';
+import { DATABASE_URL, LOCAL_GAMESERVER_URL } from '../../config';
 
 
 export async function getDashboard(request: FastifyRequest, reply: FastifyReply) {
@@ -23,10 +22,14 @@ export async function getDashboard(request: FastifyRequest, reply: FastifyReply)
 			});
 
 
+    const data = await response.json() as User;
+		const is_google_user = (data.password === null);
+
 		return reply.viewAsync("dashboard/dashboard-view.ejs", {
-		user,
-		id,
-		gameserverURL: LOCAL_GAMESERVER_URL
+			user,
+			id,
+			gameserverURL: LOCAL_GAMESERVER_URL,
+			google_user: is_google_user
 		});
   }
   catch (error) {
@@ -40,9 +43,8 @@ export async function getDashboardUser(request: FastifyRequest, reply: FastifyRe
   const { userid } = request.params as { userid: number };
 
   try {
-	const response = await fetch(`${DATABASE_URL}/user/${userid}`);
-	const userData = await response.json() as { username: string, email: string, avatar: string };
-
+		const response = await fetch(`${DATABASE_URL}/user/${userid}`);
+		const userData = await response.json() as { username: string, email: string, avatar: string };
 
 	return reply.viewAsync("dashboard/profile-button.ejs", { username: userData.username, email: userData.email, img_avatar: userData.avatar });
   }
