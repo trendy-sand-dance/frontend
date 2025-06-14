@@ -96,16 +96,15 @@ fastify.register(pluginCookie, {
 
 fastify.decorate(
 	'authenticate',
+	// TODO: Add proper unauthorized page
 	async (request: FastifyRequest, reply: FastifyReply) => {
 		const token = request.cookies.access_token
 		try {
 			if (!token)
-				// haha I love javascript
+				// haha wtf javascript
 				throw {};
 			request.user = request.jwt.verify<FastifyJWT['user']>(token)
 		} catch (error) {
-			// delete invalid cookie
-  		reply.clearCookie('access_token')
 			await reply.view(
 				"errors/error-page.ejs",
 			{
