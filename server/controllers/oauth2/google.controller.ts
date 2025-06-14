@@ -36,6 +36,7 @@ export function googleOAuth2Routes (
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
+				username: response_json.name,
 				email: response_json.email,
 			})
 		});
