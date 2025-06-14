@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest} from 'fastify';
+import { User } from '../types';
 
 
 export async function setJwt(request: FastifyRequest, reply: FastifyReply, user: User)

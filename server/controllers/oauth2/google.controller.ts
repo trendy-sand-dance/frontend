@@ -1,5 +1,6 @@
 import {FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest} from 'fastify';
 import { DATABASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../../config';
+import { User } from '../../types';
 import { setJwt } from '../../utility/jwt';
 
 type googleOauth2Response = {
