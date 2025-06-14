@@ -7,14 +7,21 @@ import { getStats, updateWins, updateLosses } from '../controllers/account/stats
 import { getPixiGame, getPlayerInfo, getUserInfo, getTournamentPlayers } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import {viewMatchHistory} from '../controllers/account/matchHistory.controller.js';
+import { FastifyJWT } from '@fastify/jwt';
 // import sidebarController from "../controllers/playground.controller.js";
 
 
 export async function routes(fastify: FastifyInstance) {
 
   // Root
+	// auto redirect when token is set (pretty gnarly but it do be workin)
   fastify.get('/', async function(request: FastifyRequest, reply: FastifyReply) {
-    return reply.sendFile('index.html');
+		const token = request.cookies.access_token
+		if (!token)
+			return reply.sendFile('index.html');
+		request.user = request.jwt.verify<FastifyJWT['user']>(token)
+
+		return reply.redirect('/dashboard');
   });
 
   // Account
