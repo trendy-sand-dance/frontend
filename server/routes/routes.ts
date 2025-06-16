@@ -8,6 +8,8 @@ import { getPixiGame, getPlayerInfo, getUserInfo, getTournamentPlayers } from '.
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
 import {viewMatchHistory} from '../controllers/account/matchHistory.controller.js';
 import { FastifyJWT } from '@fastify/jwt';
+import { getRoomMessages } from '../controllers/chat/chat.controller.js';
+import { CHATSERVER_URL } from '../config.js';
 // import sidebarController from "../controllers/playground.controller.js";
 
 
@@ -63,6 +65,10 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/game/userinfo/:id', getUserInfo);
   fastify.get('/getTournamentPlayers', getTournamentPlayers);
 
+  // Chat
+  fastify.get('/getRoomMessages/:id', getRoomMessages);
+
+
 
   // Dashboard
   fastify.get('/dashboard', {
@@ -83,9 +89,28 @@ export async function routes(fastify: FastifyInstance) {
 
 
   //can we delete these?
-  fastify.get('/sidebar/chat', async (req, reply) => {
-	console.log("triggering chat");
-    return reply.view('/partials/sidebar-chat.ejs');
+  fastify.get('/sidebar/chat/:id', async (req, reply) => {
+
+  try {
+
+    const { id } = req.params as { id : number };
+
+    console.log(`${CHATSERVER_URL}`);
+    const response = await fetch(`${CHATSERVER_URL}/getRoomMessages/${id}`);
+    const data = await response.json() as { messages : RoomMessage[] };
+    console.log("data in async route", data.messages);
+
+    return reply.view('/partials/sidebar-chat.ejs', {messages: data.messages});
+
+  } catch (error) {
+
+    req.log.error(error);
+    return reply.view("errors/error-500.ejs");
+
+  }
+
+	  // console.log("triggering chat");
+    // return reply.viewAsync('/partials/sidebar-chat.ejs', {id: id});
   });
 
   fastify.get('/sidebar/players', async (req, reply) => {

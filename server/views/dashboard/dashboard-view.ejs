@@ -94,10 +94,11 @@
 		<button 
       id="chat-content-btn"
       type="button"
-			hx-get="/sidebar/chat"
+			hx-get="/sidebar/chat/<%= id %>"
       hx-trigger='click, popstate-triggered'
-			hx-target="#sidebar-content-replaceable"
+			hx-targetsidebar-content-replaceable"
 			hx-swap="innerHTML"
+			hx-target="#sidebar-content-replaceable"
 			onclick="toggleSidebar(1)"
 			class="rounded-md p-2 justify-right bg-[--color-secondary] hover:bg-[--color-accent]">
 			Chat 💬💬💬
