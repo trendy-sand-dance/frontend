@@ -138,8 +138,14 @@ export default class PlayerManager {
 
           if (infoUsername)
             infoUsername.textContent = `${user.username}`;
-          if (infoAvatar)
-            infoAvatar.outerHTML = `<img id="infoAvatar" src="/images/avatars/${user.avatar}" class="w-12 h-12 rounded-full" />`;
+          if (infoAvatar) {
+            if (user.avatar.includes('https://lh3.googleusercontent.com')) {
+              infoAvatar.outerHTML = `<img id="infoAvatar" src="${user.avatar}" class="w-12 h-12 rounded-full" />`;
+            }
+            else {
+              infoAvatar.outerHTML = `<img id="infoAvatar" src="/images/avatars/${user.avatar}" class="w-12 h-12 rounded-full" />`;
+            }
+          }
 
           // Set up friend request button
           // const friendReqBtn = document.getElementById("friendRequestBtn");

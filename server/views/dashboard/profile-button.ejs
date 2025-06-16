@@ -3,10 +3,15 @@
 <div class="flex flex-row bg-[--color-secondary] text-[--color-text] rounded-md">
 
   <div class="flex justify-center">
+    <% if (img_avatar.includes('https://lh3.googleusercontent.com')) { %>
+    <img src="<%=img_avatar %>" alt="Avatar" class="bg-black rounded-[50%] max-w-10 h-auto">
+    <% } else { %>
     <img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-black rounded-[50%] max-w-10 h-auto">
+    <% } %>
+
   </div>
 
-  <div id='openProfileDialog' class="flex flex-row w-32 justify-between cursor-pointer bg-[--color-secondary] hover:bg-[--color-accent]">
+  <div id='openProfileDialog' class="flex flex-row min-w-32 w-full justify-between cursor-pointer bg-[--color-secondary] hover:bg-[--color-accent]">
     <p class="border-l text-[--color-text] border-[--color-accent] p-2">
       <%= username %>
     </p>
@@ -53,15 +58,30 @@
 		</p>
 	
 		
-		<img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-[--color-background] rounded-[50%] max-w-10 h-auto">
-		<i id="openAvatarInput" class='fas fa-pen text-xs flex text-[--color-accent]'></i>
-		<div id="avatarInput" class="hidden">
-		  <form hx-post="/editAvatar/<%=username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
 
+
+
+    <!-- The avatar editing  -->
+    <div class="flex flex-row">
+    <% if (img_avatar.includes('https://lh3.googleusercontent.com')) { %>
+		<img src="<%=img_avatar %>" alt="Avatar" class="bg-[--color-background] rounded-[50%] max-w-10 h-auto">
+    <% } else { %>
+		<img src="/images/avatars/<%=img_avatar %>" alt="Avatar" class="bg-[--color-background] rounded-[50%] max-w-10 h-auto">
+    <% } %>
+    
+		<i id="openAvatarInput" class='fas fa-pen text-xs flex text-[--color-accent]'></i>
+
+
+
+    </div>
+
+		<div id="avatarInput" class="hidden flex flex-col">
+		  <form hx-post="/editAvatar/<%=username %>" enctype="multipart/form-data" hx-target="#dashboard-profile-button" hx-swap="innerHTML">
 			<input type="file" id="myFile" name="filename" accept="image/*">
 			<input type="submit" value="Change Avatar"></input>
 		  </form>
-		</div>
+    </div>
+
 	  </div>
 	</div>
 

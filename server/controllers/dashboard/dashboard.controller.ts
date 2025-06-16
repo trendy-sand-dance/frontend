@@ -45,6 +45,7 @@ export async function getDashboardUser(request: FastifyRequest, reply: FastifyRe
   try {
 		const response = await fetch(`${DATABASE_URL}/user/${userid}`);
 		const userData = await response.json() as { username: string, email: string, avatar: string };
+		console.log("userData: ", userData);
 
 	return reply.viewAsync("dashboard/profile-button.ejs", { username: userData.username, email: userData.email, img_avatar: userData.avatar });
   }
