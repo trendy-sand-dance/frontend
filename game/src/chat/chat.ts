@@ -83,7 +83,7 @@ private sendIfWhisper(message : string, player : Player, playerManager : PlayerM
 
 		toId: targetID,
 
-		message: msgContent,
+		message: player.getUsername() + ": " + msgContent,
 
 		timestamp: new Date().toLocaleString()
 

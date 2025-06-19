@@ -59,7 +59,8 @@ export async function logout(request: FastifyRequest, reply: FastifyReply) {
   reply.clearCookie('access_token')
   try {
     await fetch(`${DATABASE_URL}/logout/${username}`);
-    return reply.sendFile("index.html");
+	reply.redirect('/');
+	return;
   } catch (error) {
     request.log.error(error);
     return reply.viewAsync("errors/error-500.ejs");

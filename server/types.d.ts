@@ -65,6 +65,14 @@ declare global {
     room: RoomType,
   }
 
+      type WhisperMessage = {
+    type: string,
+    fromId: number,
+    toId: number,
+    message: string,
+    timestamp: string,
+  }
+
 }
 
 interface MatchHistory 
