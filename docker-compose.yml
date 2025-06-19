@@ -7,8 +7,6 @@ services:
     environment:
       LISTEN_PORT: 3000
       LISTEN_ADDRESS: '0.0.0.0'
-    ports:
-      - "8000:3000"
     volumes:
       - ./server:/app/server  # Mount local project folder into the container
       - /app/node_modules  # Prevent overwriting node_modules
