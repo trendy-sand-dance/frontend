@@ -13,7 +13,11 @@
 				</div>
 				<% } else { %>
 				<div class="bg-[--color-secondary] text-[--color-text] rounded p-2">
-					<%= message.message %>
+					<span class="font-bold text-[--color-accent]"><%= message.username %></span>:
+					<span class="break-all overflow-wrap-anywhere inline"><%= message.message %></span>
+					<span class="block text-xs text-gray-400 text-right"></span>
+						<%= new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
+					</span>
 				</div>
 			<% }}); %>
 			<% } %>

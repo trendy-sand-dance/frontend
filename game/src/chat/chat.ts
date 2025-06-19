@@ -75,19 +75,8 @@ private sendIfWhisper(message : string, player : Player, playerManager : PlayerM
 		const msgContent : string = message.slice(nameEnd);
 
 
-		const whisper : WhisperMessage =
-
-		{   type: MessageType.PersonalChat,
-
-		fromId: player.getId(),
-
-		toId: targetID,
-
-		message: player.getUsername() + ": " + msgContent,
-
-		timestamp: new Date().toLocaleString()
-
-		};
+		const whisper : WhisperMessage =	{type: MessageType.PersonalChat, fromId: player.getId(), fromUsername: targetName,
+												toId: targetID, message: msgContent, timestamp: new Date().toLocaleString()};
 
 	this.socket!.send(JSON.stringify(whisper)); //! cause socket existence gets checked in parent func, should i keep check in case of dc?
 
@@ -130,7 +119,7 @@ private handleTextInput(playerManager : PlayerManager, mapContainer : Container)
 			// TODO: Write function to determine which room the player is and whether it's a PM or a RM
 
 
-			const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion()};
+			const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), username: player.getUsername(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion()};
 
 			this.socket.send(JSON.stringify(roomMessage));
 
