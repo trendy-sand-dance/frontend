@@ -12,6 +12,7 @@ export async function login(request: FastifyRequest, reply: FastifyReply) {
   try {
     const { username, password } = request.body as { username: string, password: string };
 
+		console.log("DATABASE_URL : ", DATABASE_URL);
     const response = await fetch(`${DATABASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
