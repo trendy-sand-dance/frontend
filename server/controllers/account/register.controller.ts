@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 const DATABASE_URL: string = "https://database_container:3000";
 
+
 export async function getRegisterView(request: FastifyRequest, reply: FastifyReply) {
   return reply.viewAsync("account/register-view.ejs");
 }

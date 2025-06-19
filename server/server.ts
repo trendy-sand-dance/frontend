@@ -19,10 +19,6 @@ import './setUpFetch';
 
 import path from 'node:path';
 
-import fs from 'fs';
-const key =  './setup/server.key';
-const cert = './setup/server.crt';
-
 const fastify: FastifyInstance = Fastify({
   logger: {
     transport: {
@@ -34,11 +30,7 @@ const fastify: FastifyInstance = Fastify({
 			}
 		},
 		level: 'info'
-	},
-    https: {
-     key: fs.readFileSync(key),
-     cert: fs.readFileSync(cert),
-   }
+	}
 });
 
 // Utility
