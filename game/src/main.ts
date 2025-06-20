@@ -5,7 +5,7 @@ import GameMap from './map/gamemap.js';
 import * as settings from './settings.js';
 import * as mouse from './input/mouse-interaction.js';
 import * as input from './input/input.js';
-import * as gameCM from './gameserver/connectionmanager.js';
+import * as gameCM from './gameserver/gameconnectionmanager.js';
 import * as chatCM from './chat/chatconnectionmanager.js';
 import PongTable from './pong/pongtable.js';
 import Point from './utility/point.js';
@@ -13,7 +13,7 @@ import Player from './player/player.js';
 import Invitation from "./ui/invitation.js";
 import { PongState, CameraMode, RoomType, MessageType } from './interfaces.js';
 import TournamentSubscription from "./pong/tournamentsubscription.js";
-import { gameSocket } from './gameserver/connectionmanager.js'
+import { gameSocket } from './gameserver/gameconnectionmanager.js'
 import { chatSocket } from './chat/chatconnectionmanager.js';
 import { fragmentShader, vertexShader } from "./shaders/shaders.js";
 import { lerpNumber } from "./utility/lerp.js";
@@ -422,7 +422,7 @@ export let gameMap: GameMap;
 
   //Network business
   if (window.__USER_ID__ && !window.__DEV__) {
-    await gameCM.runConnectionManager(gameMap);
+    await gameCM.runGameConnectionManager(gameMap);
     chatCM.runChatConnectionManager(gameMap);
 
     // Testing tournamentSubscription box

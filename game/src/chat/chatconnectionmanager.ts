@@ -1,8 +1,8 @@
-import { initializeWebsocket } from "../gameserver/connectionmanager";
+import { initializeWebsocket } from "../gameserver/gameconnectionmanager";
 import { messageHandlers } from "./messagehandler";
 import { MessageType } from "../interfaces";
 import { RoomType } from "../interfaces";
-import { localUser } from '../gameserver/connectionmanager';
+import { localUser } from '../gameserver/gameconnectionmanager';
 import Chat from './chat';
 import { playerManager } from "../player/playermanager";
 import GameMap from '../map/gamemap';
@@ -12,7 +12,7 @@ export let chatSocket: WebSocket;
 
 export function runChatConnectionManager(gameMap: GameMap) {
 
-  chatSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
+  chatSocket = initializeWebsocket("localhost", "8000", "ws-chatserver");
 
   if (chat) {
     chat.bind(chatSocket, playerManager, gameMap.container);
