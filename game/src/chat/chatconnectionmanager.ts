@@ -13,16 +13,13 @@ export let chatSocket: WebSocket;
 export function runChatConnectionManager(gameMap: GameMap) {
 
   chatSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8004", "ws-chatserver");
-  if (chatSocket) {
-    console.info(`Sucessfully connected to the chat server ${chatSocket.url}`);
-  }
 
   if (chat) {
     chat.bind(chatSocket, playerManager, gameMap.container);
   }
 
   chatSocket.onopen = (message: Event) => {
-
+    console.info(`Sucessfully connected to the chat server ${chatSocket.url}`);
     console.log(message);
     const player = playerManager.getLocalPlayer();
     if (player) {
@@ -63,7 +60,7 @@ export function runChatConnectionManager(gameMap: GameMap) {
 
 
   chatSocket.onerror = (message) => {
-    console.log("Websocket error: ", message);
+    console.error("Websocket error occurred: ", message);
   };
 
 };
