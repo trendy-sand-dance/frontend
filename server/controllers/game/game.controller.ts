@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { getBundledFile } from '../../utility/utility.js';
 import { GAMESERVER_URL, DATABASE_URL, LOCAL_GAMESERVER_URL } from '../../config.js';
+import { RoomType } from '../../types.js';
 
 export async function getPixiGame(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -52,6 +53,20 @@ export async function getTournamentPlayers(request: FastifyRequest, reply: Fasti
 
     // console.log("GETTING TOURNAMENT PLAYERS: ", resData.pongPlayers);
     return reply.viewAsync("game/tournamentplayers.ejs", { pongPlayers: resData.pongPlayers });
+  }
+  catch (error) {
+    request.log.error(error);
+  }
+}
+
+export async function getRoom(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const {id} = request.params as {id : number};
+
+    const response = await fetch(`${GAMESERVER_URL}/game/room/${id}`);
+    const data = await response.json() as { room: RoomType };
+
+    return reply.code(200).send({room: data.room});
   }
   catch (error) {
     request.log.error(error);

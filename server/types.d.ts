@@ -57,6 +57,24 @@ declare global {
     player?: Player,
   }
 
+  type RoomMessage = {
+    type: string,
+    id: number,
+	username: string,
+    message: string,
+    timestamp: string,
+    room: RoomType,
+  }
+
+  type WhisperMessage = {
+    type: string,
+    fromId: number,
+	username: string,
+    toId: number,
+    message: string,
+    timestamp: string,
+  }
+
 }
 
 interface MatchHistory 
@@ -67,4 +85,13 @@ interface MatchHistory
 	winner: string,
 	date: string,
 	opponent: string,
+}
+
+export enum RoomType {
+  Cluster = "cluster",
+  Server = "server",
+  Game = "game",
+  Bocal = "bocal",
+  Hall = "hall",
+  Toilet = "toilet",
 }
