@@ -39,104 +39,123 @@ export default class Chat {
 
   }
 
-private sendIfWhisper(message : string, player : Player, playerManager : PlayerManager, mapContainer : Container) : boolean
-{
+private getWhisperTarget(textInput : string) : string {
 
-	// playerManager.getPlayer
+	const nameEnd = textInput.indexOf(" ");
+	if (nameEnd === -1) 
+		return "";
 
-	console.log("entered whisper func");
-
-	if (message.charAt(0) != '@' || message.length < 2)
-	return false;
-
-	let nameEnd : number = message.indexOf(" "); //can users have spaces in names?
-
-	if (nameEnd === -1)
-	return false;
-
-	const targetName : string = message.slice(1, nameEnd);
-
-	const targetID : number = playerManager.getId(targetName);
-
-	// const response = await fetch(`${DATABASE_URL}/game/players/${targetName}`);
-	// const targetPlayer = await response.json() as Player;
-	
-	if (targetID === -1)
-	{
-		//make it give a specific "user not found" feedback to user in future
-		
-		console.log("Can't find user: ", targetName);
-		
-		return false;
-		
-	}
-		console.log(`${targetName}'s id: ${targetID}`);
-		
-		const msgContent : string = message.slice(nameEnd);
-
-
-		const whisper : WhisperMessage =	{type: MessageType.PersonalChat, fromId: player.getId(), fromUsername: targetName,
-												toId: targetID, message: msgContent, timestamp: new Date().toLocaleString()};
-
-	this.socket!.send(JSON.stringify(whisper)); //! cause socket existence gets checked in parent func, should i keep check in case of dc?
-
-	const bubble : ChatBubble = new ChatBubble(player, "pst pst", 10)
-	
-	this.chatBubbles.push(bubble);
-	mapContainer.addChild(bubble.getContainer());
-
-	console.log("%cwhisper send!", "color: purple");
-	this.renderMsgHTML(msgContent, player.getUsername());
-
-	return true;
+	return textInput.slice(1, nameEnd);
 
 }
 
-public renderMsgHTML(msg : string, senderName: string)
+private removeNameFromText(textInput : string) : string {
+
+	const nameEnd = textInput.indexOf(" ");
+	return textInput.slice(nameEnd);
+
+}
+
+private handleRendering(player : Player, chatMessage : RoomMessage | WhisperMessage | undefined, size : number, container : Container, playerManager : PlayerManager) : void {
+
+	if (chatMessage) { 
+		const bubble: ChatBubble = new ChatBubble(player, chatMessage.message, size);
+		this.chatBubbles.push(bubble);
+		container.addChild(bubble.getContainer());
+	}
+	this.renderMessageAsHtml(chatMessage, playerManager);
+
+}
+
+public renderMessageAsHtml(chatMessage : RoomMessage | WhisperMessage | undefined, playerManager : PlayerManager)
 {
+
 	this.chatDisplay = document.getElementById("chat-message-display") as HTMLElement;
     if (this.chatDisplay === null) {
       console.error("Couldn't get chatDisplay for Chat");
+	  return;
     }
 	const chatdiv = document.createElement("div") as HTMLElement;
-	chatdiv.setAttribute("class", "bg-[--color-secondary] text-[--color-text] rounded p-2");
-	chatdiv.innerHTML = `${senderName}: ${msg}`;
+	if (!chatMessage) {
+		chatdiv.setAttribute("class", "text-[--color-text-muted]");
+		chatdiv!.innerHTML = "Message could not be sent: user is offline or invalid...";
+		this.chatDisplay.appendChild(chatdiv);
+		return;
+	}
+	const spanUsername = document.createElement("span") as HTMLElement;
+	spanUsername!.setAttribute("class", "font-bold text-[--color-accent]");
+	const spanMessage = document.createElement("span") as HTMLElement;
+	spanMessage!.setAttribute("class", "break-all overflow-wrap-anywhere inline");
+	const spanTimestamp = document.createElement("span") as HTMLElement;
+	spanTimestamp!.setAttribute("class", "block text-xs text-gray-400 text-right");
+
+	if (chatMessage.type === MessageType.RoomChat) {
+		const msg : RoomMessage = chatMessage as RoomMessage;
+		chatdiv.setAttribute("class", "bg-[--color-secondary] text-[--color-text] rounded p-2");
+		spanUsername!.innerHTML = `${msg.username}: `;
+		spanMessage!.innerHTML = `${msg.message}`;
+		spanTimestamp!.innerHTML = `${msg.room + ", " + msg.timestamp}`;
+	}
+	if (chatMessage.type === MessageType.PersonalChat) {
+		const msg : WhisperMessage = chatMessage as WhisperMessage;
+		chatdiv.setAttribute("class", "bg-[--color-background] text-[--color-text] border border-[--color-accent] rounded p-2");
+		const localId = playerManager.getLocalPlayer()?.getId();
+		if (localId === msg.fromId) { // I'm whispering
+			spanUsername!.innerHTML = `Whisper to ${msg.toUsername}: `;
+		} 
+		else {
+			spanUsername!.innerHTML = `${msg.fromUsername} whispers: `;
+		}
+		spanMessage!.innerHTML = `${msg.message}`;
+		spanTimestamp!.innerHTML = `${msg.timestamp}`;
+	}
+
+	chatdiv.appendChild(spanUsername);
+	chatdiv.appendChild(spanMessage);
+	chatdiv.appendChild(spanTimestamp);
 	this.chatDisplay.appendChild(chatdiv);
-	// this.chatDisplay
+}
+
+private isWhisper(message : string) : boolean {
+
+	if (message.charAt(0) != '@' || message.length < 2 || message.indexOf(" ") === -1)
+		return false;
+
+	return true;
 }
 
 private handleTextInput(playerManager : PlayerManager, mapContainer : Container) : void 
 {
 
-	const chatMessage = this.getTextInput();
+	const textInput = this.getTextInput();
+	const player = playerManager.getLocalPlayer();
 
-	if (chatMessage)
+	if (textInput && player && this.socket)
 	{
+		let chatMessage : RoomMessage | WhisperMessage | undefined;
 
-		const player = playerManager.getLocalPlayer();
-		if (player && this.socket && !this.sendIfWhisper(chatMessage, player, playerManager, mapContainer)) {
-			
-			// TODO: Write function to determine which room the player is and whether it's a PM or a RM
-
-
-			const roomMessage : RoomMessage = {type: MessageType.RoomChat, id: player.getId(), username: player.getUsername(), message: chatMessage, timestamp: new Date().toLocaleString(), room: player.getRegion()};
-
-			this.socket.send(JSON.stringify(roomMessage));
-
-			const b = new ChatBubble(player, chatMessage, this.bubbleSize);
-
-			this.chatBubbles.push(b);
-
-			mapContainer.addChild(b.getContainer());
-			this.renderMsgHTML(chatMessage, player.getUsername());
-
-			console.log("We pushing");
+		if (this.isWhisper(textInput)) {
+			const message = this.removeNameFromText(textInput);
+			const targetName = this.getWhisperTarget(textInput);
+			const toId = playerManager.getId(targetName);
+			if (toId === -1 || toId === player.getId()) {
+				console.log(`${targetName} is offline or doesn't exist!`);
+			}
+			else {
+				chatMessage = { type: MessageType.PersonalChat, fromId: player.getId(), fromUsername: player.getUsername(), toId: toId, toUsername: targetName, message: message, timestamp: new Date().toISOString()};
+			}
 		}
+		else {
+			chatMessage = {type: MessageType.RoomChat, id: player.getId(), username: player.getUsername(), message: textInput, timestamp: new Date().toISOString(), room: player.getRegion()};
+		}
+
+		this.handleRendering(player, chatMessage, this.bubbleSize, mapContainer, playerManager);
+		if (chatMessage)
+			this.socket.send(JSON.stringify(chatMessage));
 	}
+
 	this.textInput.value = "";
 }
-
-
 
   public bind(chatServer: WebSocket, playerManager: PlayerManager, mapContainer: Container): void {
 

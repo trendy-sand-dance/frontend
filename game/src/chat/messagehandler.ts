@@ -27,15 +27,14 @@ export const messageHandlers: Record<string, MessageHandler> = {
     console.log(`RoomChat message from ${server.url}`);
     const msg: RoomMessage = data as RoomMessage;
     chat.createChatBubble(msg.message, msg.id, playerManager, gameMap.container);
-		chat.renderMsgHTML(msg.message, playerManager.getUsernameById(msg.id));
-
+	chat.renderMessageAsHtml(msg, playerManager);
     console.log(msg);
   },
 	"personal_chat": (data: ChatServerMessage, server: WebSocket) => {
-    console.log(`RoomChat message from ${server.url}`);
+    console.log(`WhisperMessage from ${server.url}`);
     const msg: WhisperMessage = data as WhisperMessage;
     chat.createChatBubble(msg.message, msg.toId, playerManager, gameMap.container);
-	chat.renderMsgHTML(msg.message, playerManager.getUsernameById(msg.fromId));
+	chat.renderMessageAsHtml(msg, playerManager);
     console.log(msg);
   },
 

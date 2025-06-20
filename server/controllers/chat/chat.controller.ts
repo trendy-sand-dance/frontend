@@ -36,7 +36,7 @@ export async function getMessageHistory(req: FastifyRequest, reply: FastifyReply
 
 
 
-    return reply.view('/partials/sidebar-chat.ejs', {messages: data.messages});
+    return reply.view('/partials/sidebar-chat.ejs', {messages: data.messages, userId: id});
 
   } catch (error) {
 

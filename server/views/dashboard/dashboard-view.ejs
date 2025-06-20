@@ -94,9 +94,9 @@
 		<button 
       id="chat-content-btn"
       type="button"
-			hx-get="/sidebar/chat/<%= id %>"
+		hx-get="/sidebar/chat/<%= id %>"
       hx-trigger='click, popstate-triggered'
-			hx-targetsidebar-content-replaceable"
+	  hx-vals='{"userId": window.__USER_ID__}'
 			hx-swap="innerHTML"
 			hx-target="#sidebar-content-replaceable"
 			onclick="toggleSidebar(1)"

@@ -69,7 +69,7 @@ declare global {
   type WhisperMessage = {
     type: string,
     fromId: number,
-	fromUsername: string,
+	username: string,
     toId: number,
     message: string,
     timestamp: string,
