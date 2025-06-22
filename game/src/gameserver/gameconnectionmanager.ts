@@ -6,13 +6,7 @@ import { uiContainer } from '../main.js';
 
 export function initializeWebsocket(serverAddress: string, port: string, endpoint: string): WebSocket {
 
-  if (serverAddress) {
-    return new WebSocket(`ws://${serverAddress}:${port}/${endpoint}`); // 8003/ws-gameserver
-  }
-  else {
-    console.warn("Server address not defined... this may cause issues with the websocket connection");
-    return new WebSocket("");
-  }
+    return new WebSocket(`wss://${serverAddress}:${port}/${endpoint}`); // 8003/ws-gameserver
 
 }
 
@@ -78,10 +72,11 @@ function isLocalPlayer(id: number): boolean {
 }
 
 
-export async function runConnectionManager(gameMap: GameMap) {
+export async function runGameConnectionManager(gameMap: GameMap) {
 
-  gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
-  if (gameSocket) {
+//   gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
+  gameSocket = initializeWebsocket("clubpong.com", "443", "ws-gameserver");
+  gameSocket.onopen = () => {
     console.info(`Sucessfully connected to the game server ${gameSocket.url}`);
   }
 
@@ -362,7 +357,7 @@ export async function runConnectionManager(gameMap: GameMap) {
   });
 
   gameSocket.onerror = (message) => {
-    console.log("Websocket error: ", message);
+    console.error("Websocket error occurred: ", message);
   };
 
 }

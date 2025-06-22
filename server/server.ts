@@ -138,7 +138,7 @@ const googleOAuth2Options = {
 	startRedirectPath: '/oauth2/google',
 	// Here you specify the Google callback route.
 	// All logics will be checked after the success login or failure login in this path.
-	callbackUri: `http://localhost:8000/oauth2/google/callback`,
+	callbackUri: `https://clubpong.com/oauth2/google/callback`,
 	// The following 2 functions are check in detail whether the input parameters from Google include the state query parameter or not
 
 	// TODO: Make this shit work

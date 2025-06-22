@@ -2,7 +2,7 @@ import { ColorMatrixFilter } from "pixi.js";
 import Player from './player.js';
 import Invitation from '../ui/invitation.js';
 import { mouse } from '../input/input.js';
-import { gameSocket } from "../gameserver/connectionmanager.js";
+import { gameSocket } from "../gameserver/gameconnectionmanager.js";
 import PongTable from '../pong/pongtable.js';
 import { MessageType } from "../interfaces.js";
 import('htmx.org');

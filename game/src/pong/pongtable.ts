@@ -4,10 +4,10 @@ import Point from '../utility/point.js';
 import Paddle from './paddle.js';
 import Indicator from '../ui/indicator.js';
 import Player from '../player/player.js';
-import * as cm from '../gameserver/connectionmanager.ts'
+import * as cm from '../gameserver/gameconnectionmanager.ts'
 import * as settings from '../settings.js';
 import { PongState, TournamentState } from '../interfaces.js';
-import { gameSocket } from '../gameserver/connectionmanager.ts';
+import { gameSocket } from '../gameserver/gameconnectionmanager.ts';
 import TextBox from '../ui/textbox.js';
 
 function slice2DArray(array: number[][], fromX: number, toX: number, fromY: number, toY: number) {
