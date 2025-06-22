@@ -12,7 +12,7 @@ export let chatSocket: WebSocket;
 
 export function runChatConnectionManager(gameMap: GameMap) {
 
-  chatSocket = initializeWebsocket("localhost", "8000", "ws-chatserver");
+  chatSocket = initializeWebsocket("clubpong.com", "443", "ws-chatserver");
 
   if (chat) {
     chat.bind(chatSocket, playerManager, gameMap.container);

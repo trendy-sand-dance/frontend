@@ -75,7 +75,7 @@ function isLocalPlayer(id: number): boolean {
 export async function runGameConnectionManager(gameMap: GameMap) {
 
 //   gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
-  gameSocket = initializeWebsocket("localhost", "8000", "ws-gameserver");
+  gameSocket = initializeWebsocket("clubpong.com", "443", "ws-gameserver");
   gameSocket.onopen = () => {
     console.info(`Sucessfully connected to the game server ${gameSocket.url}`);
   }
