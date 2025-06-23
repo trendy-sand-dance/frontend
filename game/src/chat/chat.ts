@@ -93,7 +93,7 @@ public renderMessageAsHtml(chatMessage : RoomMessage | WhisperMessage | undefine
 		const msg : RoomMessage = chatMessage as RoomMessage;
 		chatdiv.setAttribute("class", "bg-[--color-secondary] text-[--color-text] rounded p-2");
 		spanUsername!.innerHTML = `${msg.username}: `;
-		spanMessage!.innerHTML = `${msg.message}`;
+		spanMessage!.innerHTML = `'${msg.message}'`;
 		spanTimestamp!.innerHTML = `${msg.room + ", " + msg.timestamp}`;
 	}
 	if (chatMessage.type === MessageType.PersonalChat) {
@@ -106,7 +106,7 @@ public renderMessageAsHtml(chatMessage : RoomMessage | WhisperMessage | undefine
 		else {
 			spanUsername!.innerHTML = `${msg.fromUsername} whispers: `;
 		}
-		spanMessage!.innerHTML = `${msg.message}`;
+		spanMessage!.innerHTML = `'${msg.message}'`;
 		spanTimestamp!.innerHTML = `${msg.timestamp}`;
 	}
 
