@@ -74,8 +74,8 @@ function isLocalPlayer(id: number): boolean {
 
 export async function runGameConnectionManager(gameMap: GameMap) {
 
-//   gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
-  gameSocket = initializeWebsocket("clubpong.com", "443", "ws-gameserver");
+  gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
+  // gameSocket = initializeWebsocket("clubpong.com", "443", "ws-gameserver");
 
     // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
     // When succesfully initialized, we notice other players that there's a new connection.
@@ -83,7 +83,11 @@ export async function runGameConnectionManager(gameMap: GameMap) {
     console.log("localUser: ", localUser);
     const player = initializeLocalPlayer(localUser, gameMap);
     if (player) {
+      console.log("We're prompting the init_player (new_connection) call: ", player);
       sendToServer(gameSocket, { type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
+    }
+    else {
+      console.error("Couldn't find player object!!!!!");
     }
 
 
