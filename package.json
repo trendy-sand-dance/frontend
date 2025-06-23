@@ -23,6 +23,7 @@
     "@types/node": "^22.13.10",
     "@types/ws": "^8.18.0",
     "concurrently": "^9.1.2",
+    "dompurify": "^3.2.6",
     "ejs": "^3.1.10",
     "nodemon": "^3.1.9",
     "pino-pretty": "^13.0.0",

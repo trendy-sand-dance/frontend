@@ -2,9 +2,8 @@ import { Container } from 'pixi.js';
 import PlayerManager from "../player/playermanager.js";
 import ChatBubble from '../chat/chatbubble.js';
 import { MessageType } from "../interfaces";
-// import { DATABASE_URL } from '../../../server/config';
 import Player from '../player/player.js';
-// import { chat } from './chatconnectionmanager.js';
+import DOMPurify from 'dompurify';
 
 export default class Chat {
 
@@ -93,7 +92,7 @@ public renderMessageAsHtml(chatMessage : RoomMessage | WhisperMessage | undefine
 		const msg : RoomMessage = chatMessage as RoomMessage;
 		chatdiv.setAttribute("class", "bg-[--color-secondary] text-[--color-text] rounded p-2");
 		spanUsername!.innerHTML = `${msg.username}: `;
-		spanMessage!.innerHTML = `'${msg.message}'`;
+		spanMessage!.innerHTML = DOMPurify.sanitize(msg.message);
 		spanTimestamp!.innerHTML = `${msg.room + ", " + msg.timestamp}`;
 	}
 	if (chatMessage.type === MessageType.PersonalChat) {
@@ -106,7 +105,7 @@ public renderMessageAsHtml(chatMessage : RoomMessage | WhisperMessage | undefine
 		else {
 			spanUsername!.innerHTML = `${msg.fromUsername} whispers: `;
 		}
-		spanMessage!.innerHTML = `'${msg.message}'`;
+		spanMessage!.innerHTML = DOMPurify.sanitize(msg.message);
 		spanTimestamp!.innerHTML = `${msg.timestamp}`;
 	}
 

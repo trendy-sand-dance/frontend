@@ -1,4 +1,4 @@
-import { Sprite, Texture } from 'pixi.js';
+import { ColorMatrixFilter, Sprite, Texture } from 'pixi.js';
 import Point from '../utility/point.js';
 import { mouse } from '../input/input.js';
 import('htmx.org');
@@ -18,6 +18,22 @@ export default class TournamentSubscription {
     this.subscriptionBox = new Sprite(texture);
     this.server = server;
     this.localPlayer = localPlayer;
+
+    const filter = new ColorMatrixFilter();
+    this.subscriptionBox.interactive = true;
+    this.subscriptionBox.on('pointerover', () => {
+      this.subscriptionBox.blendMode = 'color-dodge';
+      const { matrix } = filter;
+      matrix[1] = 1.0;
+      matrix[2] = 1.0;
+      matrix[3] = 1.0;
+      this.subscriptionBox.filters = [filter];
+    });
+
+    this.subscriptionBox.on('pointerleave', () => {
+      this.subscriptionBox.filters = [];
+    });
+
 
     this.subscriptionBox.interactive = true;
     this.subscriptionBox.on('pointerdown', async () => {
