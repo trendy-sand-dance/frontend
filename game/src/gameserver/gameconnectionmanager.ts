@@ -113,6 +113,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
     // We initialize all other connected players
     if (data.type == "initialize_players") {
+      console.log("Receiving initialize_players: ", data);
       initializePlayers(data.players, gameMap);
     }
 
