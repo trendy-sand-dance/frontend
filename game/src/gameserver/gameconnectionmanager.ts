@@ -76,9 +76,11 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
 //   gameSocket = initializeWebsocket(window.__GAMESERVER_URL__, "8003", "ws-gameserver");
   gameSocket = initializeWebsocket("clubpong.com", "443", "ws-gameserver");
-  gameSocket.onopen = () => {
+
+
+  // TODO: Check if already connected, if not, send new connection
+  gameSocket.onopen = async () => {
     console.info(`Sucessfully connected to the game server ${gameSocket.url}`);
-  }
 
   // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
   // When succesfully initialized, we notice other players that there's a new connection.
@@ -87,6 +89,9 @@ export async function runGameConnectionManager(gameMap: GameMap) {
   if (player) {
     sendToServer(gameSocket, { type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
   }
+
+  }
+
 
   gameSocket.onmessage = (message) => {
     const data = JSON.parse(message.data);
