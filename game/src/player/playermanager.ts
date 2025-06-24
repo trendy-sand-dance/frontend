@@ -171,11 +171,13 @@ export default class PlayerManager {
 
             // Game Invite btn
             const gameInviteBtn = document.getElementById('gameInviteBtn');
+			const localPlayer = this.getLocalPlayer();
 
-            if (gameInviteBtn) {
 
+            if (gameInviteBtn && localPlayer) {
+				
               gameInviteBtn.onclick = () => {
-                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, id: user.id };
+                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, id: localPlayer.getId() };
                 gameSocket.send(JSON.stringify(inviteMessage));
               }
 
