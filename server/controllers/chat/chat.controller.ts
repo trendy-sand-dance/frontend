@@ -29,11 +29,11 @@ export async function getMessageHistory(req: FastifyRequest, reply: FastifyReply
 
     // console.log(`${CHATSERVER_URL}`);
 
-	//add this to routes --v
     const response = await fetch(`${CHATSERVER_URL}/getMessageHistory/${id}`);
     const data = await response.json() as { messages: Array<RoomMessage | WhisperMessage> };
     // console.log("data in async route", data.messages);
 
+	
 
 
     return reply.view('/partials/sidebar-chat.ejs', {messages: data.messages, userId: id});
