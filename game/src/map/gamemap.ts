@@ -42,7 +42,7 @@ export default class GameMap {
   private initMapRegions(): void {
 
     const bocal = new MapRegion({ x: 52, y: 0 }, 12, 24);
-    const game = new MapRegion({ x: 22, y: 15 }, 12, 9);
+    const game = new MapRegion({ x: 22, y: 15 }, 11, 9);
     const cluster = new MapRegion({ x: 0, y: 0 }, 16, 23);
     const server = new MapRegion({ x: 21, y: 0 }, 3, 5);
     const hall = new MapRegion({ x: 0, y: 0 }, 0, 0);
