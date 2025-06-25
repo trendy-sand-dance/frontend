@@ -7,10 +7,9 @@ export async function getRegisterView(request: FastifyRequest, reply: FastifyRep
 
 export async function registerUser(request: FastifyRequest, reply: FastifyReply) {
   try {
-    //const { username, password, email } = request.body as { username: string, password: string, email: string };
-    request.body as { username: string, password: string, email: string };
-    //const dataPackage = JSON.stringify({ username, password, email });
-	// why do we have this dataPackage? why arent we sending this as body?
+    const { username, password, email } = request.body as { username: string, password: string, email: string };
+    const dataPackage = JSON.stringify({ username, password, email });
+
     const response = await fetch(`${DATABASE_URL}/register`, {
       method: 'POST',
       headers: {
