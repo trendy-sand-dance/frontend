@@ -41,9 +41,9 @@ export default class GameMap {
 
   private initMapRegions(): void {
 
-    const bocal = new MapRegion({ x: 52, y: 0 }, 12, 24);
+    const bocal = new MapRegion({ x: 53, y: 0 }, 11, 24);
     const game = new MapRegion({ x: 22, y: 15 }, 11, 9);
-    const cluster = new MapRegion({ x: 0, y: 0 }, 16, 23);
+    const cluster = new MapRegion({ x: 0, y: 0 }, 15, 23);
     const server = new MapRegion({ x: 21, y: 0 }, 3, 5);
     const hall = new MapRegion({ x: 0, y: 0 }, 0, 0);
     const toilet = new MapRegion({ x: 16, y: 0 }, 4, 5);
@@ -98,7 +98,8 @@ export default class GameMap {
 
         // Raise Y 
         const currentHeightOffset = this.getHeightOffset(col, row, tileMap);
-        point.asIsometric.y -= currentHeightOffset;
+        if (tileMap[row][col] !== -1)
+          point.asIsometric.y -= currentHeightOffset;
 
         // Draw pong table tiles
         if (tileMap[row][col] === 1.01 && room === RoomType.Hall) {
@@ -114,14 +115,15 @@ export default class GameMap {
           continue;
         }
 
+        // Cardboards boxes
         if (tileMap[row][col] == -1) {
           const texture = Texture.from('cardboard_blackhole');
 
           const pileHeight = Math.random() * 3;
           for (let i = 0; i < pileHeight; i++) {
             const sprite = new Sprite(texture);
-            sprite.x = point.asIsometric.x - 32;
-            sprite.y = point.asIsometric.y - 24 - (i * 16);
+            sprite.x = point.asIsometric.x;
+            sprite.y = point.asIsometric.y - (i * 16);
             sprite.scale = 0.5;
             sprite.zIndex = 1000;
             mapRegion?.addToContainer(sprite);
