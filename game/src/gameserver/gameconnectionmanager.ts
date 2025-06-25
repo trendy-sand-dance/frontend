@@ -250,7 +250,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
     // Game invite
     if (data.type == "game_invite") {
-      if (isLocalPlayer(data.id)) {
+      if (isLocalPlayer(data.toId)) {
         const inviteMessage: GameInviteMessage = data as GameInviteMessage;
         const invite = playerManager.addInvite(inviteMessage);
         if (invite)

@@ -32,7 +32,7 @@ export default class PlayerManager {
 
   public addInvite(inviteMessage: GameInviteMessage): Invitation | undefined {
 
-    const player = this.getPlayer(inviteMessage.id);
+    const player = this.getPlayer(inviteMessage.fromId);
     if (player) {
       const invite = new Invitation(player, this.invites.length);
       this.invites.push(invite);
@@ -177,7 +177,7 @@ export default class PlayerManager {
             if (gameInviteBtn && localPlayer) {
 				
               gameInviteBtn.onclick = () => {
-                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, id: localPlayer.getId() };
+                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, fromId: localPlayer.getId(), toId: user.id };
                 gameSocket.send(JSON.stringify(inviteMessage));
               }
 
