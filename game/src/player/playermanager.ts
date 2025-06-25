@@ -81,7 +81,7 @@ export default class PlayerManager {
 
     playerSprite.interactive = true;
     playerSprite.on('pointerover', () => {
-      console.log(`Player: ${id}`);
+      // console.log(`Player: ${id}`);
       playerSprite.blendMode = 'color-dodge';
       const { matrix } = filter;
       matrix[1] = 1.0;
@@ -134,7 +134,7 @@ export default class PlayerManager {
 
           }
 
-          console.log("friendStatus", friendStatus);
+          // console.log("friendStatus", friendStatus);
 
           if (infoUsername)
             infoUsername.textContent = `${user.username}`;
@@ -168,11 +168,9 @@ export default class PlayerManager {
               isBtnThere.innerHTML = "Send friend request";
             }
 
-
             // Game Invite btn
             const gameInviteBtn = document.getElementById('gameInviteBtn');
-			const localPlayer = this.getLocalPlayer();
-
+			      const localPlayer = this.getLocalPlayer();
 
             if (gameInviteBtn && localPlayer) {
 				
@@ -182,8 +180,6 @@ export default class PlayerManager {
               }
 
             }
-
-
 
             window.htmx.process(document.body);
           }
