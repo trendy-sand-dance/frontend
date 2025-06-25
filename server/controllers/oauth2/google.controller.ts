@@ -66,7 +66,6 @@ export function googleOAuth2Routes (
 		}
 
 
-
 		// reply.redirect("http://localhost:8000/?access_token=" + token.access_token);
 		// reply.redirect("http://localhost:8000/?access_token=" + token.access_token);
 		reply.redirect('/dashboard');
