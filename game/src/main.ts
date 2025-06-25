@@ -98,7 +98,7 @@ async function setup() {
   uiContainer.label = "ui";
   pixiApp.stage.addChild(uiContainer);
 
-  console.log("Pixi app initialized:", pixiApp);
+  // console.log("Pixi app initialized:", pixiApp);
 }
 
 function joinOrLeavePongTable(player: Player, pongTable: PongTable) {
@@ -448,8 +448,8 @@ export let gameMap: GameMap;
       player: {
         id: 420,
         userId: 420,
-        x: 37,
-        y: 18,
+        x: 20,
+        y: 12,
       }
     }, gameMap)
   }

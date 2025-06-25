@@ -68,7 +68,8 @@ declare global {
 
   type GameInviteMessage = {
     type: string,
-    id: number,
+    fromId: number,
+    toId: number,
   }
 
   interface UserData {
