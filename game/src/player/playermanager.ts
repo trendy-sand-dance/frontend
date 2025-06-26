@@ -32,7 +32,7 @@ export default class PlayerManager {
 
   public addInvite(inviteMessage: GameInviteMessage): Invitation | undefined {
 
-    const player = this.getPlayer(inviteMessage.id);
+    const player = this.getPlayer(inviteMessage.fromId);
     if (player) {
       const invite = new Invitation(player, this.invites.length);
       this.invites.push(invite);
@@ -81,7 +81,7 @@ export default class PlayerManager {
 
     playerSprite.interactive = true;
     playerSprite.on('pointerover', () => {
-      console.log(`Player: ${id}`);
+      // console.log(`Player: ${id}`);
       playerSprite.blendMode = 'color-dodge';
       const { matrix } = filter;
       matrix[1] = 1.0;
@@ -134,7 +134,7 @@ export default class PlayerManager {
 
           }
 
-          console.log("friendStatus", friendStatus);
+          // console.log("friendStatus", friendStatus);
 
           if (infoUsername)
             infoUsername.textContent = `${user.username}`;
@@ -168,22 +168,18 @@ export default class PlayerManager {
               isBtnThere.innerHTML = "Send friend request";
             }
 
-
             // Game Invite btn
             const gameInviteBtn = document.getElementById('gameInviteBtn');
-			const localPlayer = this.getLocalPlayer();
-
+			      const localPlayer = this.getLocalPlayer();
 
             if (gameInviteBtn && localPlayer) {
 				
               gameInviteBtn.onclick = () => {
-                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, id: localPlayer.getId() };
+                const inviteMessage: GameInviteMessage = { type: MessageType.GameInvite, fromId: localPlayer.getId(), toId: user.id };
                 gameSocket.send(JSON.stringify(inviteMessage));
               }
 
             }
-
-
 
             window.htmx.process(document.body);
           }

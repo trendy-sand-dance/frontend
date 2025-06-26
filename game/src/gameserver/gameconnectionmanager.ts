@@ -25,7 +25,7 @@ async function getUserInfo(id: number): Promise<User> {
     return user;
   }
   catch (error) {
-    console.log("We don't got the user :(");
+    // console.log("We don't got the user :(");
     return { id: 420, username: "testUser", password: "", email: "", avatar: "", status: false, wins: 0, losses: 0, player: { id: 420, userId: 420, x: 0, y: 0 } };
 
   }
@@ -54,10 +54,10 @@ export let localUser: User;
 function initializePlayers(players: Map<number, ServerPlayer>, gameMap: GameMap) {
   for (const [id, player] of players) {
 
-    console.log(`Player ${id} is at (${player.x}, ${player.y})`);
+    // console.log(`Player ${id} is at (${player.x}, ${player.y})`);
 
     if (!isLocalPlayer(id)) {
-      console.log("Adding player: ", id, player);
+      // console.log("Adding player: ", id, player);
       const newPlayer = playerManager.addPlayer(id, player.username, player.avatar, { x: player.x, y: player.y });
       if (newPlayer) {
         gameMap.addPlayer(newPlayer);
@@ -80,10 +80,10 @@ export async function runGameConnectionManager(gameMap: GameMap) {
     // We initialize the local player by grabbing data from the window.__INITIAL_STATE__ which is set when the user logs in.
     // When succesfully initialized, we notice other players that there's a new connection.
     localUser = await getUserInfo(window.__USER_ID__);
-    console.log("localUser: ", localUser);
+    // console.log("localUser: ", localUser);
     const player = initializeLocalPlayer(localUser, gameMap);
     if (player) {
-      console.log("We're prompting the init_player (new_connection) call: ", player);
+      // console.log("We're prompting the init_player (new_connection) call: ", player);
       sendToServer(gameSocket, { type: "new_connection", id: localUser.id, username: localUser.username, avatar: localUser.avatar, position: player.getPosition() });
     }
     else {
@@ -113,7 +113,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
     // We initialize all other connected players
     if (data.type == "initialize_players") {
-      console.log("Receiving initialize_players: ", data);
+      // console.log("Receiving initialize_players: ", data);
       initializePlayers(data.players, gameMap);
     }
 
@@ -136,7 +136,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
     // When a player disconnects, we remove it from the gameMap, playerManager
     if (data.type == "disconnect_player" && !isLocalPlayer(data.id)) {
-      console.log("Disconnecting player ", data.id);
+      // console.log("Disconnecting player ", data.id);
       const mapContainer = gameMap.getContainer();
       const player = playerManager.getPlayer(data.id);
       if (player) {
@@ -168,7 +168,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
       const player = playerManager.getLocalPlayer();
       const pongTable = playerManager.pongTable;
       if (pongTable && player) {
-        console.log(data.pongPlayer.side)
+        // console.log(data.pongPlayer.side)
         pongTable.setPlayerReady(player, data.pongPlayer.side);
         pongTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
@@ -178,7 +178,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
       const player = playerManager.getPlayer(data.pongPlayer.id);
       const pongTable = playerManager.pongTable;
       if (pongTable && player) {
-        console.log(data.pongPlayer.side)
+        // console.log(data.pongPlayer.side)
         pongTable.setPlayerReady(player, data.pongPlayer.side);
         pongTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
@@ -226,7 +226,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
     if (data.type == "score_update") {
       const pongTable = playerManager.pongTable;
       if (pongTable) {
-        console.log("Data: ", data);
+        // console.log("Data: ", data);
         pongTable.updateScore(data.side, data.score);
       }
     }
@@ -250,7 +250,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
     // Game invite
     if (data.type == "game_invite") {
-      if (isLocalPlayer(data.id)) {
+      if (isLocalPlayer(data.toId)) {
         const inviteMessage: GameInviteMessage = data as GameInviteMessage;
         const invite = playerManager.addInvite(inviteMessage);
         if (invite)
@@ -261,7 +261,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
 
     // Tournament
     if (data.type == "announce_match") {
-      console.log(`(left) ${data.players.left.username} is playing against (right) ${data.players.right.username}. Time left to ready up: ${data.seconds}`)
+      // console.log(`(left) ${data.players.left.username} is playing against (right) ${data.players.right.username}. Time left to ready up: ${data.seconds}`)
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable) {
         const pl = playerManager.getPlayer(data.players.left.id);
@@ -277,7 +277,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
       const player = playerManager.getLocalPlayer();
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable && player) {
-        console.log(data.pongPlayer.side)
+        // console.log(data.pongPlayer.side)
         tournamentTable.setPlayerReady(player, data.pongPlayer.side);
         tournamentTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
@@ -287,7 +287,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
       const player = playerManager.getPlayer(data.pongPlayer.id);
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable && player) {
-        console.log(data.pongPlayer.side)
+        // console.log(data.pongPlayer.side)
         tournamentTable.setPlayerReady(player, data.pongPlayer.side);
         tournamentTable.updatePaddle(data.pongPlayer.side, data.pongPlayer.paddleY);
       }
@@ -301,7 +301,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
     }
 
     if (data.type == "countdown_pong_tournament") {
-      console.log("seconds: ", data.timer);
+      // console.log("seconds: ", data.timer);
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable) {
         tournamentTable.setCountdownTimer(Number(data.timer));
@@ -327,7 +327,7 @@ export async function runGameConnectionManager(gameMap: GameMap) {
     if (data.type == "score_update_tournament") {
       const tournamentTable = playerManager.tournamentTable;
       if (tournamentTable) {
-        console.log("Data: ", data);
+        // console.log("Data: ", data);
         tournamentTable.updateScore(data.side, data.score);
       }
     }
