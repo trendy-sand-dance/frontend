@@ -30,6 +30,12 @@
 							hx-delete="/rejectReq/<%=userId%>/<%=req.id%>">
 							Decline
 						</button>
+						<button 
+							class="text-[--color-text] hover:text-[--color-accent]"
+							hx-swap="none"
+							hx-post="/block/<%=req.id%>/<%=userId%>">
+							Block
+						</button>
 					</div>
 				</div>
 				<% }); %>
@@ -77,6 +83,12 @@
 			hx-delete="/rejectReq/<%=pend.id%>/<%=userId%>"
 			hx-swap="none">
 					Cancel request
+			</button>
+			<button 
+			class="text-[--color-text] hover:text-[--color-accent]"
+			hx-swap="none"
+			hx-post="/block/<%=pend.id%>/<%=userId%>">
+			Block
 			</button>
 		  </div>
 		<% }); %>
