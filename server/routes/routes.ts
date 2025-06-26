@@ -6,7 +6,7 @@ import { areFriends, sendFriendReq, acceptFriendReq, rejectFriendReq, blockFrien
 import { getStats, updateWins, updateLosses } from '../controllers/account/stats.controller';
 import { getPixiGame, getPlayerInfo, getUserInfo, getTournamentPlayers } from '../controllers/game/game.controller.js';
 import { getDashboard, getDashboardUser } from '../controllers/dashboard/dashboard.controller.js';
-import {viewMatchHistory} from '../controllers/account/matchHistory.controller.js';
+import { viewMatchHistory } from '../controllers/account/matchHistory.controller.js';
 import { FastifyJWT } from '@fastify/jwt';
 import { getRoomMessages, getMessageHistory } from '../controllers/chat/chat.controller.js';
 import { CHATSERVER_URL } from '../config.js';
@@ -77,10 +77,7 @@ export async function routes(fastify: FastifyInstance) {
   fastify.get('/dashboard/:userid', getDashboardUser);
 
 
-
-
   fastify.get('/viewMatchHistory/:userid', viewMatchHistory);
-
 
 
   //can we delete these?

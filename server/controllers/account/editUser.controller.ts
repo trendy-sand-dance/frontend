@@ -131,7 +131,6 @@ export async function deleteUser(request: FastifyRequest, reply: FastifyReply) {
       const responseBody = await res.json() as { error: string };
       throw { code: res.status, message: responseBody.error };
     }
-    // TODO: send view to home/login view after deleting user account
     return ({ code: res.status, message: "Successfully deleted user account" });
   } catch (error) {
     console.error(error);
