@@ -18,20 +18,20 @@
 						<strong><%= req.username %></strong>
 					</div>
 					<div 
-						class="space-x-2">
+						class="space-y-2 flex flex-col">
 						<button
-							class="accept-button text-[--color-text] hover:text-[--color-accent]"
+							class="accept-button text-[--color-text] hover:text-[--color-accent] w-full text-left"
 							hx-post="/acceptReq/<%=userId%>/<%=req.id%>"
 							hx-swap="none">
 							Accept
 						</button>
 						<button 
-							class="text-[--color-text-muted] hover:text-[--color-accent]"
+							class="text-[--color-text-muted] hover:text-[--color-accent] w-full text-left"
 							hx-delete="/rejectReq/<%=userId%>/<%=req.id%>">
 							Decline
 						</button>
 						<button 
-							class="text-[--color-text] hover:text-[--color-accent]"
+							class="text-[--color-text] hover:text-[--color-accent] w-full text-left"
 							hx-swap="none"
 							hx-post="/block/<%=req.id%>/<%=userId%>">
 							Block
@@ -52,6 +52,8 @@
 					<strong><%= friend.username %></strong> 
 			  <div class="text-sm text-[--color-text-muted]">Wins: <%= friend.wins %> | Losses: <%= friend.losses %></div>
 			</div>
+			<div 
+				class="space-y-2 flex flex-col">
 			<button
 			class="text-[--color-text] hover:text-[--color-accent]"
 			hx-swap="none"
@@ -65,6 +67,7 @@
 			Block
 		</button>
 		  </div>
+		</div>
 		<% }); %>
 	  <% } else { %>
 		<p class="text-[--color-text-muted] italic">No friends yet.</p>
@@ -78,6 +81,8 @@
 		<% pending.forEach(function(pend) { %>
 		  <div class="flex items-center justify-between text-[--color-text] bg-[--color-secondary] p-2 rounded shadow">
 			  <div><strong><%= pend.username %></strong></div>
+			  <div 
+				class="space-y-2 flex flex-col">
 			  <button
 			  class="accept-button text-[--color-text] hover:text-[--color-accent]"
 			hx-delete="/rejectReq/<%=pend.id%>/<%=userId%>"
@@ -90,6 +95,7 @@
 			hx-post="/block/<%=pend.id%>/<%=userId%>">
 			Block
 			</button>
+		  </div>
 		  </div>
 		<% }); %>
 	  <% } else { %>
