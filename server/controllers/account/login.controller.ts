@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-// import { User } from '../../types';
 import { DATABASE_URL, USERMANAGEMENT_URL } from '../../config';
 
 

@@ -10,7 +10,7 @@ import { uploadFile, deleteFile, updateFilename } from './fileUtils.controller';
  * 			- renames new image upload with <username>_avatar
  * 			 + unique addition + extension
  *
- * 			- ultimitly replacing the old avatar with the new 
+ * 			- ultimately replacing the old avatar with the new 
  * 			or adding new one if user doesn't have their own uploaded one
  * 			- ensures each user only has one avatar image with uniform
  * 			file name

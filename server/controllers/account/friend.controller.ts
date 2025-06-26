@@ -27,8 +27,6 @@ export async function sendFriendReq(request: FastifyRequest, reply: FastifyReply
   }
 };
 
-
-
 export async function acceptFriendReq(request: FastifyRequest, reply: FastifyReply): Promise<any> {
   try {
     const { senderId, userId } = request.params as { senderId: number, userId: number };

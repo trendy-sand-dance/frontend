@@ -20,9 +20,6 @@ import './setUpFetch';
 
 // Utility
 import path from 'node:path';
-// import fs from 'fs';
-// const key =  path.join(path.dirname(__dirname), './server/server.key');
-// const cert = path.join(path.dirname(__dirname), './server/server.crt');
 import { googleOAuth2Routes } from './controllers/oauth2/google.controller';
 
 
@@ -38,10 +35,6 @@ const fastify: FastifyInstance = Fastify({
     },
     level: 'warn'
   },
-  // https: {
-  //   key: fs.readFileSync(key),
-  //   cert: fs.readFileSync(cert),
-  // }
 });
 
 fastify.register(pluginMultipart), {
